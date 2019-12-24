@@ -11,9 +11,6 @@ from telegram.ext import MessageHandler, Filters
 from telegram.ext import Updater
 from textblob import TextBlob
 
-loc = os.path.dirname(os.path.abspath('__Shanisirmodule__'))
-clipLocation = f"{loc}\\Assets\\clips"
-
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 updater = Updater(token='<INSERT API KEY HERE>', use_context=True)
