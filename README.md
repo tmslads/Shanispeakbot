@@ -1,2 +1,2 @@
 # Shani-sir-TG-bot
-A Shanisir telegram bot which is savage in groups, plays clips and can be up close and personal with you in private chat!
+A Shani Sir Telegram bot who is savage in groups, sends you clips of Sir, and can get up close and personal with you in the DMs!
