@@ -1,8 +1,8 @@
 import logging
-import os
 import random
 from difflib import get_close_matches
 from uuid import uuid4
+from datetime import time
 
 from telegram import InlineQueryResultCachedAudio
 from telegram.ext import CommandHandler
@@ -13,7 +13,7 @@ from textblob import TextBlob
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
-updater = Updater(token='<INSERT API KEY HERE>', use_context=True)
+updater = Updater(token='', use_context=True)
 dispatcher = updater.dispatcher
 
 results = []
@@ -48,8 +48,6 @@ def echo(update, context):
     JJ_RB = ["like you say", "like you speak", "not hard", "okay, fine?"]  # For Adjectives or Adverbs
 
     msg = update.message.text
-    if update.message.text == '':
-        msg = "Arey you didn't give me anything to say you donut buffalo!"
 
     punctuation = r"""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
     msg = ''.join(c for c in msg if c not in punctuation)
@@ -100,9 +98,14 @@ def echo(update, context):
         cleaned.append('decide a date')
 
     shanitext = ' '.join(cleaned).capitalize()
-    temp = ''
 
     context.bot.send_message(chat_id=update.effective_chat.id, text=shanitext)
+
+
+def morning_goodness(context):
+    context.bot.send_message(chat_id=-1001396726510, text="Good morning everyone")
+    context.bot.send_audio(chat_id=-1001396726510, audio=open(r'Assets/clips/good mourning.mp3', 'rb'), title="Good morning")
+    context.bot.send_message(chat_id=-1001396726510, text="Are you doing the worksheet? Fast fast no time")
 
 
 def secret(update, context):
@@ -150,5 +153,6 @@ dispatcher.add_handler(echo_handler)
 unknown_handler = MessageHandler(Filters.command, unknown)
 dispatcher.add_handler(unknown_handler)
 
+updater.job_queue.run_daily(morning_goodness, time(8, 00, 00))  # sends message everyday at 8am on the group
 updater.start_polling()
 updater.idle()
