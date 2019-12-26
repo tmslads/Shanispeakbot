@@ -102,3 +102,36 @@ Output: ok
 
 UTC+0 2019-12-26 12:43:57 Samir says: what's your problem
 Output: Good morning Samir so sowry I am sick today I can't speak to you today like you say
+
+UTC+0 2019-12-26 13:58:44 Samir says: yo
+Output: Good morning Samir so sowry I am sick today I can't speak to you today like you say
+
+UTC+0 2019-12-26 13:58:45 Samir says: loser
+Output: Good morning Samir so sowry I am sick today I can't speak to you today like you say
+
+UTC+0 2019-12-26 13:59:17 Samir says: bs
+Output: ok
+
+UTC+0 2019-12-26 13:59:24 Samir says: stop
+Output: ok
+
+UTC+0 2019-12-26 13:59:31 Samir says: dog
+Output: ok
+
+UTC+0 2019-12-26 16:17:32 Harshil says: Hey
+Output: I don't want to talk to you.
+
+UTC+0 2019-12-26 16:19:33 Harshil says: Sup
+Output: Good mourning harshil sup *scratches nose* *draws perfect circle*
+
+UTC+0 2019-12-26 16:19:45 Harshil says: How you doin
+Output: I don't want to talk to you.
+
+UTC+0 2019-12-26 16:19:53 Harshil says: Why?!
+Output: *ignored*
+
+UTC+0 2019-12-26 16:21:07 Harshil says: Pleaseee
+Output: I don't want to talk to you.
+
+UTC+0 2019-12-26 16:21:21 Harshil says: I cry
+Output: Good mourning harshil i cry like you do i am so sowry
