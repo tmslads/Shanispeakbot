@@ -1,5 +1,4 @@
 # The Shani Sir chatbot
-
 import chatterbot
 
 shanisirbot = chatterbot.ChatBot('The Shani Sir Bot',
@@ -11,7 +10,6 @@ shanisirbot = chatterbot.ChatBot('The Shani Sir Bot',
                                                  'chatterbot.logic.UnitConversion',],
                                  preprocessors=['chatterbot.preprocessors.clean_whitespace'],
                                  read_only=True)  # This disables further learning from conversations the bot has
-
 
 def train_him():
     """Trains the bot using the standard English corpora (for now)"""
@@ -25,3 +23,4 @@ def train_him():
     end = time.time()
     time_taken = end - start
     print("\n\nThe Shani Sir Bot has been trained using the English corpora. Time taken: {time_taken}s")
+
