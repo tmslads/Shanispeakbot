@@ -1,7 +1,6 @@
 # The Shani Sir chatbot
 
 import chatterbot
-##from chatterbot.trainers import ChatterBotCorpusTrainer
 
 shanisirbot = chatterbot.ChatBot('The Shani Sir Bot',
                                  storage_adapter='chatterbot.storage.SQLStorageAdapter',
@@ -11,7 +10,18 @@ shanisirbot = chatterbot.ChatBot('The Shani Sir Bot',
                                                  'chatterbot.logic.MathematicalEvaluation',
                                                  'chatterbot.logic.UnitConversion',],
                                  preprocessors=['chatterbot.preprocessors.clean_whitespace'],
-                                 read_only=True)
+                                 read_only=True)  # This disables further learning from conversations the bot has
 
-##corpora_trainer = ChatterBotCorpusTrainer(shanisirbot)
-##corpora_trainer.train("chatterbot.corpus.english")
+
+def train_him():
+    """Trains the bot using the standard English corpora (for now)"""
+
+    from chatterbot.trainers import ChatterBotCorpusTrainer
+    import time
+
+    corpora_trainer = ChatterBotCorpusTrainer(shanisirbot)
+    start = time.time()
+    corpora_trainer.train("chatterbot.corpus.english")
+    end = time.time()
+    time_taken = end - start
+    print("\n\nThe Shani Sir Bot has been trained using the English corpora. Time taken: {time_taken}s")

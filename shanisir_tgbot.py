@@ -4,6 +4,7 @@ from datetime import time
 from difflib import get_close_matches
 from time import sleep
 from uuid import uuid4
+import chatbot
 
 from telegram import InlineQueryResultCachedAudio
 from telegram.ext import CommandHandler
@@ -62,6 +63,7 @@ def private(update, context):
     JJ_RB = ["like you say", "like you speak", "not hard", "okay, fine?"]  # For Adjectives or Adverbs
 
     msg = update.message.text
+    msg = shanisirbot.get_response(msg).text
 
     punctuation = r"""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
     msg = ''.join(c for c in msg if c not in punctuation)
