@@ -102,18 +102,19 @@ def private(update, context):
     #                                   "don't press the jockey"]))
     with open("interactions.txt", "a") as f:
         msg = f"\n\nUTC+0 {update.message.date} {update.message.from_user.first_name} says: {update.message.text}"
-        out = f"Good morning {update.message.from_user.first_name} " \
+        if update.message.reply_to_message:  # If user is replying to bot directly
+            out = 'ok'
+        else:
+            out = f"Good morning {update.message.from_user.first_name} " \
               f"so sowry I am sick today I can't speak to you today like you say"
-
         print(msg)
         print(out)
         f.write(msg)
         f.write(f"\nOutput: {out}")
 
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
-    sleep((25 / 60) * 16) if (25 / 60) * 16 < 6 else sleep(6)  # Assuming 25 WPM typing speed
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=out)
+    sleep((25 / 60) * len(out.split())) if (25 / 60) * len(out.split()) < 6 else sleep(6)  # Assuming 25 WPM typing speed on a phone
+    update.effective_message.reply_text(out)
 
     # print(time())
     # print(time.time() - begin)
