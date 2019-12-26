@@ -33,7 +33,8 @@ for file_id, name in zip(file_ids, names):
 
 def start(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id,
-                             text="I'm an inline bot, @ me in the chatbox and type to get an audio clip")
+                             text="You can use me anywhere, @ me in the chatbox and type to get an audio clip. Or just"
+                                  " talk to me here and get help from me directly.")
 
 
 def helper(update, context):
@@ -42,6 +43,14 @@ def helper(update, context):
                                   " in groups too! More commands will be added in the future."
                                   " P.S: Download Shanisirmodule from:"
                                   " https://github.com/tmslads/Shanisirmodule/releases")
+
+
+def secret(update, context):
+    context.bot.send_message(chat_id=update.effective_chat.id, text="stop finding secret commands :P")
+
+
+def unknown(update, context):
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, I didn't understand that command.")
 
 
 def private(update, context):
@@ -94,7 +103,7 @@ def private(update, context):
     with open("interactions.txt", "a") as f:
         msg = f"\n\nUTC+0 {update.message.date} {update.message.from_user.first_name} says: {update.message.text}"
         out = f"Good morning {update.message.from_user.first_name} " \
-              f"I am sick today I can't speak to you today like you say"
+              f"so sowry I am sick today I can't speak to you today like you say"
 
         print(msg)
         print(out)
@@ -102,7 +111,7 @@ def private(update, context):
         f.write(f"\nOutput: {out}")
 
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
-    sleep((25 / 60) * 16) if (25 / 60) * 16 > 6 else sleep(6)  # Assuming 25 WPM typing speed
+    sleep((25 / 60) * 16) if (25 / 60) * 16 < 6 else sleep(6)  # Assuming 25 WPM typing speed
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=out)
 
@@ -134,10 +143,6 @@ def morning_goodness(context):
     context.bot.send_message(chat_id=-1001396726510, text="I am sick today, thank you for your well wishes.")
 
 
-def secret(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="stop finding secret commands :P")
-
-
 def inline_clips(update, context):
     query = update.inline_query.query
     if not query:
@@ -155,10 +160,6 @@ def inline_clips(update, context):
                     index += 1
 
         context.bot.answer_inline_query(update.inline_query.id, results[:16])
-
-
-def unknown(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, I didn't understand that command.")
 
 
 inline_clips_handler = InlineQueryHandler(inline_clips)
