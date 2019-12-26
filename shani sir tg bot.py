@@ -10,6 +10,7 @@ from telegram.ext import CommandHandler
 from telegram.ext import InlineQueryHandler
 from telegram.ext import MessageHandler, Filters
 from telegram.ext import Updater
+from textblob import TextBlob
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -17,7 +18,7 @@ updater = Updater(token='', use_context=True)
 dispatcher = updater.dispatcher
 
 results = []
-begin = 0
+frequency = 0
 
 with open("file_ids.txt", "r") as ids, open("names.txt", "r") as name:
     file_ids = ids.read().strip().split(',')
@@ -41,6 +42,7 @@ def helper(update, context):
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text="This bot sends you actual shani sir clips straight from Shanisirmodule! He is savage"
                                   " in groups too! More commands will be added in the future."
+                                  " @ me in the chatbox and type to get an audio clip."
                                   " P.S: Download Shanisirmodule from:"
                                   " https://github.com/tmslads/Shanisirmodule/releases")
 
@@ -54,83 +56,91 @@ def unknown(update, context):
 
 
 def private(update, context):
-    global begin
+    global frequency
 
-    # cleaned = []
-    # JJ_RB = ["like you say", "like you speak", "not hard", "okay, fine?"]  # For Adjectives or Adverbs
-    #
-    # msg = update.message.text
-    #
-    # punctuation = r"""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
-    # msg = ''.join(c for c in msg if c not in punctuation)
-    # blob = TextBlob(msg)
-    # cleaned = blob.words  # Returns list with no punctuation marks
-    # blob_tags_iter = iter(blob.tags)
-    #
-    # flag = 0  # To check if a modal is present in the sentence
-    # lydcount = 0  # Counts the number of times "like you do" has been added
-    # JJ_RBcount = 0  # Counts the number of times a phrase from JJ_RB has been added
-    # if len(cleaned) < 15:
-    #     lydlim = 2  # to limit the number of times we add
-    #     JJ_RBlim = 2  # lyd and JJ_RB
-    # else:
-    #     lydlim = len(cleaned) // 9
-    #     JJ_RBlim = len(cleaned) // 9
-    # for word, tag in blob_tags_iter:  # returns list of tuples which tells the POS
-    #     index = cleaned.index(word)
-    #
-    #     if tag == 'MD' and not flag:  # Modal
-    #         cleaned.insert(index + 1, "(if the laws of physics allow it)")
-    #         flag = 1
-    #
-    #     if tag in ['JJ', 'JJR', 'JJS', 'RB', 'RBR', 'RBS'] and JJ_RBcount < JJ_RBlim:  # Adjective or Adverb
-    #         cleaned.insert(index + 1, random.choice(JJ_RB))
-    #         JJ_RBcount += 1
-    #
-    #     elif tag in ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ'] and lydcount < lydlim:  # Verb
-    #         cleaned.insert(index + 1, "like you do")
-    #         lydcount += 1
-    #
-    # if random.choice([0, 1]):
-    #     cleaned.append(random.choice(["I am so sowry", "i don't want to talk like that", "*scratches nose*",
-    #                                   "it is embarrassing to me like basically", "it's not to trouble you like you say",
-    #                                   "go for the worksheet"]))
-    # else:
-    #     cleaned.append(random.choice(["this will be fruitful", "you will benefit", "that is the expected behaviour",
-    #                                   "now you are on the track like", "class is in the flow like",
-    #                                   "aim to hit the tarjit",
-    #                                   "don't press the jockey"]))
+    cleaned = []
+    JJ_RB = ["like you say", "like you speak", "not hard", "okay, fine?"]  # For Adjectives or Adverbs
+
+    msg = update.message.text
+
+    punctuation = r"""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
+    msg = ''.join(c for c in msg if c not in punctuation)
+    blob = TextBlob(msg)
+    cleaned = blob.words  # Returns list with no punctuation marks
+
+    flag = 0  # To check if a modal is present in the sentence
+    lydcount = 0  # Counts the number of times "like you do" has been added
+    JJ_RBcount = 0  # Counts the number of times a phrase from JJ_RB has been added
+    if len(cleaned) < 15:
+        lydlim = 2  # to limit the number of times we add
+        JJ_RBlim = 2  # lyd and JJ_RB
+    else:
+        lydlim = len(cleaned) // 9
+        JJ_RBlim = len(cleaned) // 9
+    for word, tag in blob.tags:  # returns list of tuples which tells the POS
+        index = cleaned.index(word)
+
+        if tag == 'MD' and not flag:  # Modal
+            cleaned.insert(index + 1, "(if the laws of physics allow it)")
+            flag = 1
+
+        if tag in ['JJ', 'JJR', 'JJS', 'RB', 'RBR', 'RBS'] and JJ_RBcount < JJ_RBlim:  # Adjective or Adverb
+            cleaned.insert(index + 1, random.choice(JJ_RB))
+            JJ_RBcount += 1
+
+        elif tag in ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ'] and lydcount < lydlim:  # Verb
+            cleaned.insert(index + 1, "like you do")
+            lydcount += 1
+
+    if random.choice([0, 1]):
+        cleaned.append(random.choice(["I am so sowry", "i don't want to talk like that", "*scratches nose*",
+                                      "it is embarrassing to me like basically", "it's not to trouble you like you say",
+                                      "go for the worksheet"]))
+    else:
+        cleaned.append(random.choice(["this will be fruitful", "you will benefit", "that is the expected behaviour",
+                                      "now you are on the track like", "class is in the flow like",
+                                      "aim to hit the tarjit",
+                                      "don't press the jockey"]))
+
+    begin = update.message.date
+    cleaned.insert(0, update.message.from_user.first_name)
+    cleaned.insert(0, 'good mourning')
+
+    if len(cleaned) < 5:  # Will run if input is too short
+        cleaned.append("*draws perfect circle*")
+
+    if 'when' in cleaned or 'When' in cleaned or 'time' in cleaned or 'Time' in cleaned:  # If question is present
+        cleaned.append('decide a date')
+
+    shanitext = ' '.join(cleaned).capitalize()
+
     with open("interactions.txt", "a") as f:
         msg = f"\n\nUTC+0 {update.message.date} {update.message.from_user.first_name} says: {update.message.text}"
         if update.message.reply_to_message:  # If user is replying to bot directly
-            out = 'ok'
+            out = 'I don\'t want to talk to you.'
+            the_id = update.message.message_id  # Gets id of the message replied
+            frequency += 1
+            if frequency == 2:
+                out = '*ignored*'
+                frequency = 0
+                context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_audio')
+                sleep(1)
+                context.bot.send_audio(chat_id=update.effective_chat.id,
+                                       audio=open(r"Assets/clips/that's it.mp3", 'rb'),
+                                       title="That's it")
         else:
-            out = f"Good morning {update.message.from_user.first_name} " \
-              f"so sowry I am sick today I can't speak to you today like you say"
+            out = shanitext
+            the_id = None
         print(msg)
         print(out)
         f.write(msg)
         f.write(f"\nOutput: {out}")
-
-    context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
-    sleep((25 / 60) * len(out.split())) if (25 / 60) * len(out.split()) < 6 else sleep(6)  # Assuming 25 WPM typing speed on a phone
-    update.effective_message.reply_text(out)
-
-    # print(time())
-    # print(time.time() - begin)
-    begin = update.message.date
-    # cleaned.insert(0, 'good mourning')
-    #
-    # if len(cleaned) < 5:  # Will run if input is too short
-    #     cleaned.append("*draws perfect circle*")
-    #
-    # if 'when' in cleaned or 'When' in cleaned:  # If question is present in input then-
-    #     cleaned.append('decide a date')
-    #
-    # shanitext = ' '.join(cleaned).capitalize()
-
-    # print(shanitext)
-    # context.bot.send_message(chat_id=update.effective_chat.id, text=shanitext)
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')  # Sends 'typing...' status
+        # Assuming 25 WPM typing speed on a phone
+        time_taken = (25 / 60) * len(out.split())
+        sleep(time_taken) if time_taken < 6 else sleep(6)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=out,
+                                 reply_to_message_id=the_id)  # Sends message
 
 
 def morning_goodness(context):
@@ -140,8 +150,10 @@ def morning_goodness(context):
     context.bot.send_audio(chat_id=-1001396726510, audio=open(r'Assets/clips/good mourning.mp3', 'rb'),
                            title="Good morning")
     context.bot.send_chat_action(chat_id=-1001396726510, action='typing')
-    sleep((25 / 60) * 10)
-    context.bot.send_message(chat_id=-1001396726510, text="I am sick today, thank you for your well wishes.")
+    sleep((25 / 60) * 22)
+    context.bot.send_message(chat_id=-1001396726510,
+                             text="Today I'll be checking the warksheets. If you have a doubt, you can come"
+                                  " and sit here and get help from me directly.")
 
 
 def inline_clips(update, context):
