@@ -1,5 +1,4 @@
 # The Shani Sir chatbot
-
 import chatterbot
 
 shanisirbot = chatterbot.ChatBot('The Shani Sir Bot',
@@ -25,3 +24,4 @@ def train_him():
     end = time.time()
     time_taken = end - start
     print("\n\nThe Shani Sir Bot has been trained using the English corpora. Time taken: {time_taken}s")
+
