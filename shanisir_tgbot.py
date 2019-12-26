@@ -21,6 +21,8 @@ dispatcher = updater.dispatcher
 results = []
 frequency = 0
 
+##roasts = ["this is not the expected behaviour", "i don't want you to talk like that", " this language is embarassing to me like basically"
+
 with open("file_ids.txt", "r") as ids, open("names.txt", "r") as name:
     file_ids = ids.read().strip().split(',')
     names = name.read().strip().split(',')
