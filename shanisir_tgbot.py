@@ -61,8 +61,10 @@ def private(update, context):
     cleaned = []
     JJ_RB = ["like you say", "like you speak", "not hard", "okay, fine?"]  # For Adjectives or Adverbs
 
-    msg = update.message.text
+    msg = update.message.texts
+    print(msg)
     msg = chatbot.shanisirbot.get_response(msg).text
+    print(msg)
 
     punctuation = r"""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
     msg = ''.join(c for c in msg if c not in punctuation)

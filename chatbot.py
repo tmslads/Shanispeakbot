@@ -11,7 +11,6 @@ shanisirbot = chatterbot.ChatBot('The Shani Sir Bot',
                                  preprocessors=['chatterbot.preprocessors.clean_whitespace'],
                                  read_only=True)  # This disables further learning from conversations the bot has
 
-
 def train_him():
     """Trains the bot using the standard English corpora (for now)"""
 
