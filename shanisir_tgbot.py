@@ -58,7 +58,6 @@ def unknown(update, context):
 
 def private(update, context):
     global frequency
-
     cleaned = []
     JJ_RB = ["like you say", "like you speak", "not hard", "okay, fine?"]  # For Adjectives or Adverbs
 
@@ -130,6 +129,9 @@ def private(update, context):
                 context.bot.send_audio(chat_id=update.effective_chat.id,
                                        audio=open(r"Assets/clips/that's it.mp3", 'rb'),
                                        title="That's it")
+                context.bot.send_sticker(chat_id=update.effective_chat.id,
+                                         sticker="CAADBQADHAADkupnJzeKCruy2yr2FgQ",  # Sahel offensive sticker
+                                         reply_to_message_id=the_id)
         else:
             out = shanitext
             the_id = None
@@ -143,6 +145,17 @@ def private(update, context):
         sleep(time_taken) if time_taken < 6 else sleep(6)
         context.bot.send_message(chat_id=update.effective_chat.id, text=out,
                                  reply_to_message_id=the_id)  # Sends message
+
+
+def group(update, context):
+    with open("lad_words.txt", "r") as f:
+        prohibitted = f.read().split('\n')
+
+    if any(bad_word in update.message.text for bad_word in prohibitted):
+        out = f"This is not the expected behaviour {update.message.from_user.first_name}"
+        context.bot.send_message(chat_id=update.effective_chat.id, text=out,
+                                 reply_to_message_id=update.message.message_id)  # Sends message
+        print(out)
 
 
 def morning_goodness(context):
@@ -188,6 +201,9 @@ dispatcher.add_handler(clip_handler)
 
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
+
+group_handler = MessageHandler(Filters.group, group)
+dispatcher.add_handler(group_handler)
 
 private_handler = MessageHandler(Filters.text, private)
 dispatcher.add_handler(private_handler)
