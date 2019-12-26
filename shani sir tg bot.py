@@ -91,6 +91,20 @@ def private(update, context):
     #                                   "now you are on the track like", "class is in the flow like",
     #                                   "aim to hit the tarjit",
     #                                   "don't press the jockey"]))
+    with open("interactions.txt", "a") as f:
+        msg = f"\n\nUTC+0 {update.message.date} {update.message.from_user.first_name} says: {update.message.text}"
+        out = f"Good morning {update.message.from_user.first_name} " \
+              f"I am sick today I can't speak to you today like you say"
+
+        print(msg)
+        print(out)
+        f.write(msg)
+        f.write(f"\nOutput: {out}")
+
+    context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
+    sleep((25 / 60) * 16) if (25 / 60) * 16 > 6 else sleep(6)  # Assuming 25 WPM typing speed
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=out)
 
     # print(time())
     # print(time.time() - begin)
@@ -104,12 +118,7 @@ def private(update, context):
     #     cleaned.append('decide a date')
     #
     # shanitext = ' '.join(cleaned).capitalize()
-    context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
-    sleep((25 / 60) * 16) if (25 / 60) * 16 > 6 else sleep(6)  # Assuming 25 WPM typing speed
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=f"Good morning {update.message.from_user.first_name}"
-                                  f" I am sick today I can't speak to you today"
-                                  f" like you say")
+
     # print(shanitext)
     # context.bot.send_message(chat_id=update.effective_chat.id, text=shanitext)
 
@@ -164,8 +173,8 @@ dispatcher.add_handler(clip_handler)
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
 
-echo_handler = MessageHandler(Filters.text, private)
-dispatcher.add_handler(echo_handler)
+private_handler = MessageHandler(Filters.text, private)
+dispatcher.add_handler(private_handler)
 
 unknown_handler = MessageHandler(Filters.command, unknown)
 dispatcher.add_handler(unknown_handler)
