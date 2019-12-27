@@ -19,9 +19,9 @@ updater = Updater(token='', use_context=True)
 dispatcher = updater.dispatcher
 
 results = []
+roasts = ["this is not the expected behaviour", "i don't want you to talk like that",
+          "this language is embarassing to me like basically"]
 frequency = 0
-
-##roasts = ["this is not the expected behaviour", "i don't want you to talk like that", " this language is embarassing to me like basically"
 
 with open("file_ids.txt", "r") as ids, open("names.txt", "r") as name:
     file_ids = ids.read().strip().split(',')
@@ -63,10 +63,8 @@ def private(update, context):
     cleaned = []
     JJ_RB = ["like you say", "like you speak", "not hard", "okay, fine?"]  # For Adjectives or Adverbs
 
-    msg = update.message.texts
-    print(msg)
-    msg = chatbot.shanisirbot.get_response(msg).text
-    print(msg)
+    initial = update.message.text
+    msg = chatbot.shanisirbot.get_response(initial).text
 
     punctuation = r"""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
     msg = ''.join(c for c in msg if c not in punctuation)
@@ -120,7 +118,7 @@ def private(update, context):
     shanitext = ' '.join(cleaned).capitalize()
 
     with open("interactions.txt", "a") as f:
-        msg = f"\n\nUTC+0 {update.message.date} {update.message.from_user.first_name} says: {update.message.text}"
+        inp = f"\n\nUTC+0 {update.message.date} {update.message.from_user.first_name} says: {update.message.text}"
         if update.message.reply_to_message:  # If user is replying to bot directly
             out = 'I don\'t want to talk to you.'
             the_id = update.message.message_id  # Gets id of the message replied
@@ -131,7 +129,10 @@ def private(update, context):
                 context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_audio')
                 sleep(1)
                 context.bot.send_audio(chat_id=update.effective_chat.id,
-                                       audio=open(r"Assets/clips/that's it.mp3", 'rb'),
+                                       audio=open(
+                                           r"C:/Users/aarti/Documents/Python stuff/"
+                                           r"Bored/Shanisirmodule/Assets/clips/that's it.mp3",
+                                           'rb'),
                                        title="That's it")
                 context.bot.send_sticker(chat_id=update.effective_chat.id,
                                          sticker="CAADBQADHAADkupnJzeKCruy2yr2FgQ",  # Sahel offensive sticker
@@ -139,9 +140,9 @@ def private(update, context):
         else:
             out = shanitext
             the_id = None
-        print(msg)
+        print(inp)
         print(out)
-        f.write(msg)
+        f.write(inp)
         f.write(f"\nOutput: {out}")
         context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')  # Sends 'typing...' status
         # Assuming 25 WPM typing speed on a phone
@@ -156,7 +157,7 @@ def group(update, context):
         prohibitted = f.read().split('\n')
 
     if any(bad_word in update.message.text for bad_word in prohibitted):
-        out = f"This is not the expected behaviour {update.message.from_user.first_name}"
+        out = f"{random.choice(roasts)} {update.message.from_user.first_name}"
         context.bot.send_message(chat_id=update.effective_chat.id, text=out,
                                  reply_to_message_id=update.message.message_id)  # Sends message
         print(out)
@@ -166,7 +167,9 @@ def morning_goodness(context):
     context.bot.send_message(chat_id=-1001396726510, text="Good morning everyone")
     context.bot.send_chat_action(chat_id=-1001396726510, action='upload_audio')
     sleep(1)
-    context.bot.send_audio(chat_id=-1001396726510, audio=open(r'Assets/clips/good mourning.mp3', 'rb'),
+    context.bot.send_audio(chat_id=-1001396726510, audio=open(r'C:/Users/aarti/Documents/Python stuff/'
+                                                              r'Bored/Shanisirmodule/Assets/clips/good mourning.mp3',
+                                                              'rb'),
                            title="Good morning")
     context.bot.send_chat_action(chat_id=-1001396726510, action='typing')
     sleep((25 / 60) * 22)
@@ -206,11 +209,11 @@ dispatcher.add_handler(clip_handler)
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
 
+private_handler = MessageHandler(((Filters.text & ~ Filters.group) | (Filters.group & Filters.reply)), private)
+dispatcher.add_handler(private_handler)
+
 group_handler = MessageHandler(Filters.group, group)
 dispatcher.add_handler(group_handler)
-
-private_handler = MessageHandler(Filters.text, private)
-dispatcher.add_handler(private_handler)
 
 unknown_handler = MessageHandler(Filters.command, unknown)
 dispatcher.add_handler(unknown_handler)
