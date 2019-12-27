@@ -19,8 +19,8 @@ updater = Updater(token='', use_context=True)
 dispatcher = updater.dispatcher
 
 results = []
-roasts = ["this is not the expected behaviour", "i don't want you to talk like that",
-          "this language is embarassing to me like basically"]
+rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
+          "this language is embarassing to me like basically", "this is not a fruitful conversation"]
 frequency = 0
 
 with open("file_ids.txt", "r") as ids, open("names.txt", "r") as name:
@@ -75,8 +75,8 @@ def private(update, context):
     lydcount = 0  # Counts the number of times "like you do" has been added
     JJ_RBcount = 0  # Counts the number of times a phrase from JJ_RB has been added
     if len(cleaned) < 15:
-        lydlim = 2  # to limit the number of times we add
-        JJ_RBlim = 2  # lyd and JJ_RB
+        lydlim = 1  # to limit the number of times we add
+        JJ_RBlim = 1  # lyd and JJ_RB
     else:
         lydlim = len(cleaned) // 9
         JJ_RBlim = len(cleaned) // 9
@@ -107,7 +107,6 @@ def private(update, context):
 
     begin = update.message.date
     cleaned.insert(0, update.message.from_user.first_name)
-    cleaned.insert(0, 'good mourning')
 
     if len(cleaned) < 5:  # Will run if input is too short
         cleaned.append("*draws perfect circle*")
@@ -157,7 +156,7 @@ def group(update, context):
         prohibitted = f.read().split('\n')
 
     if any(bad_word in update.message.text for bad_word in prohibitted):
-        out = f"{random.choice(roasts)} {update.message.from_user.first_name}"
+        out = f"{random.choice(rebukes)} {update.message.from_user.first_name}"
         context.bot.send_message(chat_id=update.effective_chat.id, text=out,
                                  reply_to_message_id=update.message.message_id)  # Sends message
         print(out)
