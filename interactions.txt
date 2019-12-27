@@ -151,3 +151,85 @@ Output: Good mourning samir how are like you do you doing like you do *scratches
 
 UTC+0 2019-12-26 20:45:18 Samir says: idior
 Output: Good mourning samir is like you do there a reason that i should (if the laws of physics allow it) you will benefit
+
+UTC+0 2019-12-26 20:50:20 Samir says: What is the time
+Output: Good mourning samir the current like you speak time is like you do 1250 am that is the expected behaviour decide a date
+
+UTC+0 2019-12-26 20:50:48 Samir says: Bus
+Output: Good mourning samir i am like you do in the chat robot business it's not to trouble you like you say
+
+UTC+0 2019-12-27 04:48:31 Suhail says: Good morning
+Output: Good mourning suhail the current not hard time is like you do 0848 am class is in the flow like decide a date
+
+UTC+0 2019-12-27 04:48:37 Suhail says: Fuck
+Output: Good mourning suhail you mumble like you do class is in the flow like
+
+UTC+0 2019-12-27 04:49:15 Suhail says: I wonder how much of this is just harshil typing
+Output: Good mourning suhail who is like you do the best soccer player *scratches nose*
+
+UTC+0 2019-12-27 04:50:00 Suhail says: Skeet
+Output: Good mourning suhail the current okay, fine? time is like you do 0850 am don't press the jockey decide a date
+
+UTC+0 2019-12-27 04:50:27 Suhail says: Skeyaaa
+Output: Good mourning suhail the current like you speak time is like you do 0850 am go for the worksheet decide a date
+
+UTC+0 2019-12-27 04:50:41 Suhail says: Stop no
+Output: Good mourning suhail the current okay, fine? time is like you do 0850 am it's not to trouble you like you say decide a date
+
+UTC+0 2019-12-27 04:50:44 Suhail says: Wth
+Output: Good mourning suhail the current okay, fine? time is like you do 0850 am i don't want to talk like that decide a date
+
+UTC+0 2019-12-27 04:50:49 Suhail says: Actual nightmares
+Output: Good mourning suhail a robot has like you do its own not hard free not hard will (if the laws of physics allow it) you know like you do this will be fruitful
+
+UTC+0 2019-12-27 04:52:11 Suhail says: if "__name__" == "__main__":
+    break
+Output: Good mourning suhail i think like you do dune is like you do an excellent not hard story did you see any of the movies this will be fruitful
+
+UTC+0 2019-12-27 04:52:30 Suhail says: I will find a way to break you
+Output: Good mourning suhail it this will be fruitful *draws perfect circle*
+
+UTC+0 2019-12-27 04:52:33 Suhail says: Mark my words
+Output: Good mourning suhail do not not hard worry like you do it's not to trouble you like you say
+
+UTC+0 2019-12-27 06:27:47 Harshil says: Fool
+Output: Good mourning harshil tell like you do me about gossip it is embarrassing to me like basically
+
+UTC+0 2019-12-27 06:29:11 Harshil says: Idiotic
+Output: I don't want to talk to you.
+
+UTC+0 2019-12-27 06:31:37 Harshil says: Dummy
+Output: I don't want to talk to you.
+
+UTC+0 2019-12-27 06:31:52 Harshil says: Why not
+Output: *ignored*
+
+UTC+0 2019-12-27 06:32:52 Harshil says: Hello?
+Output: Good mourning harshil hi it is embarrassing to me like basically *draws perfect circle*
+
+UTC+0 2019-12-27 06:36:59 Harshil says: Huh?
+Output: Good mourning harshil the current like you speak time is like you do 1037 am i don't want to talk like that decide a date
+
+UTC+0 2019-12-27 06:37:49 Harshil says: What
+Output: I don't want to talk to you.
+
+UTC+0 2019-12-27 06:38:59 Harshil says: What
+Output: Good mourning harshil the current like you speak time is like you do 1038 am now you are on the track like decide a date
+
+UTC+0 2019-12-27 06:45:16 Harshil says: Hi
+Output: Good mourning harshil how are like you do you doing like you do go for the worksheet
+
+UTC+0 2019-12-27 06:47:52 Harshil says: Hi
+Output: Good mourning harshil how are like you do you doing like you do i am so sowry
+
+UTC+0 2019-12-27 06:48:08 Harshil says: Hey
+Output: I don't want to talk to you.
+
+UTC+0 2019-12-27 06:48:15 Harshil says: Why
+Output: *ignored*
+
+UTC+0 2019-12-27 06:48:54 Harshil says: Shit
+Output: Good mourning harshil the current okay, fine? time is like you do 1048 am class is in the flow like decide a date
+
+UTC+0 2019-12-27 06:50:13 Harshil says: Hi
+Output: I don't want to talk to you.
