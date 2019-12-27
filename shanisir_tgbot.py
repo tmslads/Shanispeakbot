@@ -153,9 +153,9 @@ def private(update, context):
 
 def group(update, context):
     with open("lad_words.txt", "r") as f:
-        prohibitted = f.read().split('\n')
+        prohibited = f.read().split('\n')
 
-    if any(bad_word in update.message.text for bad_word in prohibitted):
+    if any(bad_word in update.message.text for bad_word in prohibited):
         out = f"{random.choice(rebukes)} {update.message.from_user.first_name}"
         context.bot.send_message(chat_id=update.effective_chat.id, text=out,
                                  reply_to_message_id=update.message.message_id)  # Sends message
