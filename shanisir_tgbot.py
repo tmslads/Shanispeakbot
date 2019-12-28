@@ -20,7 +20,7 @@ dispatcher = updater.dispatcher
 
 results = []
 rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
-          "this language is embarassing to me like basically", "this is not a fruitful conversation"]
+           "this language is embarassing to me like basically", "this is not a fruitful conversation"]
 frequency = 0
 
 with open("file_ids.txt", "r") as ids, open("names.txt", "r") as name:
@@ -55,7 +55,7 @@ def secret(update, context):
 
 
 def unknown(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, I didn't understand that command.")
+    context.bot.send_message(chat_id=update.effective_chat.id, text="I didn't say wrong I don't know.")
 
 
 def private(update, context):
@@ -80,8 +80,13 @@ def private(update, context):
     else:
         lydlim = len(cleaned) // 9
         JJ_RBlim = len(cleaned) // 9
+
+    tempindex = 0
     for word, tag in blob.tags:  # returns list of tuples which tells the POS
         index = cleaned.index(word)
+
+        if index - tempindex < 5:  # Do not add lad things too close to each other
+            continue
 
         if tag == 'MD' and not flag:  # Modal
             cleaned.insert(index + 1, "(if the laws of physics allow it)")
@@ -90,10 +95,12 @@ def private(update, context):
         if tag in ['JJ', 'JJR', 'JJS', 'RB', 'RBR', 'RBS'] and JJ_RBcount < JJ_RBlim:  # Adjective or Adverb
             cleaned.insert(index + 1, random.choice(JJ_RB))
             JJ_RBcount += 1
+            tempindex = index
 
         elif tag in ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ'] and lydcount < lydlim:  # Verb
             cleaned.insert(index + 1, "like you do")
             lydcount += 1
+            tempindex = index
 
     if random.choice([0, 1]):
         cleaned.append(random.choice(["I am so sowry", "i don't want to talk like that", "*scratches nose*",
@@ -153,7 +160,7 @@ def private(update, context):
 
 def group(update, context):
     with open("lad_words.txt", "r") as f:
-        prohibited = f.read().split('\n')
+        prohibited = f.read().lower().split('\n')
 
     if any(bad_word in update.message.text for bad_word in prohibited):
         out = f"{random.choice(rebukes)} {update.message.from_user.first_name}"
@@ -208,11 +215,11 @@ dispatcher.add_handler(clip_handler)
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
 
-private_handler = MessageHandler(((Filters.text & ~ Filters.group) | (Filters.group & Filters.reply)), private)
-dispatcher.add_handler(private_handler)
-
 group_handler = MessageHandler(Filters.group, group)
 dispatcher.add_handler(group_handler)
+
+private_handler = MessageHandler(Filters.text, private)
+dispatcher.add_handler(private_handler)
 
 unknown_handler = MessageHandler(Filters.command, unknown)
 dispatcher.add_handler(unknown_handler)
