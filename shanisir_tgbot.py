@@ -20,7 +20,7 @@ dispatcher = updater.dispatcher
 
 results = []
 rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
-          "this language is embarassing to me like basically", "this is not a fruitful conversation"]
+           "this language is embarassing to me like basically", "this is not a fruitful conversation"]
 frequency = 0
 
 with open("file_ids.txt", "r") as ids, open("names.txt", "r") as name:
@@ -55,7 +55,7 @@ def secret(update, context):
 
 
 def unknown(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, I didn't understand that command.")
+    context.bot.send_message(chat_id=update.effective_chat.id, text="I didn't say wrong I don't know.")
 
 
 def private(update, context):
@@ -80,13 +80,24 @@ def private(update, context):
         lydlim = 1  # to limit the number of times we add
         JJ_RBlim = 1  # lyd and JJ_RB
     else:
+<<<<<<< HEAD
         lydlim = len(cleaned) // 20
         JJ_RBlim = len(cleaned) // 20
 
     temp = 0
     for word, tag in blob_tags_iter:  # returns list of tuples which tells the POS
+=======
+        lydlim = len(cleaned) // 9
+        JJ_RBlim = len(cleaned) // 9
+
+    tempindex = 0
+    for word, tag in blob.tags:  # returns list of tuples which tells the POS
+>>>>>>> 3d7a3821fdb74f50d96b87b0b129ff2486d899ae
         index = cleaned.index(word)
         if index - temp < 7:  # Do not add lad things too close to each other
+            continue
+
+        if index - tempindex < 5:  # Do not add lad things too close to each other
             continue
 
         if tag == 'MD' and not flag:  # Modal
@@ -96,12 +107,20 @@ def private(update, context):
         if tag in ['JJ', 'JJR', 'JJS', 'RB', 'RBR', 'RBS'] and JJ_RBcount < JJ_RBlim:  # Adjective or Adverb
             cleaned.insert(index + 1, r.choice(JJ_RB))
             JJ_RBcount += 1
+<<<<<<< HEAD
             temp = index
+=======
+            tempindex = index
+>>>>>>> 3d7a3821fdb74f50d96b87b0b129ff2486d899ae
 
         elif tag in ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ'] and lydcount < lydlim:  # Verb
             cleaned.insert(index + 1, "like you do")
             lydcount += 1
+<<<<<<< HEAD
             temp = index
+=======
+            tempindex = index
+>>>>>>> 3d7a3821fdb74f50d96b87b0b129ff2486d899ae
 
     if r.choice([0, 1]):
         cleaned.append(r.choice(["I am so sowry", "i don't want to talk like that", "*scratches nose*",
@@ -160,10 +179,15 @@ def private(update, context):
 
 def group(update, context):
     with open("lad_words.txt", "r") as f:
-        prohibitted = f.read().split('\n')
+        prohibited = f.read().lower().split('\n')
 
+<<<<<<< HEAD
     if any(bad_word in update.message.text for bad_word in prohibitted):
         out = f"{r.choice(rebukes)} {update.message.from_user.first_name}"
+=======
+    if any(bad_word in update.message.text for bad_word in prohibited):
+        out = f"{random.choice(rebukes)} {update.message.from_user.first_name}"
+>>>>>>> 3d7a3821fdb74f50d96b87b0b129ff2486d899ae
         context.bot.send_message(chat_id=update.effective_chat.id, text=out,
                                  reply_to_message_id=update.message.message_id)  # Sends message
         print(out)
@@ -215,11 +239,11 @@ dispatcher.add_handler(clip_handler)
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
 
-private_handler = MessageHandler(((Filters.text & ~ Filters.group) | (Filters.group & Filters.reply)), private)
-dispatcher.add_handler(private_handler)
-
 group_handler = MessageHandler(Filters.group, group)
 dispatcher.add_handler(group_handler)
+
+private_handler = MessageHandler(Filters.text, private)
+dispatcher.add_handler(private_handler)
 
 unknown_handler = MessageHandler(Filters.command, unknown)
 dispatcher.add_handler(unknown_handler)
