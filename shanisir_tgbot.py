@@ -1,5 +1,5 @@
 import logging
-import random
+import random as r
 from datetime import time
 from difflib import get_close_matches
 from time import sleep
@@ -70,40 +70,47 @@ def private(update, context):
     msg = ''.join(c for c in msg if c not in punctuation)
     blob = TextBlob(msg)
     cleaned = blob.words  # Returns list with no punctuation marks
-
+    blob_tags_iter = iter(blob.tags)
+    
     flag = 0  # To check if a modal is present in the sentence
     lydcount = 0  # Counts the number of times "like you do" has been added
     JJ_RBcount = 0  # Counts the number of times a phrase from JJ_RB has been added
-    if len(cleaned) < 15:
+    
+    if len(cleaned) < 20:
         lydlim = 1  # to limit the number of times we add
         JJ_RBlim = 1  # lyd and JJ_RB
     else:
-        lydlim = len(cleaned) // 9
-        JJ_RBlim = len(cleaned) // 9
-    for word, tag in blob.tags:  # returns list of tuples which tells the POS
+        lydlim = len(cleaned) // 20
+        JJ_RBlim = len(cleaned) // 20
+
+    temp = 0
+    for word, tag in blob_tags_iter:  # returns list of tuples which tells the POS
         index = cleaned.index(word)
+        if index - temp < 7:  # Do not add lad things too close to each other
+            continue
 
         if tag == 'MD' and not flag:  # Modal
             cleaned.insert(index + 1, "(if the laws of physics allow it)")
             flag = 1
 
         if tag in ['JJ', 'JJR', 'JJS', 'RB', 'RBR', 'RBS'] and JJ_RBcount < JJ_RBlim:  # Adjective or Adverb
-            cleaned.insert(index + 1, random.choice(JJ_RB))
+            cleaned.insert(index + 1, r.choice(JJ_RB))
             JJ_RBcount += 1
+            temp = index
 
         elif tag in ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ'] and lydcount < lydlim:  # Verb
             cleaned.insert(index + 1, "like you do")
             lydcount += 1
+            temp = index
 
-    if random.choice([0, 1]):
-        cleaned.append(random.choice(["I am so sowry", "i don't want to talk like that", "*scratches nose*",
-                                      "it is embarrassing to me like basically", "it's not to trouble you like you say",
-                                      "go for the worksheet"]))
+    if r.choice([0, 1]):
+        cleaned.append(r.choice(["I am so sowry", "i don't want to talk like that", "*scratches nose*",
+                                 "it is embarrassing to me like basically", "it's not to trouble you like you say",
+                                 "go for the worksheet"]))
     else:
-        cleaned.append(random.choice(["this will be fruitful", "you will benefit", "that is the expected behaviour",
-                                      "now you are on the track like", "class is in the flow like",
-                                      "aim to hit the tarjit",
-                                      "don't press the jockey"]))
+        cleaned.append(r.choice(["this will be fruitful", "you will benefit", "that is the expected behaviour",
+                                 "now you are on the track like", "class is in the flow like", "aim to hit the tarjit",
+                                 "don't press the jockey"]))
 
     begin = update.message.date
     cleaned.insert(0, update.message.from_user.first_name)
@@ -111,7 +118,7 @@ def private(update, context):
     if len(cleaned) < 5:  # Will run if input is too short
         cleaned.append("*draws perfect circle*")
 
-    if 'when' in cleaned or 'When' in cleaned or 'time' in cleaned or 'Time' in cleaned:  # If question is present
+    if 'when' in cleaned or 'When' in cleaned or 'time' in cleaned or 'Time' in cleaned:  # If question is present in input then-
         cleaned.append('decide a date')
 
     shanitext = ' '.join(cleaned).capitalize()
@@ -156,7 +163,7 @@ def group(update, context):
         prohibitted = f.read().split('\n')
 
     if any(bad_word in update.message.text for bad_word in prohibitted):
-        out = f"{random.choice(rebukes)} {update.message.from_user.first_name}"
+        out = f"{r.choice(rebukes)} {update.message.from_user.first_name}"
         context.bot.send_message(chat_id=update.effective_chat.id, text=out,
                                  reply_to_message_id=update.message.message_id)  # Sends message
         print(out)
@@ -180,7 +187,7 @@ def morning_goodness(context):
 def inline_clips(update, context):
     query = update.inline_query.query
     if not query:
-        random.shuffle(results)
+        r.shuffle(results)
         context.bot.answer_inline_query(update.inline_query.id, results[:25])
     else:
         matches = get_close_matches(query, names, n=15, cutoff=0.4)

@@ -9,7 +9,7 @@ shanisirbot = chatterbot.ChatBot('The Shani Sir Bot',
                                                  'chatterbot.logic.MathematicalEvaluation',
                                                  'chatterbot.logic.UnitConversion',],
                                  preprocessors=['chatterbot.preprocessors.clean_whitespace'],
-                                 read_only=False)  # This disables further learning from conversations the bot has
+                                 read_only=True)  # Set to True to disable further learning from conversations the bot has
 
 def train_with(corpus):
     """
@@ -22,8 +22,8 @@ def train_with(corpus):
     from chatterbot.trainers import ChatterBotCorpusTrainer, UbuntuCorpusTrainer
     import time
 
-    if corpus == 'ubu':
-        start = time.time()
+    if corpus == 'ubu':  # WARNING: TAKES A REALLY LONG TIME
+        start = time.time()  # (TOOK 114000 SECONDS = 31 HOURS TO EXTRACT AND TRAIN FOR UNCLE SAM, NOT COUNTING DOWNLOAD TIME)
         corpus_trainer = UbuntuCorpusTrainer(shanisirbot)
         corpus_trainer.train()
     else:
@@ -32,11 +32,21 @@ def train_with(corpus):
         if corpus == 'eng':
             corpus_trainer.train("chatterbot.corpus.english")
         elif corpus == 'woz':
-            corpus_trainer.train("./MULTIWOZ2.1")
+            corpus_trainer.train('./data/MULTIWOZ2.1/attraction_db.json',
+'./data/MULTIWOZ2.1/data.json',
+'./data/MULTIWOZ2.1/dialogue_acts.json',
+'./data/MULTIWOZ2.1/hospital_db.json',
+'./data/MULTIWOZ2.1/hotel_db.json',
+'./data/MULTIWOZ2.1/ontology.json',
+'./data/MULTIWOZ2.1/police_db.json'
+'./data/MULTIWOZ2.1/restaurant_db.json',
+'./data/MULTIWOZ2.1/taxi_db.json',
+'./data/MULTIWOZ2.1/testListFile.json',
+'./data/MULTIWOZ2.1/train_db.json',
+'./data/MULTIWOZ2.1/valListFile.json')
         else:
             print("Invalid corpus.")
             return
     end = time.time()
     time_taken = end - start
     print(f"\n\nThe Shani Sir chatbot has been trained using the corpus {corpus}. Time taken: {time_taken}s")
-
