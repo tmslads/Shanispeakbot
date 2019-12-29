@@ -70,7 +70,6 @@ def private(update, context):
     msg = ''.join(c for c in msg if c not in punctuation)
     blob = TextBlob(msg)
     cleaned = blob.words  # Returns list with no punctuation marks
-    blob_tags_iter = iter(blob.tags)
     
     flag = 0  # To check if a modal is present in the sentence
     lydcount = 0  # Counts the number of times "like you do" has been added
@@ -80,19 +79,11 @@ def private(update, context):
         lydlim = 1  # to limit the number of times we add
         JJ_RBlim = 1  # lyd and JJ_RB
     else:
-<<<<<<< HEAD
         lydlim = len(cleaned) // 20
         JJ_RBlim = len(cleaned) // 20
 
     temp = 0
-    for word, tag in blob_tags_iter:  # returns list of tuples which tells the POS
-=======
-        lydlim = len(cleaned) // 9
-        JJ_RBlim = len(cleaned) // 9
-
-    tempindex = 0
     for word, tag in blob.tags:  # returns list of tuples which tells the POS
->>>>>>> 3d7a3821fdb74f50d96b87b0b129ff2486d899ae
         index = cleaned.index(word)
         if index - temp < 7:  # Do not add lad things too close to each other
             continue
@@ -107,20 +98,12 @@ def private(update, context):
         if tag in ['JJ', 'JJR', 'JJS', 'RB', 'RBR', 'RBS'] and JJ_RBcount < JJ_RBlim:  # Adjective or Adverb
             cleaned.insert(index + 1, r.choice(JJ_RB))
             JJ_RBcount += 1
-<<<<<<< HEAD
             temp = index
-=======
-            tempindex = index
->>>>>>> 3d7a3821fdb74f50d96b87b0b129ff2486d899ae
 
         elif tag in ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ'] and lydcount < lydlim:  # Verb
             cleaned.insert(index + 1, "like you do")
             lydcount += 1
-<<<<<<< HEAD
             temp = index
-=======
-            tempindex = index
->>>>>>> 3d7a3821fdb74f50d96b87b0b129ff2486d899ae
 
     if r.choice([0, 1]):
         cleaned.append(r.choice(["I am so sowry", "i don't want to talk like that", "*scratches nose*",
@@ -181,13 +164,8 @@ def group(update, context):
     with open("lad_words.txt", "r") as f:
         prohibited = f.read().lower().split('\n')
 
-<<<<<<< HEAD
     if any(bad_word in update.message.text for bad_word in prohibitted):
         out = f"{r.choice(rebukes)} {update.message.from_user.first_name}"
-=======
-    if any(bad_word in update.message.text for bad_word in prohibited):
-        out = f"{random.choice(rebukes)} {update.message.from_user.first_name}"
->>>>>>> 3d7a3821fdb74f50d96b87b0b129ff2486d899ae
         context.bot.send_message(chat_id=update.effective_chat.id, text=out,
                                  reply_to_message_id=update.message.message_id)  # Sends message
         print(out)
