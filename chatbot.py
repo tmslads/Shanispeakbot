@@ -5,11 +5,10 @@ shanisirbot = chatterbot.ChatBot('The Shani Sir Bot',
                                  storage_adapter='chatterbot.storage.SQLStorageAdapter',
                                  logic_adapters=['chatterbot.logic.BestMatch',                                                 
                                                  'chatterbot.logic.SpecificResponseAdapter',
-                                                 'chatterbot.logic.TimeLogicAdapter',
                                                  'chatterbot.logic.MathematicalEvaluation',
                                                  'chatterbot.logic.UnitConversion',],
                                  preprocessors=['chatterbot.preprocessors.clean_whitespace'],
-                                 read_only=True)  # Set to True to disable further learning from conversations the bot has
+                                 read_only=False)  # Set to True to disable further learning from conversations the bot has
 
 def train_with(corpus):
     """
