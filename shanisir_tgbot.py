@@ -1,36 +1,42 @@
 import logging
 import random
 from datetime import time
-from difflib import get_close_matches
 from time import sleep
 from uuid import uuid4
-import chatbot
 
-from telegram import InlineQueryResultCachedAudio
+from telegram import InlineQueryResultAudio
 from telegram.ext import CommandHandler
 from telegram.ext import InlineQueryHandler
 from telegram.ext import MessageHandler, Filters
 from telegram.ext import Updater
 from textblob import TextBlob
 
+import chatbot
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
-updater = Updater(token='', use_context=True)
 dispatcher = updater.dispatcher
 
 results = []
+rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
+           "this language is embarassing to me like basically", "this is not a fruitful conversation"]
 frequency = 0
 
-with open("file_ids.txt", "r") as ids, open("names.txt", "r") as name:
-    file_ids = ids.read().strip().split(',')
-    names = name.read().strip().split(',')
+results.append(InlineQueryResultAudio(id=uuid4(),
+                                      audio_url='https://raw.githubusercontent.com/tmslads/Shanisirmodule/'
+                                                'haunya/Assets/clips/LCR%20circuit.mp3', title="LCR circuit"))
 
-assert (len(names) == len(file_ids))
-for file_id, name in zip(file_ids, names):
-    results.append(InlineQueryResultCachedAudio(
-        id=uuid4(),
-        audio_file_id=file_id,
-        caption=name))
+
+# with open("file_ids.txt", "r") as ids, open("names.txt", "r") as name:
+#     file_ids = ids.read().strip().split(',')
+#     names = name.read().strip().split(',')
+#
+# assert (len(names) == len(file_ids))
+# for file_id, name in zip(file_ids, names):
+#     results.append(InlineQueryResultCachedAudio(
+#         id=uuid4(),
+#         audio_file_id=file_id,
+#         caption=name))
 
 
 def start(update, context):
@@ -53,7 +59,7 @@ def secret(update, context):
 
 
 def unknown(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id, text="Sorry, I didn't understand that command.")
+    context.bot.send_message(chat_id=update.effective_chat.id, text="I didn't say wrong I don't know.")
 
 
 def private(update, context):
@@ -61,10 +67,8 @@ def private(update, context):
     cleaned = []
     JJ_RB = ["like you say", "like you speak", "not hard", "okay, fine?"]  # For Adjectives or Adverbs
 
-    msg = update.message.texts
-    print(msg)
-    msg = chatbot.shanisirbot.get_response(msg).text
-    print(msg)
+    initial = update.message.text
+    msg = chatbot.shanisirbot.get_response(initial).text
 
     punctuation = r"""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
     msg = ''.join(c for c in msg if c not in punctuation)
@@ -75,13 +79,18 @@ def private(update, context):
     lydcount = 0  # Counts the number of times "like you do" has been added
     JJ_RBcount = 0  # Counts the number of times a phrase from JJ_RB has been added
     if len(cleaned) < 15:
-        lydlim = 2  # to limit the number of times we add
-        JJ_RBlim = 2  # lyd and JJ_RB
+        lydlim = 1  # to limit the number of times we add
+        JJ_RBlim = 1  # lyd and JJ_RB
     else:
         lydlim = len(cleaned) // 9
         JJ_RBlim = len(cleaned) // 9
+
+    tempindex = 0
     for word, tag in blob.tags:  # returns list of tuples which tells the POS
         index = cleaned.index(word)
+
+        if index - tempindex < 5:  # Do not add lad things too close to each other
+            continue
 
         if tag == 'MD' and not flag:  # Modal
             cleaned.insert(index + 1, "(if the laws of physics allow it)")
@@ -90,10 +99,12 @@ def private(update, context):
         if tag in ['JJ', 'JJR', 'JJS', 'RB', 'RBR', 'RBS'] and JJ_RBcount < JJ_RBlim:  # Adjective or Adverb
             cleaned.insert(index + 1, random.choice(JJ_RB))
             JJ_RBcount += 1
+            tempindex = index
 
         elif tag in ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ'] and lydcount < lydlim:  # Verb
             cleaned.insert(index + 1, "like you do")
             lydcount += 1
+            tempindex = index
 
     if random.choice([0, 1]):
         cleaned.append(random.choice(["I am so sowry", "i don't want to talk like that", "*scratches nose*",
@@ -107,7 +118,6 @@ def private(update, context):
 
     begin = update.message.date
     cleaned.insert(0, update.message.from_user.first_name)
-    cleaned.insert(0, 'good mourning')
 
     if len(cleaned) < 5:  # Will run if input is too short
         cleaned.append("*draws perfect circle*")
@@ -118,7 +128,7 @@ def private(update, context):
     shanitext = ' '.join(cleaned).capitalize()
 
     with open("interactions.txt", "a") as f:
-        msg = f"\n\nUTC+0 {update.message.date} {update.message.from_user.first_name} says: {update.message.text}"
+        inp = f"\n\nUTC+0 {update.message.date} {update.message.from_user.first_name} says: {update.message.text}"
         if update.message.reply_to_message:  # If user is replying to bot directly
             out = 'I don\'t want to talk to you.'
             the_id = update.message.message_id  # Gets id of the message replied
@@ -129,7 +139,10 @@ def private(update, context):
                 context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_audio')
                 sleep(1)
                 context.bot.send_audio(chat_id=update.effective_chat.id,
-                                       audio=open(r"Assets/clips/that's it.mp3", 'rb'),
+                                       audio=open(
+                                           r"C:/Users/aarti/Documents/Python stuff/"
+                                           r"Bored/Shanisirmodule/Assets/clips/that's it.mp3",
+                                           'rb'),
                                        title="That's it")
                 context.bot.send_sticker(chat_id=update.effective_chat.id,
                                          sticker="CAADBQADHAADkupnJzeKCruy2yr2FgQ",  # Sahel offensive sticker
@@ -137,9 +150,9 @@ def private(update, context):
         else:
             out = shanitext
             the_id = None
-        print(msg)
+        print(inp)
         print(out)
-        f.write(msg)
+        f.write(inp)
         f.write(f"\nOutput: {out}")
         context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')  # Sends 'typing...' status
         # Assuming 25 WPM typing speed on a phone
@@ -151,10 +164,10 @@ def private(update, context):
 
 def group(update, context):
     with open("lad_words.txt", "r") as f:
-        prohibitted = f.read().split('\n')
+        prohibited = f.read().lower().split('\n')
 
-    if any(bad_word in update.message.text for bad_word in prohibitted):
-        out = f"This is not the expected behaviour {update.message.from_user.first_name}"
+    if any(bad_word in update.message.text for bad_word in prohibited):
+        out = f"{random.choice(rebukes)} {update.message.from_user.first_name}"
         context.bot.send_message(chat_id=update.effective_chat.id, text=out,
                                  reply_to_message_id=update.message.message_id)  # Sends message
         print(out)
@@ -164,7 +177,9 @@ def morning_goodness(context):
     context.bot.send_message(chat_id=-1001396726510, text="Good morning everyone")
     context.bot.send_chat_action(chat_id=-1001396726510, action='upload_audio')
     sleep(1)
-    context.bot.send_audio(chat_id=-1001396726510, audio=open(r'Assets/clips/good mourning.mp3', 'rb'),
+    context.bot.send_audio(chat_id=-1001396726510, audio=open(r'C:/Users/aarti/Documents/Python stuff/'
+                                                              r'Bored/Shanisirmodule/Assets/clips/good mourning.mp3',
+                                                              'rb'),
                            title="Good morning")
     context.bot.send_chat_action(chat_id=-1001396726510, action='typing')
     sleep((25 / 60) * 22)
@@ -175,21 +190,21 @@ def morning_goodness(context):
 
 def inline_clips(update, context):
     query = update.inline_query.query
-    if not query:
-        random.shuffle(results)
-        context.bot.answer_inline_query(update.inline_query.id, results[:25])
-    else:
-        matches = get_close_matches(query, names, n=15, cutoff=0.4)
-        index = 0
-        while index <= len(matches) - 1:
-            for pos, result in enumerate(results):
-                if index == len(matches):
-                    break
-                if matches[index] == result['caption']:
-                    results[index], results[pos] = results[pos], results[index]
-                    index += 1
+    # if not query:
+    #     random.shuffle(results)
+    #     context.bot.answer_inline_query(update.inline_query.id, results[:25])
+    # else:
+    #     matches = get_close_matches(query, names, n=15, cutoff=0.4)
+    #     index = 0
+    #     while index <= len(matches) - 1:
+    #         for pos, result in enumerate(results):
+    #             if index == len(matches):
+    #                 break
+    #             if matches[index] == result['caption']:
+    #                 results[index], results[pos] = results[pos], results[index]
+    #                 index += 1
 
-        context.bot.answer_inline_query(update.inline_query.id, results[:16])
+    context.bot.answer_inline_query(update.inline_query.id, results[:16])
 
 
 inline_clips_handler = InlineQueryHandler(inline_clips)

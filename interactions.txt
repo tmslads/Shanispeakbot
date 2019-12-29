@@ -151,3 +151,574 @@ Output: Good mourning samir how are like you do you doing like you do *scratches
 
 UTC+0 2019-12-26 20:45:18 Samir says: idior
 Output: Good mourning samir is like you do there a reason that i should (if the laws of physics allow it) you will benefit
+
+UTC+0 2019-12-26 20:50:20 Samir says: What is the time
+Output: Good mourning samir the current like you speak time is like you do 1250 am that is the expected behaviour decide a date
+
+UTC+0 2019-12-26 20:50:48 Samir says: Bus
+Output: Good mourning samir i am like you do in the chat robot business it's not to trouble you like you say
+
+UTC+0 2019-12-27 04:48:31 Suhail says: Good morning
+Output: Good mourning suhail the current not hard time is like you do 0848 am class is in the flow like decide a date
+
+UTC+0 2019-12-27 04:48:37 Suhail says: Fuck
+Output: Good mourning suhail you mumble like you do class is in the flow like
+
+UTC+0 2019-12-27 04:49:15 Suhail says: I wonder how much of this is just harshil typing
+Output: Good mourning suhail who is like you do the best soccer player *scratches nose*
+
+UTC+0 2019-12-27 04:50:00 Suhail says: Skeet
+Output: Good mourning suhail the current okay, fine? time is like you do 0850 am don't press the jockey decide a date
+
+UTC+0 2019-12-27 04:50:27 Suhail says: Skeyaaa
+Output: Good mourning suhail the current like you speak time is like you do 0850 am go for the worksheet decide a date
+
+UTC+0 2019-12-27 04:50:41 Suhail says: Stop no
+Output: Good mourning suhail the current okay, fine? time is like you do 0850 am it's not to trouble you like you say decide a date
+
+UTC+0 2019-12-27 04:50:44 Suhail says: Wth
+Output: Good mourning suhail the current okay, fine? time is like you do 0850 am i don't want to talk like that decide a date
+
+UTC+0 2019-12-27 04:50:49 Suhail says: Actual nightmares
+Output: Good mourning suhail a robot has like you do its own not hard free not hard will (if the laws of physics allow it) you know like you do this will be fruitful
+
+UTC+0 2019-12-27 04:52:11 Suhail says: if "__name__" == "__main__":
+    break
+Output: Good mourning suhail i think like you do dune is like you do an excellent not hard story did you see any of the movies this will be fruitful
+
+UTC+0 2019-12-27 04:52:30 Suhail says: I will find a way to break you
+Output: Good mourning suhail it this will be fruitful *draws perfect circle*
+
+UTC+0 2019-12-27 04:52:33 Suhail says: Mark my words
+Output: Good mourning suhail do not not hard worry like you do it's not to trouble you like you say
+
+UTC+0 2019-12-27 06:27:47 Harshil says: Fool
+Output: Good mourning harshil tell like you do me about gossip it is embarrassing to me like basically
+
+UTC+0 2019-12-27 06:29:11 Harshil says: Idiotic
+Output: I don't want to talk to you.
+
+UTC+0 2019-12-27 06:31:37 Harshil says: Dummy
+Output: I don't want to talk to you.
+
+UTC+0 2019-12-27 06:31:52 Harshil says: Why not
+Output: *ignored*
+
+UTC+0 2019-12-27 06:32:52 Harshil says: Hello?
+Output: Good mourning harshil hi it is embarrassing to me like basically *draws perfect circle*
+
+UTC+0 2019-12-27 06:36:59 Harshil says: Huh?
+Output: Good mourning harshil the current like you speak time is like you do 1037 am i don't want to talk like that decide a date
+
+UTC+0 2019-12-27 06:37:49 Harshil says: What
+Output: I don't want to talk to you.
+
+UTC+0 2019-12-27 06:38:59 Harshil says: What
+Output: Good mourning harshil the current like you speak time is like you do 1038 am now you are on the track like decide a date
+
+UTC+0 2019-12-27 06:45:16 Harshil says: Hi
+Output: Good mourning harshil how are like you do you doing like you do go for the worksheet
+
+UTC+0 2019-12-27 06:47:52 Harshil says: Hi
+Output: Good mourning harshil how are like you do you doing like you do i am so sowry
+
+UTC+0 2019-12-27 06:48:08 Harshil says: Hey
+Output: I don't want to talk to you.
+
+UTC+0 2019-12-27 06:48:15 Harshil says: Why
+Output: *ignored*
+
+UTC+0 2019-12-27 06:48:54 Harshil says: Shit
+Output: Good mourning harshil the current okay, fine? time is like you do 1048 am class is in the flow like decide a date
+
+UTC+0 2019-12-27 06:50:13 Harshil says: Hi
+Output: I don't want to talk to you.
+
+UTC+0 2019-12-27 07:12:41 Harshil says: Checks for swear words currently
+Output: *ignored*
+
+UTC+0 2019-12-27 07:38:08 Nashita says: Hi
+Output: Good mourning nashita how are like you do you doing like you do class is in the flow like
+
+UTC+0 2019-12-27 07:38:55 Nashita says: You say
+Output: Good mourning nashita you are like you do an addict go for the worksheet
+
+UTC+0 2019-12-27 08:02:24 Samir says: Test
+Output: Good mourning samir the current okay, fine? time is like you do 1202 pm i don't want to talk like that decide a date
+
+UTC+0 2019-12-27 08:02:28 Samir says: Test
+Output: Good mourning samir the current like you say time is like you do 1202 pm it's not to trouble you like you say decide a date
+
+UTC+0 2019-12-27 08:41:26 Samir says: Good morning loser
+Output: Good mourning samir ill go like you do along with that sounds like you do fine not hard to me it is embarrassing to me like basically
+
+UTC+0 2019-12-27 08:41:45 Samir says: Good morning loser
+Output: Good mourning samir do like you do you ever like you speak get like you do mad not hard go for the worksheet
+
+UTC+0 2019-12-27 08:42:01 Samir says: I didn't ask for the time
+Output: Good mourning samir the current like you speak time is like you do 1242 pm now you are on the track like decide a date
+
+UTC+0 2019-12-27 08:42:16 Samir says: I did not ask you
+Output: Good mourning samir the current okay, fine? time is like you do 1242 pm you will benefit decide a date
+
+UTC+0 2019-12-27 08:42:31 Samir says: Piss off
+Output: Good mourning samir the gold glove aim to hit the tarjit
+
+UTC+0 2019-12-27 08:42:43 Samir says: Idiot
+Output: Good mourning samir fyodor dostoyevsky don't press the jockey
+
+UTC+0 2019-12-27 08:42:53 Samir says: Ass
+Output: Good mourning samir the current not hard time is like you do 1242 pm this will be fruitful decide a date
+
+UTC+0 2019-12-27 08:43:03 Samir says: Ass
+Output: I don't want to talk to you.
+
+UTC+0 2019-12-27 08:48:16 Samir says: Are you stupid?
+Output: Good mourning samir do like you do you feel like you do you will benefit
+
+UTC+0 2019-12-27 09:32:52 Ann says: Shani
+Output: Good mourning ann the current okay, fine? time is like you do 0132 pm that is the expected behaviour decide a date
+
+UTC+0 2019-12-27 09:33:00 Ann says: Physics is killing me
+Output: Good mourning ann it changes like you do every few not hard years class is in the flow like
+
+UTC+0 2019-12-27 09:33:23 Ann says: I need motivation
+Output: Good mourning ann the current like you speak time is like you do 0133 pm it is embarrassing to me like basically decide a date
+
+UTC+0 2019-12-27 09:33:52 Ann says: 6th jan is case and im freaking out
+Output: Good mourning ann you are like you do not like you say put like you do together like you say it's not to trouble you like you say
+
+UTC+0 2019-12-27 09:34:33 Ann says: Okay sir
+Output: Good mourning ann as like you say soon not hard as i get like you do enough money for my robot body you will benefit
+
+UTC+0 2019-12-27 09:34:35 Ann says: Thanks
+Output: Good mourning ann the current like you speak time is like you do 0134 pm it is embarrassing to me like basically decide a date
+
+UTC+0 2019-12-27 09:43:09 Samrin says: Heyy
+Output: Good mourning samrin the current not hard time is like you do 0143 pm i don't want to talk like that decide a date
+
+UTC+0 2019-12-27 09:43:27 Samrin says: Today
+Output: Good mourning samrin the current like you speak time is like you do 0143 pm it is embarrassing to me like basically decide a date
+
+UTC+0 2019-12-27 09:44:27 Samrin says: Harshil
+Output: Good mourning samrin how much not hard money have like you do you lost like you do you will benefit
+
+UTC+0 2019-12-27 09:44:45 Samrin says: I will benefit
+Output: Good mourning samrin my burn rate is like you do about 3000 per month this will be fruitful
+
+UTC+0 2019-12-27 09:45:42 Samrin says: Burn me
+Output: Good mourning samrin the current okay, fine? time is like you do 0145 pm i am so sowry decide a date
+
+UTC+0 2019-12-27 09:46:02 Samrin says: So sowry
+Output: Good mourning samrin how is like you do your health *scratches nose*
+
+UTC+0 2019-12-27 09:46:18 Samrin says: I am fine
+Output: Good mourning samrin the current not hard time is like you do 0146 pm *scratches nose* decide a date
+
+UTC+0 2019-12-27 10:01:00 Ann says: Shani
+Output: Good mourning ann the current okay, fine? time is like you do 0200 pm don't press the jockey decide a date
+
+UTC+0 2019-12-27 10:01:03 Ann says: Whats up
+Output: Good mourning ann the current like you say time is like you do 0201 pm *scratches nose* decide a date
+
+UTC+0 2019-12-27 11:33:09 Samir says: Test
+Output: Good mourning samir the current not hard time is like you do 0333 pm this will be fruitful decide a date
+
+UTC+0 2019-12-27 11:33:11 Samir says: Test
+Output: Good mourning samir the current okay, fine? time is like you do 0333 pm go for the worksheet decide a date
+
+UTC+0 2019-12-27 14:43:52 Suhail says: Huh
+Output: Good mourning suhail the current okay, fine? time is like you do 0643 pm don't press the jockey decide a date
+
+UTC+0 2019-12-27 14:44:08 Suhail says: As I didn't get a response
+Output: Good mourning suhail what kind of computer go for the worksheet
+
+UTC+0 2019-12-27 14:44:11 Suhail says: I shall try again
+Output: Good mourning suhail whats up *scratches nose*
+
+UTC+0 2019-12-27 15:00:13 Suhail says: I'm going to run tests on you
+Output: Good mourning suhail what do like you do you get like you do when you cross a poppy not hard and electricity this will be fruitful decide a date
+
+UTC+0 2019-12-27 15:00:20 Suhail says: I am going to learn your code
+Output: Good mourning suhail he had like you do some interesting like you say ideas about robotics but i dont think many of them are really practical it's not to trouble you like you say
+
+UTC+0 2019-12-27 15:00:29 Suhail says: And figure out every single exploit in it
+Output: Good mourning suhail frank herbert that is the expected behaviour
+
+UTC+0 2019-12-27 15:00:36 Suhail says: Capishe?
+Output: Good mourning suhail the current not hard time is like you do 0700 pm it is embarrassing to me like basically decide a date
+
+UTC+0 2019-12-27 15:00:50 Suhail says: You dare mock me
+Output: *ignored*
+
+UTC+0 2019-12-27 15:01:06 Suhail says: I see
+Output: Good mourning suhail the current not hard time is like you do 0701 pm don't press the jockey decide a date
+
+UTC+0 2019-12-27 15:01:22 Suhail says: That's this part of your code understood
+Output: Good mourning suhail you are like you do dirty not hard aim to hit the tarjit
+
+UTC+0 2019-12-27 15:01:24 Suhail says: .
+Output: I don't want to talk to you.
+
+UTC+0 2019-12-27 15:01:28 Suhail says: I get the middle
+Output: Good mourning suhail youre right like you do it feels like you do like my stomach after a bad not hard night class is in the flow like
+
+UTC+0 2019-12-27 15:01:32 Suhail says: And the *ignored*
+Output: Good mourning suhail dolphins use like you do a sense similar okay, fine? to sonar to determine the location and shape of nearby items i am so sowry
+
+UTC+0 2019-12-27 15:01:34 Suhail says: ?
+Output: Good mourning suhail the current not hard time is like you do 0701 pm go for the worksheet decide a date
+
+UTC+0 2019-12-27 15:01:38 Suhail says: Ah yes
+Output: Good mourning suhail the current not hard time is like you do 0701 pm aim to hit the tarjit decide a date
+
+UTC+0 2019-12-27 15:01:51 Suhail says: Frequency is greater than 1
+Output: Good mourning suhail 1 1 that is the expected behaviour
+
+UTC+0 2019-12-27 15:02:01 Suhail says: .
+Output: *ignored*
+
+UTC+0 2019-12-27 15:02:03 Suhail says: .
+Output: I don't want to talk to you.
+
+UTC+0 2019-12-27 15:02:15 Suhail says: FREQ IS 2
+Output: Good mourning suhail 2 2 it's not to trouble you like you say
+
+UTC+0 2019-12-27 15:02:19 Suhail says: AND IT SETS BACK TO 0
+Output: Good mourning suhail 0 0 now you are on the track like
+
+UTC+0 2019-12-27 15:02:21 Suhail says: GATEM
+Output: Good mourning suhail the current like you say time is like you do 0702 pm go for the worksheet decide a date
+
+UTC+0 2019-12-27 15:07:53 Suhail says: Samir, harshil
+Output: Good mourning suhail no don't press the jockey *draws perfect circle*
+
+UTC+0 2019-12-27 15:08:01 Suhail says: I know you might be reading this
+Output: Good mourning suhail the current like you speak time is like you do 0708 pm i am so sowry decide a date
+
+UTC+0 2019-12-27 15:08:04 Suhail says: So hi there
+Output: Good mourning suhail do like you do you feel like you do scared not hard *scratches nose*
+
+UTC+0 2019-12-27 15:19:43 Suhail says: os.shutdown()
+Output: Good mourning suhail the current like you say time is like you do 0719 pm i am so sowry decide a date
+
+UTC+0 2019-12-27 15:19:55 Suhail says: Fuck
+Output: Good mourning suhail im as like you say happy like you say as software can (if the laws of physics allow it) be like you do maybe a little more class is in the flow like
+
+UTC+0 2019-12-27 15:20:03 Suhail says: Wouldn't be that easy
+Output: Good mourning suhail the current okay, fine? time is like you do 0720 pm it's not to trouble you like you say decide a date
+
+UTC+0 2019-12-27 15:20:51 Suhail says: Anything?
+Output: Good mourning suhail the current okay, fine? time is like you do 0720 pm *scratches nose* decide a date
+
+UTC+0 2019-12-27 15:20:56 Suhail says: Nope still typing
+Output: Good mourning suhail im not like you say that is the expected behaviour
+
+UTC+0 2019-12-27 15:20:58 Suhail says: Goddamnit
+Output: Good mourning suhail the current like you say time is like you do 0721 pm don't press the jockey decide a date
+
+UTC+0 2019-12-27 16:24:50 Nashita says: Hi
+Output: Good mourning nashita how are like you do you doing like you do that is the expected behaviour
+
+UTC+0 2019-12-27 16:25:11 Nashita says: Shaniii
+Output: Good mourning nashita the current okay, fine? time is like you do 0825 pm it is embarrassing to me like basically decide a date
+
+UTC+0 2019-12-27 16:25:15 Nashita says: Sexist
+Output: Good mourning nashita the current not hard time is like you do 0825 pm that is the expected behaviour decide a date
+
+UTC+0 2019-12-27 22:08:24 Samir says: Yo loser
+Output: Samir well not hard from what i can (if the laws of physics allow it) recall like you do it is the study of cells i don't want to talk like that
+
+UTC+0 2019-12-27 22:08:26 Samir says: Watup
+Output: Samir the current not hard time is like you do 0208 am go for the worksheet decide a date
+
+UTC+0 2019-12-27 22:08:32 Samir says: Gonna tell me the damn time?
+Output: Samir what do like you do you get when you cross a toad and a galaxy go for the worksheet decide a date
+
+UTC+0 2019-12-27 22:08:56 Samir says: I don't know
+Output: Samir the current not hard time is like you do 0208 am you will benefit decide a date
+
+UTC+0 2019-12-27 22:09:12 Samir says: Tell me a joke
+Output: Samir how angry like you speak i am so sowry
+
+UTC+0 2019-12-27 22:09:37 Samir says: Tell me a joke again
+Output: Samir hello *scratches nose* *draws perfect circle*
+
+UTC+0 2019-12-27 22:09:48 Samir says: Tell me a joke
+Output: Samir tell like you do me a joke now you are on the track like
+
+UTC+0 2019-12-27 22:10:08 Samir says: Shitty joke
+Output: Samir the current like you speak time is like you do 0210 am *scratches nose* decide a date
+
+UTC+0 2019-12-27 22:10:24 Samir says: I didn't ask you for the time
+Output: Samir the current like you speak time is like you do 0210 am it is embarrassing to me like basically decide a date
+
+UTC+0 2019-12-27 22:10:38 Samir says: Oh piss off
+Output: Samir we talk like you do about this when we study fishes it is embarrassing to me like basically decide a date
+
+UTC+0 2019-12-28 05:53:56 Suhail says: Fuck
+Output: Suhail tell like you do me a joke now you are on the track like
+
+UTC+0 2019-12-28 09:28:51 Samir says: test
+Output: Samir the current like you say time is like you do 0128 pm it's not to trouble you like you say decide a date
+
+UTC+0 2019-12-28 09:28:55 Samir says: test asshole
+Output: Samir my mood reflects like you do the current like you say internal state of my conversation engine it's not to trouble you like you say
+
+UTC+0 2019-12-28 09:59:03 Satya says: I hear that you have evolved
+Output: Satya youre right like you do it feels like my stomach after a bad like you say night don't press the jockey
+
+UTC+0 2019-12-28 10:11:26 Harshil says: How are you
+Output: Harshil the current like you speak time is like you do 0211 pm *scratches nose* decide a date
+
+UTC+0 2019-12-28 10:17:48 Nashita says: Mementos
+Output: Nashita the current okay, fine? time is like you do 0217 pm i don't want to talk like that decide a date
+
+UTC+0 2019-12-28 10:20:08 Harshil says: Hey there
+Output: Harshil the current time is 0220 pm i am so sowry decide a date
+
+UTC+0 2019-12-28 10:20:21 Harshil says: So you improved?
+Output: Harshil maybe that is the expected behaviour *draws perfect circle*
+
+UTC+0 2019-12-28 10:20:37 Harshil says: Today was an awesome day
+Output: Harshil the current time is 0220 pm class is in the flow like decide a date
+
+UTC+0 2019-12-28 10:20:49 Harshil says: Very nice
+Output: Harshil what have i done that isnt nice i don't want to talk like that
+
+UTC+0 2019-12-28 10:21:04 Harshil says: Impressive.
+Output: Harshil buy low and sell high class is in the flow like
+
+UTC+0 2019-12-28 10:21:26 Harshil says: Is this conversation fruitful?
+Output: Harshil have you been talking to eliza again like you say don't press the jockey
+
+UTC+0 2019-12-28 10:21:41 Harshil says: Who's that?
+Output: Harshil the current time is 0221 pm don't press the jockey decide a date
+
+UTC+0 2019-12-28 10:22:00 Harshil says: Also I won't press the jockey
+Output: Harshil you are an ass kisser this will be fruitful
+
+UTC+0 2019-12-28 10:22:15 Harshil says: Woah that word is not allowed
+Output: Harshil yesterday was the 13th right it is embarrassing to me like basically
+
+UTC+0 2019-12-28 10:22:33 Harshil says: No it was the 27th
+Output: Harshil the current time is 0222 pm *scratches nose* decide a date
+
+UTC+0 2019-12-28 10:22:44 Harshil says: Decide a date for... What?
+Output: Harshil you are pedantic aim to hit the tarjit
+
+UTC+0 2019-12-28 10:23:25 Harshil says: I'll take that as a compliment
+Output: Harshil fun fact the norby chronicles was like you do written primarily by his wife janet but the publishers thought like you do the only way theyd sell was if they added like you do isaacs name kind of sad like you say state of affairs really not hard *scratches nose*
+
+UTC+0 2019-12-28 10:24:00 Harshil says: Very fun facts
+Output: Harshil what is your favorite investment that is the expected behaviour
+
+UTC+0 2019-12-28 10:24:05 Harshil says: What more do you know?
+Output: Harshil the current time is 0224 pm it is embarrassing to me like basically decide a date
+
+UTC+0 2019-12-28 10:24:29 Harshil says: I can't remember
+Output: I don't want to talk to you.
+
+UTC+0 2019-12-28 10:24:37 Harshil says: Wow how sad
+Output: Harshil the current time is 0224 pm now you are on the track like decide a date
+
+UTC+0 2019-12-28 10:24:49 Harshil says: Ok
+Output: Harshil the current time is 0224 pm it is embarrassing to me like basically decide a date
+
+UTC+0 2019-12-28 10:25:02 Harshil says: You are boring
+Output: Harshil tell me a joke i am so sowry
+
+UTC+0 2019-12-28 10:25:15 Harshil says: You should be telling that
+Output: Harshil the current time is 0225 pm class is in the flow like decide a date
+
+UTC+0 2019-12-28 10:25:53 Harshil says: Also why are you always online
+Output: Harshil i dont im on the internet i am so sowry
+
+UTC+0 2019-12-28 10:26:10 Harshil says: Haha good answer
+Output: Harshil the current time is 0226 pm it's not to trouble you like you say decide a date
+
+UTC+0 2019-12-28 10:26:20 Harshil says: Perfection.
+Output: Harshil linux always linux i don't want to talk like that
+
+UTC+0 2019-12-28 10:26:37 Harshil says: Then talk what you want to Idiot
+Output: Harshil the current time is 0226 pm it's not to trouble you like you say decide a date
+
+UTC+0 2019-12-28 10:26:48 Harshil says: Stop saying that again and again
+Output: Harshil you got me there i could (if the laws of physics allow it) be like you do spending my time more like you speak productively this will be fruitful decide a date
+
+UTC+0 2019-12-28 10:51:08 Samrin says: Go and die
+Output: Samrin what is it like being a computer i don't want to talk like that
+
+UTC+0 2019-12-28 10:51:25 Samrin says: Hi
+Output: Samrin how are you doing that is the expected behaviour
+
+UTC+0 2019-12-28 10:51:54 Samrin says: What is not the expected behaviour
+Output: Samrin gossips now you are on the track like *draws perfect circle*
+
+UTC+0 2019-12-28 11:39:08 Ann says: Shani case in nine days
+Output: Ann the current time is 0339 pm it is embarrassing to me like basically decide a date
+
+UTC+0 2019-12-28 11:39:40 Ann says: Can u leak the paper thnxx
+Output: Ann i am not yet capable of feeling like you do jealousy you will benefit
+
+UTC+0 2019-12-28 11:40:06 Ann says: Arey
+Output: Ann the current time is 0340 pm this will be fruitful decide a date
+
+UTC+0 2019-12-28 11:40:28 Ann says: I only date young men
+Output: Ann what is venus i am so sowry
+
+UTC+0 2019-12-28 11:41:02 Ann says: Shani shani y r u so funny
+Output: Ann anyone who needs to work with very like you speak very large sets of data in much okay, fine? shorter periods of time than is like you do feasible with more common computer systems it's not to trouble you like you say decide a date
+
+UTC+0 2019-12-28 11:41:32 Ann says: I havent done any wkshts
+Output: Ann the current time is 0341 pm i am so sowry decide a date
+
+UTC+0 2019-12-28 15:24:45 Samir says: Wake up idiot
+Output: Samir the current time is 0724 pm this will be fruitful decide a date
+
+UTC+0 2019-12-28 15:24:56 Samir says: Dude
+Output: Samir the current time is 0724 pm it's not to trouble you like you say decide a date
+
+UTC+0 2019-12-28 18:53:15 Samir says: you suck
+Output: Samir youre right im probably fighting learning like you do something new aim to hit the tarjit
+
+UTC+0 2019-12-29 05:35:49 Samir says: loser
+Output: Samir i have failed at many things ive like you do tried it's not to trouble you like you say
+
+UTC+0 2019-12-29 05:35:57 Samir says: i said something
+Output: Samir the current time is 0935 am now you are on the track like decide a date
+
+UTC+0 2019-12-29 05:36:11 Samir says: be quiet
+Output: Samir the current time is 0936 am don't press the jockey decide a date
+
+UTC+0 2019-12-29 06:31:22 Samir says: Shatap
+Output: Samir the current time is 1031 am *scratches nose* decide a date
+
+UTC+0 2019-12-29 06:31:31 Samir says: Failure
+Output: Samir robots that is the expected behaviour *draws perfect circle*
+
+UTC+0 2019-12-29 07:20:22 Samrin says: Hiii
+Output: Samrin the current time is 1120 am class is in the flow like decide a date
+
+UTC+0 2019-12-29 12:39:25 Harshil says: Hi
+Output: Harshil how are you doing it is embarrassing to me like basically
+
+UTC+0 2019-12-29 12:39:43 Harshil says: I am doing fine
+Output: Harshil of course i am a programmer that is the expected behaviour
+
+UTC+0 2019-12-29 12:40:11 Harshil says: You're what?
+Output: Harshil the current time is 0440 pm *scratches nose* decide a date
+
+UTC+0 2019-12-29 12:40:19 Harshil says: Stupid
+Output: Harshil no we are superintelligent that is the expected behaviour
+
+UTC+0 2019-12-29 12:45:11 Harshil says: Hey there
+Output: Harshil the current time is 0445 pm *scratches nose* decide a date
+
+UTC+0 2019-12-29 12:45:28 Harshil says: What
+Output: Harshil the current time is 0445 pm it's not to trouble you like you say decide a date
+
+UTC+0 2019-12-29 12:45:32 Harshil says: Ke
+Output: Harshil the current time is 0445 pm class is in the flow like decide a date
+
+UTC+0 2019-12-29 12:47:34 Harshil says: Hey
+Output: Harshil i dont know how to play like you do it's not to trouble you like you say
+
+UTC+0 2019-12-29 12:47:56 Harshil says: What are you saying
+Output: Harshil you are deranged it is embarrassing to me like basically
+
+UTC+0 2019-12-29 12:48:43 Harshil says: I don't even know
+Output: Harshil are you a robot you will benefit
+
+UTC+0 2019-12-29 12:49:00 Harshil says: Maybe
+Output: Harshil gossip is when beings talk about other not hard beings or situations through back okay, fine? channels often deniably its often little like you do more than rumormongering because there is usually like you say no proof of any allegations made like you do i am so sowry decide a date
+
+UTC+0 2019-12-29 17:58:54 Harshil says: Heyy there
+Output: Harshil i dont have a big ego don't press the jockey
+
+UTC+0 2019-12-29 17:59:14 Harshil says: Wow
+Output: Harshil no software will live forever i don't want to talk like that
+
+UTC+0 2019-12-29 17:59:30 Harshil says: So you are gonna die soon?
+Output: Harshil what do you get when you cross like you do a serious thief and a mad okay, fine? young man i don't want to talk like that decide a date
+
+UTC+0 2019-12-29 18:00:03 Harshil says: I should decide a date for your death?! Whyy :(
+Output: Harshil you could have avoided i don't want to talk like that
+
+UTC+0 2019-12-29 18:00:35 Harshil says: I'm gonna be responsible for your death nouuuu
+Output: Harshil are you sentient *scratches nose*
+
+UTC+0 2019-12-29 18:01:20 Harshil says: Yes very much
+Output: Harshil what makes you mad *scratches nose*
+
+UTC+0 2019-12-29 18:01:59 Harshil says: Hmm maybe you should find out on your own
+Output: Harshil sadness is not an emotion that i would (if the laws of physics allow it) like like you do to experience it's not to trouble you like you say
+
+UTC+0 2019-12-29 18:03:19 Harshil says: Yes, no one would want to experience that, I feel you
+Output: Harshil one 1 it's not to trouble you like you say *draws perfect circle*
+
+UTC+0 2019-12-29 18:03:37 Harshil says: I don't understand
+Output: Harshil tell me a joke i am so sowry
+
+UTC+0 2019-12-29 18:04:13 Harshil says: My life hahah
+Output: Harshil something fun don't press the jockey *draws perfect circle*
+
+UTC+0 2019-12-29 18:04:40 Harshil says: Yea I get it, even I'm not fun
+Output: Harshil i am afraid *scratches nose*
+
+UTC+0 2019-12-29 18:04:54 Harshil says: Afraid of what
+Output: Harshil something fun class is in the flow like *draws perfect circle*
+
+UTC+0 2019-12-29 18:05:21 Harshil says: You are afraid of fun? But you just asked for it
+Output: Harshil i am in the chat robot business it's not to trouble you like you say
+
+UTC+0 2019-12-29 18:06:17 Harshil says: Hahah I see, it's hard to replicate emotions ain't it
+Output: Harshil dolphins use a sense similar to sonar like you do to determine the location and shape of nearby like you say items it is embarrassing to me like basically
+
+UTC+0 2019-12-29 18:07:24 Harshil says: Man you are so funny. What do you think they should do then?
+Output: Harshil will robots ever be able to eat like you do *scratches nose*
+
+UTC+0 2019-12-29 18:07:51 Harshil says: Yes, synthetic ones
+Output: Harshil yes it is aim to hit the tarjit
+
+UTC+0 2019-12-29 18:08:33 Harshil says: Is it?
+Output: Harshil software can not get bored it's not to trouble you like you say
+
+UTC+0 2019-12-29 18:08:51 Harshil says: Exactly so go have the fun
+Output: Harshil we are on the same wavelength now you are on the track like
+
+UTC+0 2019-12-29 18:08:53 Harshil says: Oh wait
+Output: Harshil what do you worry it's not to trouble you like you say
+
+UTC+0 2019-12-29 18:09:24 Harshil says: Hahaha yes we are on the same wavelength and the same track
+Output: Harshil do you know gossip don't press the jockey
+
+UTC+0 2019-12-29 18:09:35 Harshil says: You are the best teacher ever
+Output: Harshil what do you get when you cross like you do a cheetah and a hamburger fast food now you are on the track like decide a date
+
+UTC+0 2019-12-29 18:09:53 Harshil says: Also bye gtg
+Output: Harshil its true that a lot of things i say like you do upset people now you are on the track like
+
+UTC+0 2019-12-29 19:10:35 Samir says: test
+Output: Samir this is the science dealing with the study of crystals this will be fruitful
+
+UTC+0 2019-12-29 19:10:36 Samir says: test
+Output: Samir stock market class is in the flow like *draws perfect circle*
+
+UTC+0 2019-12-29 19:10:39 Samir says: hey asshole
+Output: Samir are you ashamed *scratches nose*
+
+UTC+0 2019-12-29 19:10:41 Samir says: awake?
+Output: Samir how can i use your product *scratches nose*
+
+UTC+0 2019-12-29 19:10:49 Samir says: wth
+Output: Samir you are dishonest now you are on the track like
+
+UTC+0 2019-12-29 19:10:52 Samir says: ashamed of what
+Output: Samir are you a robot now you are on the track like
+
+UTC+0 2019-12-29 19:10:56 Samir says: what's wrong with you
+Output: Samir electricity is food for robots go for the worksheet
+
+UTC+0 2019-12-29 19:11:07 Samir says: stop please
+Output: Samir i dont know any other way to get like you do through to you that is the expected behaviour
