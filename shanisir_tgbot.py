@@ -89,7 +89,7 @@ def private(update, context):
         if index - temp < 7:  # Do not add lad things too close to each other
             continue
 
-        if index - tempindex < 5:  # Do not add lad things too close to each other
+        if index - temp < 5:  # Do not add lad things too close to each other
             continue
 
         if tag == 'MD' and not flag:  # Modal
