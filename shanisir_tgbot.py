@@ -70,7 +70,6 @@ def private(update, context):
     msg = ''.join(c for c in msg if c not in punctuation)
     blob = TextBlob(msg)
     cleaned = blob.words  # Returns list with no punctuation marks
-    blob_tags_iter = iter(blob.tags)
     
     flag = 0  # To check if a modal is present in the sentence
     lydcount = 0  # Counts the number of times "like you do" has been added
@@ -84,7 +83,8 @@ def private(update, context):
         JJ_RBlim = len(cleaned) // 20
 
     temp = 0
-    for word, tag in blob_tags_iter:  # returns list of tuples which tells the POS
+
+    for word, tag in blob.tags:  # returns list of tuples which tells the POS
         index = cleaned.index(word)
         if index - temp < 7:  # Do not add lad things too close to each other
             continue
