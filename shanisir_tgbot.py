@@ -66,7 +66,7 @@ def unknown(update, context):
 def private(update, context):
     global frequency, latest_response
     cleaned = []
-    JJ_RB = ["like you say", "like you speak", "not hard", "okay, fine?"]  # For Adjectives or Adverbs
+    JJ_RB = ["like you say", "like you speak"]  # For Adjectives or Adverbs
 
     initial = update.message.text
     initialStatement = chatterbot.conversation.Statement(update.message.text, in_response_to=latest_response)
@@ -100,9 +100,6 @@ def private(update, context):
         if index - temp < 7:  # Do not add lad things too close to each other
             continue
 
-        if index - temp < 5:  # Do not add lad things too close to each other
-            continue
-
         if tag == 'MD' and not flag:  # Modal
             cleaned.insert(index + 1, "(if the laws of physics allow it)")
             flag = 1
@@ -119,19 +116,19 @@ def private(update, context):
 
     if r.choice([0, 1]):
         if r.choice([0, 1]):
-            cleaned.append(r.choice(["I am so sowry", "i don't want to talk like that", "*scratches nose*",
+            cleaned.append(r.choice(["I am so sowry", "i don't want to talk like that",
                                      "it is embarrassing to me like basically", "it's not to trouble you like you say",
-                                     "go for the worksheet"]))
+                                     "go for the worksheet", "it's not that hard"]))
         else:
-            cleaned.append(r.choice(["this will be fruitful", "you will benefit", "that is the expected behaviour",
-                                     "now you are on the track like", "class is in the flow like", "aim to hit the tarjit",
+            cleaned.append(r.choice(["it will be fruitful", "you will benefit", "that is the expected behaviour",
+                                     "now you are on the track like", "now class is in the flow like", "aim to hit the tarjit",
                                      "don't press the jockey"]))
 
     begin = update.message.date
     cleaned.insert(0, update.message.from_user.first_name)
 
     if len(cleaned) < 5:  # Will run if input is too short
-        cleaned.append("*draws perfect circle*")
+        cleaned.append(r.choice(["*draws perfect circle*", "*scratches nose*"]))
 
     if 'when' in cleaned or 'When' in cleaned or 'time' in cleaned or 'Time' in cleaned:  # If question is present in input then-
         cleaned.append('decide a date')
@@ -177,11 +174,11 @@ def group(update, context):
     with open("lad_words.txt", "r") as f:
         prohibited = f.read().lower().split('\n')
 
-    if any(bad_word in update.message.text.split() for bad_word in prohibitted):
+    if any(bad_word in update.message.text.split() for bad_word in prohibited):
         out = f"{r.choice(rebukes)} {update.message.from_user.first_name}"
         context.bot.send_message(chat_id=update.effective_chat.id, text=out,
                                  reply_to_message_id=update.message.message_id)  # Sends message
-        print(out)
+        print("Rebuke: ", out)
 
 
 def morning_goodness(context):
@@ -233,7 +230,7 @@ dispatcher.add_handler(start_handler)
 group_handler = MessageHandler(Filters.group, group)
 dispatcher.add_handler(group_handler)
 
-private_handler = MessageHandler(Filters.text, private)
+private_handler = MMessageHandler(Filters.text, private)
 dispatcher.add_handler(private_handler)
 
 unknown_handler = MessageHandler(Filters.command, unknown)
