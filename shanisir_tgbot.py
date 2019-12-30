@@ -118,13 +118,14 @@ def private(update, context):
             temp = index
 
     if r.choice([0, 1]):
-        cleaned.append(r.choice(["I am so sowry", "i don't want to talk like that", "*scratches nose*",
-                                 "it is embarrassing to me like basically", "it's not to trouble you like you say",
-                                 "go for the worksheet"]))
-    else:
-        cleaned.append(r.choice(["this will be fruitful", "you will benefit", "that is the expected behaviour",
-                                 "now you are on the track like", "class is in the flow like", "aim to hit the tarjit",
-                                 "don't press the jockey"]))
+        if r.choice([0, 1]):
+            cleaned.append(r.choice(["I am so sowry", "i don't want to talk like that", "*scratches nose*",
+                                     "it is embarrassing to me like basically", "it's not to trouble you like you say",
+                                     "go for the worksheet"]))
+        else:
+            cleaned.append(r.choice(["this will be fruitful", "you will benefit", "that is the expected behaviour",
+                                     "now you are on the track like", "class is in the flow like", "aim to hit the tarjit",
+                                     "don't press the jockey"]))
 
     begin = update.message.date
     cleaned.insert(0, update.message.from_user.first_name)
