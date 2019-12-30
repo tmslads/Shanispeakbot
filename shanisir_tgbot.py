@@ -5,6 +5,7 @@ from difflib import get_close_matches
 from time import sleep
 from uuid import uuid4
 import chatbot
+import chatterbot
 
 from telegram import InlineQueryResultCachedAudio
 from telegram.ext import CommandHandler
@@ -15,9 +16,13 @@ from textblob import TextBlob
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
-updater = Updater(token='', use_context=True)
+
+with open("token.txt", 'r') as file:
+    bot_token = file.read()
+updater = Updater(token=f'{bot_token}', use_context=True)
 dispatcher = updater.dispatcher
 
+latest_response = None
 results = []
 rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
            "this language is embarassing to me like basically", "this is not a fruitful conversation"]
@@ -59,12 +64,18 @@ def unknown(update, context):
 
 
 def private(update, context):
-    global frequency
+    global frequency, latest_response
     cleaned = []
     JJ_RB = ["like you say", "like you speak", "not hard", "okay, fine?"]  # For Adjectives or Adverbs
 
     initial = update.message.text
-    msg = chatbot.shanisirbot.get_response(initial).text
+    initialStatement = chatterbot.conversation.Statement(update.message.text, in_response_to=latest_response)
+    chatbot.shanisirbot.learn_response(initialStatement, latest_response)  # Learn user's latest message as response to shanisirbot's latest message
+    latest_response = chatbot.shanisirbot.get_response(initial)
+    try:
+        msg = latest_response.text
+    except AttributeError:
+        msg = 'Hello'
 
     punctuation = r"""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
     msg = ''.join(c for c in msg if c not in punctuation)
