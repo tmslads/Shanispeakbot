@@ -22,10 +22,20 @@ with open("token.txt", 'r') as file:
 updater = Updater(token=f'{bot_token}', use_context=True)
 dispatcher = updater.dispatcher
 
+with open("lad_words.txt", "r") as f:
+    prohibited = f.read().lower().split('\n')
+
+with open("snake.txt", "r") as f:
+    snake_roast = f.read()
+
 latest_response = None
 results = []
 rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
            "this language is embarassing to me like basically", "this is not a fruitful conversation"]
+swear_advice = ["Don't use such words. Okay, fine?", "Such language fails to hit the tarjit.",
+                "Vocabulary like this really presses my jokey.", "It's embarrassing vocabulary like basically.", "Such language is not expected from 12th class students",
+                "You say shit like this then you go 'oh i'm so sowry sir it slipped' and expect me to forgive your sorry ass. Pathetic. Get a grip, loser.",
+                "Some of you dumbasses talk as if your teachers are all deaf. Trust me; we hear a lot more than you'd like us to.]
 frequency = 0
 
 with open("file_ids.txt", "r") as ids, open("names.txt", "r") as name:
@@ -171,9 +181,6 @@ def private(update, context):
 
 
 def group(update, context):
-    with open("lad_words.txt", "r") as f:
-        prohibited = f.read().lower().split('\n')
-
     if any(bad_word in update.message.text.split() for bad_word in prohibited):
         out = f"{r.choice(rebukes)} {update.message.from_user.first_name}"
         context.bot.send_message(chat_id=update.effective_chat.id, text=out,
@@ -215,6 +222,21 @@ def inline_clips(update, context):
         context.bot.answer_inline_query(update.inline_query.id, results[:16])
 
 
+def swear(update, context):
+    while True:
+        swears = r.choices(prohibited, k=4)
+        if len(set(swears)) < len(swears):  # i.e. if there is a duplicate element
+            continue
+        break
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=f"'{swears[0]}',\n'{swears[1]}',\n'{swears[2]}',\n'{swears[3]}'\n\n{r.choice(swear_advice)}")
+
+
+def snake(update, context):
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=snake_roast)
+
+
 inline_clips_handler = InlineQueryHandler(inline_clips)
 dispatcher.add_handler(inline_clips_handler)
 
@@ -227,10 +249,16 @@ dispatcher.add_handler(clip_handler)
 start_handler = CommandHandler('start', start)
 dispatcher.add_handler(start_handler)
 
+swear_handler = CommandHandler('swear', swear)
+dispatcher.add_handler(swear_handler)
+
+snake_handler = CommandHandler('snake', snake)
+dispatcher.add_handler(snake_handler)
+
 group_handler = MessageHandler(Filters.group, group)
 dispatcher.add_handler(group_handler)
 
-private_handler = MMessageHandler(Filters.text, private)
+private_handler = MessageHandler(Filters.text, private)
 dispatcher.add_handler(private_handler)
 
 unknown_handler = MessageHandler(Filters.command, unknown)

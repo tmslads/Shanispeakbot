@@ -1,0 +1,19 @@
+**You're such a snake.**
+
+**So much so, that I wish you were a recursive Python function; you would finally be able to execute() yourself. Unfortunately though, you serve no function in society.**
+**I know you try: your hardest, but you're always the Exception to "it's common sense!". You're two faced like a Queue, and if I gathered documentation for all your errors, a bit of garbage collection, I would return with quite a thicc Stack.**
+**This message to you is just me emptying my life's Recycle Bin.**
+**In conclusion then, either uninstall this ego of yours or get Alt-F4ed by me, your Task Manager.**
+**Seriously; if you keep this up, the only thing you'll be printing to the console is "Goodbye world!". Commit to changing yourself, or else: no Pull Request will save you from me.**
+
+import tkinter
+
+#I initialize you
+you = tkinter.Tk()
+you.title("Foolish child")
+you.pack()
+
+#And I can destroy you #as well
+#you.destroy()
+
+**#Don't make me.**
