@@ -4,15 +4,16 @@ from datetime import time
 from difflib import get_close_matches
 from time import sleep
 from uuid import uuid4
-import chatbot
-import chatterbot
 
+import chatterbot
 from telegram import InlineQueryResultCachedAudio
 from telegram.ext import CommandHandler
 from telegram.ext import InlineQueryHandler
 from telegram.ext import MessageHandler, Filters
 from telegram.ext import Updater
 from textblob import TextBlob
+
+import chatbot
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
