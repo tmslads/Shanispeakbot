@@ -4,6 +4,7 @@ from datetime import time
 from difflib import get_close_matches
 from time import sleep
 from uuid import uuid4
+import getpass
 
 import chatterbot
 from telegram import InlineQueryResultCachedAudio
@@ -18,6 +19,12 @@ import chatbot
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
+user = getpass.getuser()  # To determine which location to provide for clips
+if user == 'aarti':
+    clip_loc = r'C:/Users/Uncle Sam/Desktop/sthyaVERAT/4 FUN ya Practice/Shanisirmodule/Assets/clips/'
+elif user == 'Uncle Sam':
+    clip_loc = r'C:/Users/aarti/Documents/Python stuff/Bored/Shanisirmodule/Assets/clips/'
+
 with open("token.txt", 'r') as file:
     bot_token = file.read()
 updater = Updater(token=f'{bot_token}', use_context=True)
@@ -29,6 +36,10 @@ with open("lad_words.txt", "r") as f:
 with open("snake.txt", "r") as f:
     snake_roast = f.read()
 
+with open("file_ids.txt", "r") as ids, open("names.txt", "r") as name:
+    file_ids = ids.read().strip().split(',')
+    names = name.read().strip().split(',')
+
 latest_response = None
 results = []
 rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
@@ -38,10 +49,6 @@ swear_advice = ["Don't use such words. Okay, fine?", "Such language fails to hit
                 "You say shit like this then you go 'oh i'm so sowry sir it slipped' and expect me to forgive your sorry ass. Pathetic. Get a grip, loser.",
                 "Some of you dumbasses talk as if your teachers are all deaf. Trust me; we hear a lot more than you'd like us to."]
 frequency = 0
-
-with open("file_ids.txt", "r") as ids, open("names.txt", "r") as name:
-    file_ids = ids.read().strip().split(',')
-    names = name.read().strip().split(',')
 
 assert (len(names) == len(file_ids))
 for file_id, name in zip(file_ids, names):
@@ -62,7 +69,7 @@ def helper(update, context):
                              text="This bot sends you actual shani sir clips straight from Shanisirmodule! He is savage"
                                   " in groups too! More commands will be added in the future."
                                   " @ me in the chatbox and type to get an audio clip."
-                                  " P.S: Download Shanisirmodule from:"
+                                  " P.S: Download The Shani Sir Module from:"
                                   " https://github.com/tmslads/Shanisirmodule/releases")
 
 
@@ -147,7 +154,7 @@ def private(update, context):
     shanitext = ' '.join(cleaned).capitalize()
 
     with open("interactions.txt", "a") as f:
-        inp = f"\n\nUTC+0 {update.message.date} {update.message.from_user.first_name} says: {update.message.text}"
+        inp = f"UTC+0 {update.message.date} {update.message.from_user.first_name} says: {update.message.text}\n\n"
         if update.message.reply_to_message:  # If user is replying to bot directly
             out = 'I don\'t want to talk to you.'
             the_id = update.message.message_id  # Gets id of the message replied
@@ -158,10 +165,7 @@ def private(update, context):
                 context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_audio')
                 sleep(1)
                 context.bot.send_audio(chat_id=update.effective_chat.id,
-                                       audio=open(
-                                           r"C:/Users/aarti/Documents/Python stuff/"
-                                           r"Bored/Shanisirmodule/Assets/clips/that's it.mp3",
-                                           'rb'),
+                                       audio=open(f"{clip_loc}that's it.mp3",'rb'),
                                        title="That's it")
                 context.bot.send_sticker(chat_id=update.effective_chat.id,
                                          sticker="CAADBQADHAADkupnJzeKCruy2yr2FgQ",  # Sahel offensive sticker
@@ -193,9 +197,7 @@ def morning_goodness(context):
     context.bot.send_message(chat_id=-1001396726510, text="Good morning everyone")
     context.bot.send_chat_action(chat_id=-1001396726510, action='upload_audio')
     sleep(1)
-    context.bot.send_audio(chat_id=-1001396726510, audio=open(r'C:/Users/aarti/Documents/Python stuff/'
-                                                              r'Bored/Shanisirmodule/Assets/clips/good mourning.mp3',
-                                                              'rb'),
+    context.bot.send_audio(chat_id=-1001396726510, audio=open(f"{clip_loc}good mourning.mp3", 'rb'),
                            title="Good morning")
     context.bot.send_chat_action(chat_id=-1001396726510, action='typing')
     sleep((25 / 60) * 22)
