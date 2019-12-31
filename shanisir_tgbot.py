@@ -24,9 +24,9 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 URL = 'http://randomfactgenerator.net/'  # To be scraped for facts()
 
 user = getpass.getuser()  # To determine which location to provide for clips
-if user == 'aarti':
+if user == 'Uncle Sam':
     clip_loc = r'C:/Users/Uncle Sam/Desktop/sthyaVERAT/4 FUN ya Practice/Shanisirmodule/Assets/clips/'
-elif user == 'Uncle Sam':
+elif user == 'aarti':
     clip_loc = r'C:/Users/aarti/Documents/Python stuff/Bored/Shanisirmodule/Assets/clips/'
 
 with open("token.txt", 'r') as file:
@@ -158,7 +158,7 @@ def private(update, context):
     shanitext = ' '.join(cleaned).capitalize()
 
     with open("interactions.txt", "a") as f:
-        inp = f"UTC+0 {update.message.date} {update.message.from_user.first_name} says: {update.message.text}\n\n"
+        inp = f"UTC+0 {update.message.date} {update.message.from_user.first_name} says: {update.message.text}\n"
         if update.message.reply_to_message:  # If user is replying to bot directly
             out = 'I don\'t want to talk to you.'
             the_id = update.message.message_id  # Gets id of the message replied
@@ -180,7 +180,7 @@ def private(update, context):
         print(inp)
         print(out)
         f.write(inp)
-        f.write(f"\nOutput: {out}")
+        f.write(f"Output: {out}\n\n")
         context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')  # Sends 'typing...' status
         # Assuming 25 WPM typing speed on a phone
         time_taken = (25 / 60) * len(out.split())
