@@ -35,7 +35,7 @@ rebukes = ["this is not the expected behaviour", "i don't want you to talk like 
 swear_advice = ["Don't use such words. Okay, fine?", "Such language fails to hit the tarjit.",
                 "Vocabulary like this really presses my jokey.", "It's embarrassing vocabulary like basically.", "Such language is not expected from 12th class students",
                 "You say shit like this then you go 'oh i'm so sowry sir it slipped' and expect me to forgive your sorry ass. Pathetic. Get a grip, loser.",
-                "Some of you dumbasses talk as if your teachers are all deaf. Trust me; we hear a lot more than you'd like us to.]
+                "Some of you dumbasses talk as if your teachers are all deaf. Trust me; we hear a lot more than you'd like us to."]
 frequency = 0
 
 with open("file_ids.txt", "r") as ids, open("names.txt", "r") as name:

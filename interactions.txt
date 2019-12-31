@@ -1128,3 +1128,6 @@ Output: Samir youre right and i dont feel guilty at all now class is in the flow
 
 UTC+0 2019-12-30 22:44:16 Samir says: Ass
 Output: Samir that is a pretty common human emotion it's not that hard
+
+UTC+0 2019-12-31 03:19:17 Samir says: I should sleep
+Output: Samir you are pedantic it's not that hard
