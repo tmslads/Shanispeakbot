@@ -225,9 +225,8 @@ def inline_clips(update, context):
 def swear(update, context):
     while True:
         swears = r.choices(prohibited, k=4)
-        if len(set(swears)) < len(swears):  # i.e. if there is a duplicate element
-            continue
-        break
+        if len(set(swears)) == len(swears):  # i.e. if there is a duplicate element
+            break
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=f"'{swears[0]}',\n'{swears[1]}',\n'{swears[2]}',\n'{swears[3]}'\n\n{r.choice(swear_advice)}")
 
