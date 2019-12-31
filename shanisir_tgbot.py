@@ -4,15 +4,16 @@ from datetime import time
 from difflib import get_close_matches
 from time import sleep
 from uuid import uuid4
-import chatbot
-import chatterbot
 
+import chatterbot
 from telegram import InlineQueryResultCachedAudio
 from telegram.ext import CommandHandler
 from telegram.ext import InlineQueryHandler
 from telegram.ext import MessageHandler, Filters
 from telegram.ext import Updater
 from textblob import TextBlob
+
+import chatbot
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -225,9 +226,8 @@ def inline_clips(update, context):
 def swear(update, context):
     while True:
         swears = r.choices(prohibited, k=4)
-        if len(set(swears)) < len(swears):  # i.e. if there is a duplicate element
-            continue
-        break
+        if len(set(swears)) == len(swears):  # i.e. if there is a duplicate element
+            break
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=f"'{swears[0]}',\n'{swears[1]}',\n'{swears[2]}',\n'{swears[3]}'\n\n{r.choice(swear_advice)}")
 
