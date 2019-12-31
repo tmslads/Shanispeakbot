@@ -1263,3 +1263,6 @@ Output: Samrin hi *scratches nose*
 
 UTC+0 2019-12-31 09:39:22 Samrin says: To be or not to be that is the question
 Output: Samrin could i borrow a cup of sugar
+
+UTC+0 2019-12-31 09:39:31 Samrin says: Sure here you go
+Output: Samrin the off switch *draws perfect circle*
