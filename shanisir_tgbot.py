@@ -6,6 +6,8 @@ from time import sleep
 from uuid import uuid4
 import getpass
 
+import requests
+from bs4 import BeautifulSoup
 import chatterbot
 from telegram import InlineQueryResultCachedAudio
 from telegram.ext import CommandHandler
@@ -18,6 +20,8 @@ import chatbot
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
+
+URL = 'http://randomfactgenerator.net/'  # To be scraped for facts()
 
 user = getpass.getuser()  # To determine which location to provide for clips
 if user == 'aarti':
@@ -239,6 +243,15 @@ def snake(update, context):
                              text=snake_roast)
 
 
+def facts(update, context):
+    page = requests.get(URL)
+    soup = BeautifulSoup(page.content, 'html.parser')
+    results = soup.find_all(id='z')  # Finds HTML elements with ID 'z'
+    facts = [results[0].getText()[:-6], results[1].getText()[:-6], results[2].getText()[:-6]]  # List of three random facts
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=r.choice(facts))
+
+
 inline_clips_handler = InlineQueryHandler(inline_clips)
 dispatcher.add_handler(inline_clips_handler)
 
@@ -256,6 +269,9 @@ dispatcher.add_handler(swear_handler)
 
 snake_handler = CommandHandler('snake', snake)
 dispatcher.add_handler(snake_handler)
+
+facts_handler = CommandHandler('facts', facts)
+dispatcher.add_handler(facts_handler)
 
 group_handler = MessageHandler(Filters.group, group)
 dispatcher.add_handler(group_handler)
