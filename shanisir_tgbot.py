@@ -21,6 +21,8 @@ import chatbot
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
 
+chatbot.shanisirbot.initialize()  # Does any work that needs to be done before the chatbot can process responses.
+
 URL = 'http://randomfactgenerator.net/'  # To be scraped for facts()
 
 user = getpass.getuser()  # To determine which location to provide for clips
