@@ -6,20 +6,46 @@ shanisirbot = chatterbot.ChatBot('The Shani Sir Bot',
                                  logic_adapters=['chatterbot.logic.BestMatch',                                                 
                                                  'chatterbot.logic.SpecificResponseAdapter',
                                                  'chatterbot.logic.MathematicalEvaluation',
-                                                 'chatterbot.logic.UnitConversion'],
+                                                 'chatterbot.logic.UnitConversion',],
                                  preprocessors=['chatterbot.preprocessors.clean_whitespace'],
-                                 read_only=False)  # This disables further learning from conversations the bot has
+                                 read_only=False)  # Set to True to disable further learning from conversations the bot has
 
-def train_him():
-    """Trains the bot using the standard English corpora (for now)"""
+def train_with(corpus):
+    """
+    Trains the bot using the specified corpus
+    eng ---> chatterbot.corpus.english (standard English corpus from chatterbot_corpora)
+    woz ---> ./MULTIWOZ2.1 (Multi-Domain Wizard-of-Oz dataset from http://dialogue.mi.eng.cam.ac.uk/index.php/corpus/)
+    ubu ---> Will download and extract the Ubuntu dialog corpus if that has not already been done.
+    """
 
-    from chatterbot.trainers import ChatterBotCorpusTrainer
+    from chatterbot.trainers import ChatterBotCorpusTrainer, UbuntuCorpusTrainer
     import time
 
-    corpora_trainer = ChatterBotCorpusTrainer(shanisirbot)
-    start = time.time()
-    corpora_trainer.train("chatterbot.corpus.english")
+    if corpus == 'ubu':  # WARNING: TAKES A REALLY LONG TIME
+        start = time.time()  # (TOOK 114000 SECONDS = 31 HOURS TO EXTRACT AND TRAIN FOR UNCLE SAM, NOT COUNTING DOWNLOAD TIME)
+        corpus_trainer = UbuntuCorpusTrainer(shanisirbot)
+        corpus_trainer.train()
+    else:
+        start = time.time()
+        corpus_trainer = ChatterBotCorpusTrainer(shanisirbot)
+        if corpus == 'eng':
+            corpus_trainer.train("chatterbot.corpus.english")
+        elif corpus == 'woz':
+            corpus_trainer.train('./data/MULTIWOZ2.1/attraction_db.json',
+'./data/MULTIWOZ2.1/data.json',
+'./data/MULTIWOZ2.1/dialogue_acts.json',
+'./data/MULTIWOZ2.1/hospital_db.json',
+'./data/MULTIWOZ2.1/hotel_db.json',
+'./data/MULTIWOZ2.1/ontology.json',
+'./data/MULTIWOZ2.1/police_db.json'
+'./data/MULTIWOZ2.1/restaurant_db.json',
+'./data/MULTIWOZ2.1/taxi_db.json',
+'./data/MULTIWOZ2.1/testListFile.json',
+'./data/MULTIWOZ2.1/train_db.json',
+'./data/MULTIWOZ2.1/valListFile.json')
+        else:
+            print("Invalid corpus.")
+            return
     end = time.time()
     time_taken = end - start
-    print("\n\nThe Shani Sir Bot has been trained using the English corpora. Time taken: {time_taken}s")
-
+    print(f"\n\nThe Shani Sir chatbot has been trained using the corpus {corpus}. Time taken: {time_taken}s")
