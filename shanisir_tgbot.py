@@ -9,8 +9,7 @@ import getpass
 import itertools
 
 import chatterbot
-from numpy.random import choice as wchoice
-from telegram import InlineQueryResultCachedAudio
+from telegram import InlineQueryResultAudio
 
 from telegram.ext import CommandHandler
 from telegram.ext import InlineQueryHandler
@@ -71,22 +70,6 @@ with open("lad_words.txt", "r") as f:
 
 with open("snake.txt", "r") as f:
     snake_roast = f.read()
-
-updater = Updater(token=f'{bot_token}', use_context=True)
-dispatcher = updater.dispatcher
-
-latest_response = None
-results = []
-rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
-           "this language is embarassing to me like basically", "this is not a fruitful conversation"]
-swear_advice = ["Don't use such words. Okay, fine?", "Such language fails to hit the tarjit.",
-                "Vocabulary like this really presses my jokey.", "It's embarrassing vocabulary like basically.",
-                "Such language is not expected from 12th class students",
-                "You say shit like this then you go 'oh i'm so sowry sir it slipped' and expect me to forgive your"
-                " sorry ass. Pathetic. Get a grip, loser.",
-                "Some of you dumbasses talk as if your teachers are all deaf. Trust me; we hear a lot more than you'd"
-                " like us to."]
-frequency = 0
 
 links, names = util.clips()
 for clip in zip(links, names):
@@ -249,7 +232,8 @@ def private(update, context):
 
 def group(update, context):
     if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
-        if wchoice([0, 1], p=[0.7, 0.3]):  # Only rebuke when this evaluates to True. Probabilities are 0.7 for False, 0.3 for True
+        if r.choices([0, 1],  # Only rebuke when this evaluates to True. Probabilities are 0.8 for False, 0.2 for True.
+                     weights=[0.8, 0.2])[0]:  # Note that choices() returns a list.
             out = f"{next(rebukes)} {update.message.from_user.first_name}"
             context.bot.send_message(chat_id=update.effective_chat.id, text=out,
                                      reply_to_message_id=update.message.message_id)  # Sends message
@@ -284,29 +268,6 @@ def inline_clips(update, context):
                     index += 1
 
         context.bot.answer_inline_query(update.inline_query.id, results[:16])
-
-
-def swear(update, context):
-    while True:
-        swears = r.choices(prohibited, k=4)
-        if len(set(swears)) == len(swears):  # i.e. if there is a duplicate element
-            break
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=f"'{swears[0]}',\n'{swears[1]}',\n'{swears[2]}',\n'{swears[3]}'\n\n{next(swear_advice)}")
-
-
-def snake(update, context):
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=snake_roast)
-
-
-def facts(update, context):
-    page = requests.get(URL)
-    soup = BeautifulSoup(page.content, 'html.parser')
-    results = soup.find_all(id='z')  # Finds HTML elements with ID 'z'
-    facts = [results[0].getText()[:-6], results[1].getText()[:-6], results[2].getText()[:-6]]  # List of three random facts
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=r.choice(facts))
 
 
 inline_clips_handler = InlineQueryHandler(inline_clips)
