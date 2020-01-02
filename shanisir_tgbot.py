@@ -5,10 +5,12 @@ from difflib import get_close_matches
 from time import sleep
 from uuid import uuid4
 import getpass
+import itertools
 
 import requests
 from bs4 import BeautifulSoup
 import chatterbot
+from numpy.random import choice as wchoice
 from telegram import InlineQueryResultCachedAudio
 from telegram.ext import CommandHandler
 from telegram.ext import InlineQueryHandler
@@ -50,10 +52,14 @@ latest_response = None
 results = []
 rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
            "this language is embarassing to me like basically", "this is not a fruitful conversation"]
+r.shuffle(rebukes)
+rebukes = itertools.cycle(rebukes)
 swear_advice = ["Don't use such words. Okay, fine?", "Such language fails to hit the tarjit.",
                 "Vocabulary like this really presses my jokey.", "It's embarrassing vocabulary like basically.", "Such language is not expected from 12th class students",
                 "You say shit like this then you go 'oh i'm so sowry sir it slipped' and expect me to forgive your sorry ass. Pathetic. Get a grip, loser.",
                 "Some of you dumbasses talk as if your teachers are all deaf. Trust me; we hear a lot more than you'd like us to."]
+r.shuffle(swear_advice)
+swear_advice = itertools.cycle(swear_advice)
 frequency = 0
 
 assert (len(names) == len(file_ids))
@@ -192,11 +198,12 @@ def private(update, context):
 
 
 def group(update, context):
-    if any(bad_word in update.message.text.split() for bad_word in prohibited):
-        out = f"{r.choice(rebukes)} {update.message.from_user.first_name}"
-        context.bot.send_message(chat_id=update.effective_chat.id, text=out,
-                                 reply_to_message_id=update.message.message_id)  # Sends message
-        print("Rebuke: ", out)
+    if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
+        if wchoice([0, 1], p=[0.7, 0.3]):  # Only rebuke when this evaluates to True. Probabilities are 0.7 for False, 0.3 for True
+            out = f"{next(rebukes)} {update.message.from_user.first_name}"
+            context.bot.send_message(chat_id=update.effective_chat.id, text=out,
+                                     reply_to_message_id=update.message.message_id)  # Sends message
+            print("Rebuke: ", out)
 
 
 def morning_goodness(context):
@@ -237,7 +244,7 @@ def swear(update, context):
         if len(set(swears)) == len(swears):  # i.e. if there is a duplicate element
             break
     context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=f"'{swears[0]}',\n'{swears[1]}',\n'{swears[2]}',\n'{swears[3]}'\n\n{r.choice(swear_advice)}")
+                             text=f"'{swears[0]}',\n'{swears[1]}',\n'{swears[2]}',\n'{swears[3]}'\n\n{next(swear_advice)}")
 
 
 def snake(update, context):
