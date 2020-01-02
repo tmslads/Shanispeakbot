@@ -997,7 +997,7 @@ Output: Areeb ahsan beautiful is better than ugly
 UTC+0 2019-12-30 10:33:20 Areeb Ahsan says: So I am better than you?
 Output: Areeb ahsan although never is often better than right now not hard class is in the flow like
 
-UTC+0 2019-12-30 10:33:46 Areeb Ahsan says: Shhh then don’t distract me
+UTC+0 2019-12-30 10:33:46 Areeb Ahsan says: Shhh then donï¿½t distract me
 Output: Areeb ahsan you are immortal go for the worksheet
 
 UTC+0 2019-12-30 10:33:59 Areeb Ahsan says: U are distracting me
@@ -1009,7 +1009,7 @@ Output: Areeb ahsan should i be did something happen
 UTC+0 2019-12-30 10:34:17 Areeb Ahsan says: Shh
 Output: Areeb ahsan restart yourself *draws perfect circle*
 
-UTC+0 2019-12-30 10:34:26 Areeb Ahsan says: I won’t
+UTC+0 2019-12-30 10:34:26 Areeb Ahsan says: I wonï¿½t
 Output: Areeb ahsan happiness is not really a predictable emotion
 
 UTC+0 2019-12-30 10:34:27 Areeb Ahsan says: U do
@@ -1282,7 +1282,7 @@ Output: Samrin not right now no it's not to trouble you like you say
 UTC+0 2019-12-31 09:41:26 Areeb Ahsan says: Can you manage some correction?
 Output: Areeb ahsan i see *scratches nose*
 
-UTC+0 2019-12-31 09:41:37 Areeb Ahsan says: What’s up?
+UTC+0 2019-12-31 09:41:37 Areeb Ahsan says: Whatï¿½s up?
 Output: Areeb ahsan not much now you are on the track like *draws perfect circle*
 
 UTC+0 2019-12-31 09:41:45 Samrin says: Then when to trouble me
@@ -1291,7 +1291,7 @@ Output: Samrin so you think i am a machine what characteristics made like you do
 UTC+0 2019-12-31 09:42:01 Samrin says: Are you a machine
 Output: Samrin i like to laugh as much as the next like you speak being i don't want to talk like that
 
-UTC+0 2019-12-31 09:42:02 Areeb Ahsan says: I’m trying to be on the track tbh
+UTC+0 2019-12-31 09:42:02 Areeb Ahsan says: Iï¿½m trying to be on the track tbh
 Output: Areeb ahsan what do you get when you cross finals and a chicken eggsams aim to hit the tarjit decide a date
 
 UTC+0 2019-12-31 09:42:24 Samrin says: Do you know Harshil
@@ -1606,22 +1606,22 @@ Output: Samar a secret society that has supposedly existed for centuriesUTC+0 20
 Output: Samar a secret organization believed by some to be like you do in control of all governments through a worldwide conspiracyUTC+0 2019-12-31 15:50:47 Samar says: Mhm
 
 
-Output: Samar this can not happen because i am effectively like you speak immortal it's not that hardUTC+0 2019-12-31 15:51:48 Samar says: You’re dad is immortal
+Output: Samar this can not happen because i am effectively like you speak immortal it's not that hardUTC+0 2019-12-31 15:51:48 Samar says: Youï¿½re dad is immortal
 
 
 Output: Samar computers perform very large number of calculations to get like you do the result it's not that hardUTC+0 2019-12-31 15:52:05 Samar says: It is hard
 
 
-Output: Samar so you think i am a machine what characteristics made like you do you think so i don't want to talk like thatUTC+0 2019-12-31 15:52:08 Samar says: I’m commerce
+Output: Samar so you think i am a machine what characteristics made like you do you think so i don't want to talk like thatUTC+0 2019-12-31 15:52:08 Samar says: Iï¿½m commerce
 
 
 Output: Samar what do you get when you cross an alien and a chicken like you say eggstraterrestrial decide a dateUTC+0 2019-12-31 16:04:29 Samar says: Lmao
 
 
-Output: Samar you are avoiding *draws perfect circle*UTC+0 2019-12-31 16:04:29 Samar says: I’d love to have those chicken nuggets
+Output: Samar you are avoiding *draws perfect circle*UTC+0 2019-12-31 16:04:29 Samar says: Iï¿½d love to have those chicken nuggets
 
 
-Output: Samar you are dishonest you will benefitUTC+0 2019-12-31 16:05:22 Samar says: I’d love to have those chicken nuggets
+Output: Samar you are dishonest you will benefitUTC+0 2019-12-31 16:05:22 Samar says: Iï¿½d love to have those chicken nuggets
 
 
 Output: Samar i was hoping youd say some illuminati crap but nvm that is the expected behaviourUTC+0 2019-12-31 16:05:35 Samar says: Thanks
@@ -1917,3 +1917,29 @@ Output: Samir i could always improve myself compared to the pack
 UTC+0 2020-01-01 21:43:13 Samir says: You better.
 Output: Samir i dream that i will become rich
 
+UTC+0 2020-01-02 04:11:51 Nashita says: Hi donâ€™t ignore
+Output: Nashita my favorite subjects include robotics computer science and natural like you say language processing now class is in the flow like 
+
+UTC+0 2020-01-02 04:13:42 Nashita says: Excuse your favorite subject is political science 
+Output: What do you get when you cross finals and a chicken nashita eggsams decide a date 
+
+UTC+0 2020-01-02 10:08:14 Samir says: Your dreams will never come true.
+Output: Samir well you better speak up bitch it's not that hard 
+
+UTC+0 2020-01-02 10:09:20 Samir says: Watch your language, prick! 
+Output: You are samir psycho *scratches nose* 
+
+UTC+0 2020-01-02 11:53:15 Samir says: You are stupid. 
+Output: You sound like samir data 
+
+UTC+0 2020-01-02 12:03:53 Samir says: You are very stupid. 
+Output: Samir you are corrupt it's not to trouble you like you say 
+
+UTC+0 2020-01-02 12:45:55 Samir says: You are corrupt. 
+Output: Samir it must seem like that it is embarrassing to me like basically 
+
+UTC+0 2020-01-02 12:46:51 Samir says: You are pathetic. 
+Output: You are not exactly albert einstein samir yourself 
+
+UTC+0 2020-01-02 12:47:28 Samir says: OH NO YOU DIDN'T 
+Output: The current time is 0447 samir pm decide a date 
