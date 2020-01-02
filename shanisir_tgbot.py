@@ -207,7 +207,7 @@ def private(update, context):
     shanitext = ' '.join(cleaned).capitalize()
 
     with open("interactions.txt", "a") as f:
-        inp = f"UTC+0 {update.message.date} {update.message.from_user.full_name} ({username}) says: {update.message.text}\n"
+        inp = f"UTC+0 {update.message.date} {update.message.from_user.full_name} ({update.message.from_user.username}) says: {update.message.text}\n"
         if update.message.reply_to_message:  # If user is replying to bot directly
             out = 'I don\'t want to talk to you.'
             the_id = update.message.message_id  # Gets id of the message replied
