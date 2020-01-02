@@ -168,14 +168,14 @@ def private(update, context):
                                      "aim to hit the tarjit", "don't press the jockey"]))
         cleaned.insert(0, update.message.from_user.first_name)
     else:
-        cleaned.insert(-1, update.message.from_user.first_name)
+        cleaned.append(update.message.from_user.first_name)
     # begin = update.message.date
 
     if len(cleaned) < 5:  # Will run if input is too short
         cleaned.append(r.choice(["*draws perfect circle*", "*scratches nose*"]))
 
     if 'when' in cleaned or 'When' in cleaned or 'time' in cleaned or 'Time' in cleaned:  # If question is present
-        cleaned.append('decide a date')
+        cleaned.insert(-1, 'decide a date')
 
     shanitext = ' '.join(cleaned).capitalize()
 
@@ -234,7 +234,6 @@ def morning_goodness(context):
 def inline_clips(update, context):
     query = update.inline_query.query
     if not query:
-        r.shuffle(results)
         context.bot.answer_inline_query(update.inline_query.id, results[:50])
     else:
         matches = get_close_matches(query, names, n=15, cutoff=0.4)
