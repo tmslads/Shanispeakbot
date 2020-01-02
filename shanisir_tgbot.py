@@ -78,14 +78,19 @@ for clip in zip(links, names):
 
 
 class Commands:
+    def delete_command(updt):
+        """Delete the command message sent by the user"""
+        dispatcher.bot.delete_message(chat_id=updt.message.chat_id,
+                                      message_id=updt.message.message_id,)
+
     @staticmethod
-    def start(self, update, context):
+    def start(update, context):
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text="You can use me anywhere, @ me in the chatbox and type to get an audio clip."
                                       " Or just talk to me here and get help from me directly.")
 
     @staticmethod
-    def helper(self, update, context):
+    def helper(update, context):
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text="This bot sends you actual shani sir clips straight from Shanisirmodule! "
                                       "He is savage in groups too! More commands will be added in the future."
@@ -99,6 +104,7 @@ class Commands:
 
     @staticmethod
     def swear(update, context):
+        Commands.delete_command(update)
         while True:
             swears = r.choices(prohibited, k=4)
             if len(set(swears)) == len(swears):  # i.e. if there is a duplicate element
@@ -109,11 +115,13 @@ class Commands:
 
     @staticmethod
     def snake(update, context):
+        Commands.delete_command(update)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=snake_roast)
 
     @staticmethod
     def facts(update, context):
+        Commands.delete_command(update)
         factoid = util.facts()
         facts = [factoid[0].getText()[:-6], factoid[1].getText()[:-6],
                  factoid[2].getText()[:-6]]  # List of three random facts
@@ -199,7 +207,7 @@ def private(update, context):
     shanitext = ' '.join(cleaned).capitalize()
 
     with open("interactions.txt", "a") as f:
-        inp = f"UTC+0 {update.message.date} {update.message.from_user.first_name} says: {update.message.text}\n"
+        inp = f"UTC+0 {update.message.date} {update.message.from_user.full_name} ({username}) says: {update.message.text}\n"
         if update.message.reply_to_message:  # If user is replying to bot directly
             out = 'I don\'t want to talk to you.'
             the_id = update.message.message_id  # Gets id of the message replied
