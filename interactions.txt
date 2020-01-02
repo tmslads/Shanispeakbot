@@ -1942,4 +1942,4 @@ UTC+0 2020-01-02 12:46:51 Samir says: You are pathetic.
 Output: You are not exactly albert einstein samir yourself 
 
 UTC+0 2020-01-02 12:47:28 Samir says: OH NO YOU DIDN'T 
-Output: The current time is 0447 samir pm decide a date 
+Output: The current time is 0447 samir pm decide a date
