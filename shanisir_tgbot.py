@@ -31,15 +31,15 @@ if user == 'Uncle Sam':
 elif user == 'aarti':
     clip_loc = r'C:/Users/aarti/Documents/Python stuff/Bored/Shanisirmodule/Assets/clips/'
 
-with open("token.txt", 'r') as file:
+with open("text_files/token.txt", 'r') as file:
     bot_token = file.read()
 updater = Updater(token=f'{bot_token}', use_context=True)
 dispatcher = updater.dispatcher
 
-with open("lad_words.txt", "r") as f:
+with open(r"text_files/lad_words.txt", "r") as f:
     prohibited = f.read().lower().split('\n')
 
-with open("snake.txt", "r") as f:
+with open(r"text_files/snake.txt", "r") as f:
     snake_roast = f.read()
 
 latest_response = None
@@ -55,21 +55,6 @@ swear_advice = ["Don't use such words. Okay, fine?", "Such language fails to hit
 r.shuffle(swear_advice)
 swear_advice = itertools.cycle(swear_advice)
 frequency = 0
-
-user = getpass.getuser()  # To determine which location to provide for clips
-if user == 'Uncle Sam':
-    clip_loc = r'C:/Users/Uncle Sam/Desktop/sthyaVERAT/4 FUN ya Practice/Shanisirmodule/Assets/clips/'
-elif user == 'aarti':
-    clip_loc = r'C:/Users/aarti/Documents/Python stuff/Bored/Shanisirmodule/Assets/clips/'
-
-with open("token.txt", 'r') as file:
-    bot_token = file.read()
-
-with open("lad_words.txt", "r") as f:
-    prohibited = f.read().lower().split('\n')
-
-with open("snake.txt", "r") as f:
-    snake_roast = f.read()
 
 links, names = util.clips()
 for clip in zip(links, names):
@@ -106,12 +91,12 @@ class Commands:
     def swear(update, context):
         Commands.delete_command(update)
         while True:
-            swears = r.choices(prohibited, k=4)
+            swears = r.choices(prohibited, k=4)  # Returns a list of 4 elements
             if len(set(swears)) == len(swears):  # i.e. if there is a duplicate element
                 break
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=f"'{swears[0]}',\n'{swears[1]}',\n'{swears[2]}',\n'{swears[3]}'\n\n"
-                                      f"{r.choice(swear_advice)}")
+                                      f"{next(swear_advice)}")
 
     @staticmethod
     def snake(update, context):
@@ -206,7 +191,7 @@ def private(update, context):
 
     shanitext = ' '.join(cleaned).capitalize()
 
-    with open("interactions.txt", "a") as f:
+    with open("text_files/interactions.txt", "a") as f:
         inp = f"UTC+0 {update.message.date} {update.message.from_user.full_name} ({update.message.from_user.username}) says: {update.message.text}\n"
         if update.message.reply_to_message:  # If user is replying to bot directly
             out = 'I don\'t want to talk to you.'
@@ -224,7 +209,7 @@ def private(update, context):
                                          sticker="CAADBQADHAADkupnJzeKCruy2yr2FgQ",  # Sahel offensive sticker
                                          reply_to_message_id=the_id)
         else:
-            out = shanitext
+            out = shanitext.capitalize()
             the_id = None
         print(inp)
         print(out)
