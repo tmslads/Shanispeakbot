@@ -234,15 +234,13 @@ def group(update, context):
 
 
 def morning_goodness(context):
-    context.bot.send_message(chat_id=-1001396726510, text="Good morning everyone")
-    context.bot.send_chat_action(chat_id=-1001396726510, action='upload_audio')
-    sleep(1)
-    context.bot.send_audio(chat_id=-1001396726510, audio=open(f"{clip_loc}good mourning.mp3", 'rb'),
-                           title="Good morning")
-    context.bot.send_chat_action(chat_id=-1001396726510, action='typing')
-    sleep((25 / 60) * 22)
-    context.bot.send_message(chat_id=-1001396726510,
-                             text="Hope you all know physics is first exam. January 6. Don't forget like you say.")
+    context.bot.send_message(chat_id=-1001396726510, text="Hello lads. I wish you all luck. I believe in you losers.")
+##    context.bot.send_chat_action(chat_id=-1001396726510, action='upload_audio')
+##    sleep(1)
+##    context.bot.send_audio(chat_id=-1001396726510, audio=open(f"{clip_loc}good mourning.mp3", 'rb'),
+##                           title="Good morning")
+##    context.bot.send_chat_action(chat_id=-1001396726510, action='typing')
+##    sleep((25 / 60) * 22)
 
 
 def inline_clips(update, context):
