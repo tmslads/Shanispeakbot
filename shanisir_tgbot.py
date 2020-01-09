@@ -193,24 +193,24 @@ def private(update, context):
 
     with open("text_files/interactions.txt", "a") as f:
         inp = f"UTC+0 {update.message.date} {update.message.from_user.full_name} ({update.message.from_user.username}) says: {update.message.text}\n"
-        if update.message.reply_to_message:  # If user is replying to bot directly
-            out = 'I don\'t want to talk to you.'
-            the_id = update.message.message_id  # Gets id of the message replied
-            frequency += 1
-            if frequency == 2:
-                out = '*ignored*'
-                frequency = 0
-                context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_audio')
-                sleep(1)
-                context.bot.send_audio(chat_id=update.effective_chat.id,
-                                       audio=open(f"{clip_loc}that's it.mp3", 'rb'),
-                                       title="That's it")
-                context.bot.send_sticker(chat_id=update.effective_chat.id,
-                                         sticker="CAADBQADHAADkupnJzeKCruy2yr2FgQ",  # Sahel offensive sticker
-                                         reply_to_message_id=the_id)
-        else:
-            out = shanitext.capitalize()
-            the_id = None
+##        if update.message.reply_to_message:  # If user is replying to bot directly
+##            out = 'I don\'t want to talk to you.'
+##            the_id = update.message.message_id  # Gets id of the message replied
+##            frequency += 1
+##            if frequency == 2:
+##                out = '*ignored*'
+##                frequency = 0
+##                context.bot.send_chat_action(chat_id=update.effective_chat.id, action='upload_audio')
+##                sleep(1)
+##                context.bot.send_audio(chat_id=update.effective_chat.id,
+##                                       audio=open(f"{clip_loc}that's it.mp3", 'rb'),
+##                                       title="That's it")
+##                context.bot.send_sticker(chat_id=update.effective_chat.id,
+##                                         sticker="CAADBQADHAADkupnJzeKCruy2yr2FgQ",  # Sahel offensive sticker
+##                                         reply_to_message_id=the_id)
+##        else:
+        out = shanitext.capitalize()
+        the_id = None
         print(inp)
         print(out)
         f.write(inp)
@@ -234,13 +234,25 @@ def group(update, context):
 
 
 def morning_goodness(context):
-    context.bot.send_message(chat_id=-1001396726510, text="Hello lads. I wish you all luck. I believe in you losers.")
+    seek = open("text_files/seek.txt", "r")
+    cursor = int(seek.read())  # Finds where the cursor stopped on the previous day
+    seek.close()
+    print(cursor)
+    if cursor == 16157:  # If EOF was reached
+        cursor = 0  # Start from the beginning
+    greetings = open("text_files/good_mourning.txt", "r")
+    greetings.seek(cursor)  # Move the cursor to its previous position
+    greeting = greetings.readline()  # And read the next line
+    print(greeting)
+    cursor = greetings.tell()  # Position of cursor after reading the greeting
+    seek = open("text_files/seek.txt", "w")
+    seek.write(str(cursor))  # Store the new position of the cursor, to be used when morning_goodness() is next called
+    seek.close()
+    greetings.close()
+##    context.bot.send_message(chat_id=-1001396726510, text=greeting)
 ##    context.bot.send_chat_action(chat_id=-1001396726510, action='upload_audio')
-##    sleep(1)
 ##    context.bot.send_audio(chat_id=-1001396726510, audio=open(f"{clip_loc}good mourning.mp3", 'rb'),
 ##                           title="Good morning")
-##    context.bot.send_chat_action(chat_id=-1001396726510, action='typing')
-##    sleep((25 / 60) * 22)
 
 
 def inline_clips(update, context):
@@ -291,6 +303,6 @@ dispatcher.add_handler(private_handler)
 unknown_handler = MessageHandler(Filters.command, Commands.unknown)
 dispatcher.add_handler(unknown_handler)
 
-updater.job_queue.run_daily(morning_goodness, time(8, 00, 00))  # sends message everyday at 8am on the group
+updater.job_queue.run_daily(morning_goodness, time(8, 0, 0))  # morning_goodness() will be called daily at the specified time ([h]h, [m]m,[s]s)
 updater.start_polling()
 updater.idle()
