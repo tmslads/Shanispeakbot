@@ -63,10 +63,10 @@ for clip in zip(links, names):
 
 
 class Commands:
-    def delete_command(updt):
+    @staticmethod
+    def delete_command(update):
         """Delete the command message sent by the user"""
-        dispatcher.bot.delete_message(chat_id=updt.message.chat_id,
-                                      message_id=updt.message.message_id,)
+        update.message.delete()
 
     @staticmethod
     def start(update, context):
