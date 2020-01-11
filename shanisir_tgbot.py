@@ -118,15 +118,19 @@ class Commands:
         context.bot.send_message(chat_id=update.effective_chat.id, text="I didn't say wrong I don't know.")
 
 
-def private(update, context):
+def private(update, context, grp=False):
     global frequency, latest_response
     cleaned = []
     JJ_RB = ["like you say", "like you speak"]  # For Adjectives or Adverbs
-
-    initial = update.message.text
     initialStatement = chatterbot.conversation.Statement(update.message.text, in_response_to=latest_response)
-    chatbot.shanisirbot.learn_response(initialStatement,
-                                       latest_response)  # Learn user's latest message as response to bot's message
+    if not grp:
+        isgrp = f"(GROUP: {update.effective_chat.title})"
+        initial = update.message.text
+        chatbot.shanisirbot.learn_response(initialStatement,
+                                           latest_response)  # Learn user's latest message as response to bot's message
+    else:
+        isgrp = ""
+        initial = update.message.reply_to_message.text
     latest_response = chatbot.shanisirbot.get_response(initial)
     try:
         msg = latest_response.text
@@ -192,7 +196,7 @@ def private(update, context):
     shanitext = ' '.join(cleaned).capitalize()
 
     with open("text_files/interactions.txt", "a") as f:
-        inp = f"UTC+0 {update.message.date} {update.message.from_user.full_name} ({update.message.from_user.username}) says: {update.message.text}\n"
+        inp = f"UTC+0 {update.message.date} {isgrp} {update.message.from_user.full_name} ({update.message.from_user.username}) says: {update.message.text}\n"
 ##        if update.message.reply_to_message:  # If user is replying to bot directly
 ##            out = 'I don\'t want to talk to you.'
 ##            the_id = update.message.message_id  # Gets id of the message replied
@@ -224,20 +228,23 @@ def private(update, context):
 
 
 def group(update, context):
-    if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
-        if r.choices([0, 1],  # Only rebuke when this evaluates to True. Probabilities are 0.8 for False, 0.2 for True.
-                     weights=[0.8, 0.2])[0]:  # Note that choices() returns a list.
-            out = f"{next(rebukes)} {update.message.from_user.first_name}"
-            context.bot.send_message(chat_id=update.effective_chat.id, text=out,
-                                     reply_to_message_id=update.message.message_id)  # Sends message
-            print("Rebuke: ", out)
+    if update.message.text is not None:
+        if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
+            if r.choices([0, 1],  # Only rebuke when this evaluates to True. Probabilities are 0.8 for False, 0.2 for True.
+                         weights=[0.8, 0.2])[0]:  # Note that choices() returns a list.
+                out = f"{next(rebukes)} {update.message.from_user.first_name}"
+                context.bot.send_message(chat_id=update.effective_chat.id, text=out,
+                                         reply_to_message_id=update.message.message_id)  # Sends message
+                print("Rebuke: ", out)
+        if update.message.reply_to_message is not None:  # If the message sent is a reply to a message
+            if update.message.reply_to_message.from_user.username == 'shanisirbot':  # If it is a reply to a message from the bot
+                private(update, context, grp=True)  # send a response as you would in private chat
 
 
 def morning_goodness(context):
     seek = open("text_files/seek.txt", "r")
     cursor = int(seek.read())  # Finds where the cursor stopped on the previous day
     seek.close()
-    print(cursor)
     if cursor == 16157:  # If EOF was reached
         cursor = 0  # Start from the beginning
     greetings = open("text_files/good_mourning.txt", "r")
@@ -249,10 +256,16 @@ def morning_goodness(context):
     seek.write(str(cursor))  # Store the new position of the cursor, to be used when morning_goodness() is next called
     seek.close()
     greetings.close()
-##    context.bot.send_message(chat_id=-1001396726510, text=greeting)
-##    context.bot.send_chat_action(chat_id=-1001396726510, action='upload_audio')
-##    context.bot.send_audio(chat_id=-1001396726510, audio=open(f"{clip_loc}good mourning.mp3", 'rb'),
-##                           title="Good morning")
+    msg=context.bot.send_message(chat_id=-1001396726510, text=greeting)  # Send to 12B group
+    context.bot.pin_chat_message(chat_id=-1001396726510, message_id=msg.message_id)  # Pin it
+    msg=context.bot.send_message(chat_id=-1001210862980, text=greeting)  # Send to Chwelth group
+    context.bot.pin_chat_message(chat_id=-1001210862980, message_id=msg.message_id)  # Pin it
+    context.bot.send_chat_action(chat_id=-1001396726510, action='upload_audio')
+    context.bot.send_chat_action(chat_id=-1001210862980, action='upload_audio')
+    context.bot.send_audio(chat_id=-1001396726510, audio=open(f"{clip_loc}my issue is you don't score.mp3", 'rb'),
+                           title="Good morning")
+    context.bot.send_audio(chat_id=-1001210862980, audio=open(f"{clip_loc}my issue is you don't score.mp3", 'rb'),
+                           title="Good morning")
 
 
 def inline_clips(update, context):
@@ -294,7 +307,7 @@ dispatcher.add_handler(snake_handler)
 facts_handler = CommandHandler('facts', Commands.facts)
 dispatcher.add_handler(facts_handler)
 
-group_handler = MessageHandler(Filters.group, group)
+group_handler = MessageHandler(Filters.group | Filters.reply, group)
 dispatcher.add_handler(group_handler)
 
 private_handler = MessageHandler(Filters.text, private)
