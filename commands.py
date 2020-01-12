@@ -37,7 +37,8 @@ class BotCommands:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text="This bot sends you actual shani sir clips straight from Shanisirmodule! "
                                       "He is savage in groups too!"
-                                      " @ me in the chatbox and type to get an audio clip."
+                                      " @ me in the chatbox (don't press enter yet!), press space and then type"
+                                      " to get a clip. and type to get an audio clip."
                                       " P.S: Download Shanisirmodule from:"
                                       " https://github.com/tmslads/Shanisirmodule/releases")
 
