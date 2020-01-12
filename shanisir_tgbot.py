@@ -39,7 +39,6 @@ updater = Updater(token=f'{bot_token}', use_context=True)
 dispatcher = updater.dispatcher
 
 latest_response = None
-frequency = 0
 
 results = []
 rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
@@ -122,16 +121,17 @@ def reply(update, context):
 
 
 def group(update, context):
-    if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
-        if r.choices([0, 1], weights=[0.8, 0.2])[0]:  # Probabilities are 0.8 - False, 0.2 - True.
-            out = f"{next(rebukes)} {update.message.from_user.first_name}"
-            context.bot.send_message(chat_id=update.effective_chat.id, text=out,
-                                     reply_to_message_id=update.message.message_id)  # Sends message
-            print(f"Rebuke: {out}")
+    if update.message.text is not None:
+        if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
+            if r.choices([0, 1], weights=[0.8, 0.2])[0]:  # Probabilities are 0.8 - False, 0.2 - True.
+                out = f"{next(rebukes)} {update.message.from_user.first_name}"
+                context.bot.send_message(chat_id=update.effective_chat.id, text=out,
+                                         reply_to_message_id=update.message.message_id)  # Sends message
+                print(f"Rebuke: {out}")
 
 
 def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
-    global frequency, latest_response
+    global latest_response
     cleaned = []
     JJ_RB = ["like you say", "like you speak"]  # For Adjectives or Adverbs
     initialStatement = chatterbot.conversation.Statement(update.message.text, in_response_to=latest_response)
@@ -238,9 +238,9 @@ def morning_goodness(context):
         greeting = greetings.readline()  # And read the next line
         print(greeting)
         cursor = greetings.tell()  # Position of cursor after reading the greeting
-        seek.seek(0)
-        seek.write(str(cursor))  # Store the new position of the cursor, for next morning_goodness() call
-        seek.truncate()
+    seek = open("text_files/seek.txt", "w")
+    seek.write(str(cursor))  # Store the new position of the cursor, to be used when morning_goodness() is next called
+    seek.close()
 
     for chat_id in [-1001396726510, -1001210862980]:
         msg = context.bot.send_message(chat_id=chat_id, text=greeting)  # Send to both groups
@@ -286,6 +286,6 @@ dispatcher.add_handler(private_handler)
 unknown_handler = MessageHandler(Filters.command, commands.BotCommands.unknown)
 dispatcher.add_handler(unknown_handler)
 
-updater.job_queue.run_daily(morning_goodness, time(8, 0, 0))  # morning_goodness() will be called daily at that time
+updater.job_queue.run_daily(morning_goodness, time(4, 0, 0))  # will be called daily at ([h]h, [m]m,[s]s) (UTC+0)
 updater.start_polling()
 updater.idle()
