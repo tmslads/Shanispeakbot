@@ -316,6 +316,6 @@ dispatcher.add_handler(private_handler)
 unknown_handler = MessageHandler(Filters.command, Commands.unknown)
 dispatcher.add_handler(unknown_handler)
 
-updater.job_queue.run_daily(morning_goodness, time(8, 0, 0))  # morning_goodness() will be called daily at the specified time ([h]h, [m]m,[s]s)
+updater.job_queue.run_daily(morning_goodness, time(11, 5, 0))  # morning_goodness() will be called daily at the specified time ([h]h, [m]m,[s]s)
 updater.start_polling()
 updater.idle()
