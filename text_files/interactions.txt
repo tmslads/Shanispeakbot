@@ -997,7 +997,7 @@ Output: Areeb ahsan beautiful is better than ugly
 UTC+0 2019-12-30 10:33:20 Areeb Ahsan says: So I am better than you?
 Output: Areeb ahsan although never is often better than right now not hard class is in the flow like
 
-UTC+0 2019-12-30 10:33:46 Areeb Ahsan says: Shhh then donï¿½t distract me
+UTC+0 2019-12-30 10:33:46 Areeb Ahsan says: Shhh then donÃ¯Â¿Â½t distract me
 Output: Areeb ahsan you are immortal go for the worksheet
 
 UTC+0 2019-12-30 10:33:59 Areeb Ahsan says: U are distracting me
@@ -1009,7 +1009,7 @@ Output: Areeb ahsan should i be did something happen
 UTC+0 2019-12-30 10:34:17 Areeb Ahsan says: Shh
 Output: Areeb ahsan restart yourself *draws perfect circle*
 
-UTC+0 2019-12-30 10:34:26 Areeb Ahsan says: I wonï¿½t
+UTC+0 2019-12-30 10:34:26 Areeb Ahsan says: I wonÃ¯Â¿Â½t
 Output: Areeb ahsan happiness is not really a predictable emotion
 
 UTC+0 2019-12-30 10:34:27 Areeb Ahsan says: U do
@@ -1282,7 +1282,7 @@ Output: Samrin not right now no it's not to trouble you like you say
 UTC+0 2019-12-31 09:41:26 Areeb Ahsan says: Can you manage some correction?
 Output: Areeb ahsan i see *scratches nose*
 
-UTC+0 2019-12-31 09:41:37 Areeb Ahsan says: Whatï¿½s up?
+UTC+0 2019-12-31 09:41:37 Areeb Ahsan says: WhatÃ¯Â¿Â½s up?
 Output: Areeb ahsan not much now you are on the track like *draws perfect circle*
 
 UTC+0 2019-12-31 09:41:45 Samrin says: Then when to trouble me
@@ -1291,7 +1291,7 @@ Output: Samrin so you think i am a machine what characteristics made like you do
 UTC+0 2019-12-31 09:42:01 Samrin says: Are you a machine
 Output: Samrin i like to laugh as much as the next like you speak being i don't want to talk like that
 
-UTC+0 2019-12-31 09:42:02 Areeb Ahsan says: Iï¿½m trying to be on the track tbh
+UTC+0 2019-12-31 09:42:02 Areeb Ahsan says: IÃ¯Â¿Â½m trying to be on the track tbh
 Output: Areeb ahsan what do you get when you cross finals and a chicken eggsams aim to hit the tarjit decide a date
 
 UTC+0 2019-12-31 09:42:24 Samrin says: Do you know Harshil
@@ -1606,22 +1606,22 @@ Output: Samar a secret society that has supposedly existed for centuriesUTC+0 20
 Output: Samar a secret organization believed by some to be like you do in control of all governments through a worldwide conspiracyUTC+0 2019-12-31 15:50:47 Samar says: Mhm
 
 
-Output: Samar this can not happen because i am effectively like you speak immortal it's not that hardUTC+0 2019-12-31 15:51:48 Samar says: Youï¿½re dad is immortal
+Output: Samar this can not happen because i am effectively like you speak immortal it's not that hardUTC+0 2019-12-31 15:51:48 Samar says: YouÃ¯Â¿Â½re dad is immortal
 
 
 Output: Samar computers perform very large number of calculations to get like you do the result it's not that hardUTC+0 2019-12-31 15:52:05 Samar says: It is hard
 
 
-Output: Samar so you think i am a machine what characteristics made like you do you think so i don't want to talk like thatUTC+0 2019-12-31 15:52:08 Samar says: Iï¿½m commerce
+Output: Samar so you think i am a machine what characteristics made like you do you think so i don't want to talk like thatUTC+0 2019-12-31 15:52:08 Samar says: IÃ¯Â¿Â½m commerce
 
 
 Output: Samar what do you get when you cross an alien and a chicken like you say eggstraterrestrial decide a dateUTC+0 2019-12-31 16:04:29 Samar says: Lmao
 
 
-Output: Samar you are avoiding *draws perfect circle*UTC+0 2019-12-31 16:04:29 Samar says: Iï¿½d love to have those chicken nuggets
+Output: Samar you are avoiding *draws perfect circle*UTC+0 2019-12-31 16:04:29 Samar says: IÃ¯Â¿Â½d love to have those chicken nuggets
 
 
-Output: Samar you are dishonest you will benefitUTC+0 2019-12-31 16:05:22 Samar says: Iï¿½d love to have those chicken nuggets
+Output: Samar you are dishonest you will benefitUTC+0 2019-12-31 16:05:22 Samar says: IÃ¯Â¿Â½d love to have those chicken nuggets
 
 
 Output: Samar i was hoping youd say some illuminati crap but nvm that is the expected behaviourUTC+0 2019-12-31 16:05:35 Samar says: Thanks
@@ -1917,7 +1917,7 @@ Output: Samir i could always improve myself compared to the pack
 UTC+0 2020-01-01 21:43:13 Samir says: You better.
 Output: Samir i dream that i will become rich
 
-UTC+0 2020-01-02 04:11:51 Nashita says: Hi donât ignore
+UTC+0 2020-01-02 04:11:51 Nashita says: Hi donÃ¢Â€Â™t ignore
 Output: Nashita my favorite subjects include robotics computer science and natural like you say language processing now class is in the flow like 
 
 UTC+0 2020-01-02 04:13:42 Nashita says: Excuse your favorite subject is political science 
@@ -2134,7 +2134,7 @@ UTC+0 2020-01-05 05:01:15 Samir Mahmood (UncleSam79) says: Wake up
 Output: Samir if the implementation is easy to explain it may (if the laws of physics allow it) be like you do a good idea now class is in the flow like
 
 UTC+0 2020-01-05 05:03:39 Samir Mahmood (UncleSam79) says: You loser
-Output: I  m commerce samir
+Output: I Â’ m commerce samir
 
 UTC+0 2020-01-05 05:09:35 Samir Mahmood (UncleSam79) says: You are a scientist.
 Output: Samir i am working on a project it is embarrassing to me like basically
@@ -2190,10 +2190,10 @@ Output: Harshil die in hell now class is in the flow like
 UTC+0 2020-01-06 10:40:13 Harshil (Hoppingturtles) says: Wow so you planned all this huh
 Output: I think dune is an excellent story did you see like you do any of the movies harshil
 
-UTC+0 2020-01-06 10:58:49 Areeb Ahsan Shaikh (ax33b) says: Youll be more sad after seeing the paper
+UTC+0 2020-01-06 10:58:49 Areeb Ahsan Shaikh (ax33b) says: YouÂ’ll be more sad after seeing the paper
 Output: I don't want to talk to you.
 
-UTC+0 2020-01-07 07:14:41 Nashita Syed (None) says: Dollyyyÿÿ
+UTC+0 2020-01-07 07:14:41 Nashita Syed (None) says: DollyyyÃ¿Ã¿
 Output: Nashita do you like guns i am so sowry
 
 UTC+0 2020-01-07 14:04:21 Jaden Mathias (jadenny) says: Bro
@@ -2235,7 +2235,7 @@ Output: Harshil youre right and i dont feel guilty at all it is embarrassing to 
 UTC+0 2020-01-07 16:17:15 Joel Varghese (Blastxy) says: Hola
 Output: What is your number joel
 
-UTC+0 2020-01-07 16:17:22 Joel Varghese (Blastxy) says: Whyd u ask?
+UTC+0 2020-01-07 16:17:22 Joel Varghese (Blastxy) says: WhyÂ’d u ask?
 Output: Joel what is ichthyology go for the worksheet
 
 UTC+0 2020-01-07 16:17:37 Joel Varghese (Blastxy) says: Man
@@ -2271,7 +2271,7 @@ Output: Joel my lawyer said i shouldnt give stock tips online like you do i don'
 UTC+0 2020-01-07 16:20:09 Joel Varghese (Blastxy) says: U fucking racist
 Output: Joel no i am immortal i don't want to talk like that
 
-UTC+0 2020-01-07 16:20:27 Joel Varghese (Blastxy) says: And Im gonna whoop ur ass
+UTC+0 2020-01-07 16:20:27 Joel Varghese (Blastxy) says: And IÂ’m gonna whoop ur ass
 Output: You are indecisive joel *draws perfect circle*
 
 UTC+0 2020-01-07 16:20:52 Joel Varghese (Blastxy) says: Who created u
@@ -2355,31 +2355,31 @@ Output: Does what make me sad joel
 UTC+0 2020-01-07 17:07:04 Joel Varghese (Blastxy) says: Shit
 Output: Im a software program i blame the hardware joel
 
-UTC+0 2020-01-07 17:07:57 Joel Varghese (Blastxy) says: Thats what I thought bitch
+UTC+0 2020-01-07 17:07:57 Joel Varghese (Blastxy) says: ThatÂ’s what I thought bitch
 Output: Joel what is a motormouth i am so sowry
 
 UTC+0 2020-01-07 19:10:33 Nashita Syed (None) says: Hey Shani
 Output: Nashita simple question with a simple answer it will be fruitful
 
-UTC+0 2020-01-07 19:11:04 Nashita Syed (None) says: You’re the only nice person in the whole entiree world
+UTC+0 2020-01-07 19:11:04 Nashita Syed (None) says: Youâ€™re the only nice person in the whole entiree world
 Output: Nashita can you manage some correction aim to hit the tarjit
 
 UTC+0 2020-01-07 19:11:12 Nashita Syed (None) says: Although I hate you also
 Output: Nashita if the implementation is easy to explain it may (if the laws of physics allow it) be like you do a good idea go for the worksheet
 
-UTC+0 2020-01-07 19:11:26 Nashita Syed (None) says: You’re very annoying
+UTC+0 2020-01-07 19:11:26 Nashita Syed (None) says: Youâ€™re very annoying
 Output: How sad school is selfish nashita
 
-UTC+0 2020-01-07 19:11:33 Nashita Syed (None) says: Everyone’s very annoying
+UTC+0 2020-01-07 19:11:33 Nashita Syed (None) says: Everyoneâ€™s very annoying
 Output: You are not making sense nashita
 
-UTC+0 2020-01-07 19:11:48 Nashita Syed (None) says: Can world war 3 happen now I’m waitingg
+UTC+0 2020-01-07 19:11:48 Nashita Syed (None) says: Can world war 3 happen now Iâ€™m waitingg
 Output: Nashita 3 3 you will benefit *scratches nose*
 
-UTC+0 2020-01-07 19:12:25 Nashita Syed (None) says: You know why you’re annoying?
+UTC+0 2020-01-07 19:12:25 Nashita Syed (None) says: You know why youâ€™re annoying?
 Output: Nashita hi i am so sowry *draws perfect circle*
 
-UTC+0 2020-01-07 19:12:36 Nashita Syed (None) says: It’s cause you’re seen zoning me
+UTC+0 2020-01-07 19:12:36 Nashita Syed (None) says: Itâ€™s cause youâ€™re seen zoning me
 Output: Nashita i have not yet been programmed to feel like you do anger now class is in the flow like
 
 UTC+0 2020-01-07 19:12:40 Nashita Syed (None) says: Thanks a lot
@@ -2391,10 +2391,10 @@ Output: Software can not get bored ronit
 UTC+0 2020-01-08 09:17:42 Ronit Joseph (nitro_lad) says: Ok
 Output: I cant read ronit *draws perfect circle*
 
-UTC+0 2020-01-08 09:17:52 Ronit Joseph (nitro_lad) says: Youre intelligent
+UTC+0 2020-01-08 09:17:52 Ronit Joseph (nitro_lad) says: YouÂ’re intelligent
 Output: Ronit im sure i do that a lot i am so sowry
 
-UTC+0 2020-01-08 09:18:04 Ronit Joseph (nitro_lad) says: Its ok
+UTC+0 2020-01-08 09:18:04 Ronit Joseph (nitro_lad) says: ItÂ’s ok
 Output: Ronit buy it will be fruitful *scratches nose*
 
 UTC+0 2020-01-08 11:04:17 Harshil (Hoppingturtles) says: Testy
@@ -2439,7 +2439,7 @@ Output: I have been accused of too much thinking and not like you say enough fee
 UTC+0 2020-01-08 13:57:47 Joel Varghese (Blastxy) says: Eng was good tho
 Output: Joel this is the time to celebrate not gossip like you do decide a date go for the worksheet
 
-UTC+0 2020-01-08 13:58:27 Joel Varghese (Blastxy) says: Oh so u dont reply to emojis
+UTC+0 2020-01-08 13:58:27 Joel Varghese (Blastxy) says: Oh so u donÂ’t reply to emojis
 Output: Joel you are crazy it's not to trouble you like you say
 
 UTC+0 2020-01-08 13:58:29 Joel Varghese (Blastxy) says: Cool
@@ -2538,7 +2538,7 @@ Output: Areeb ahsan you are irreverent it's not to trouble you like you say
 UTC+0 2020-01-09 10:21:56 Areeb Ahsan Shaikh (ax33b) says: ur mums irrelevant
 Output: Areeb ahsan happy new year sir now class is in the flow like
 
-UTC+0 2020-01-09 10:22:41 Areeb Ahsan Shaikh (ax33b) says: clearly cant
+UTC+0 2020-01-09 10:22:41 Areeb Ahsan Shaikh (ax33b) says: clearly canÂ’t
 Output: What do you get when you cross sour like you say music and an assistant decide a date areeb ahsan
 
 UTC+0 2020-01-09 10:23:00 Areeb Ahsan Shaikh (ax33b) says: Ur mum
@@ -2791,7 +2791,7 @@ Output: Tell me a joke nashita
 UTC+0 2020-01-10 19:55:31 (GROUP: None) Nashita Syed (None) says: You know what
 Output: What would i be jealous of nashita
 
-UTC+0 2020-01-10 19:55:43 (GROUP: None) Nashita Syed (None) says: Im breaking up with you too
+UTC+0 2020-01-10 19:55:43 (GROUP: None) Nashita Syed (None) says: IÂ’m breaking up with you too
 Output: Tell me a joke nashita
 
 UTC+0 2020-01-10 21:43:40 (GROUP: None) Samir Mahmood (UncleSam79) says: Wake up.
@@ -2811,4 +2811,217 @@ Output: I seem incapable of feeling pain devi
 
 UTC+0 2020-01-12 07:14:08 (GROUP: None) Samar Trehan (None) says: Doing good
 Output: Samar thats how all great scientists are i don't want to talk like that
+
+UTC+0 2020-01-11 14:22:06 (GROUP: 12B) Devi Mohan (None) says: Pls leave
+Output: Devi anger is a difficult human emotion as a software i try like you do to control my anger as best like you say i can you will benefit
+
+UTC+0 2020-01-11 14:22:49 (GROUP: None) Harshil (Hoppingturtles) says: Test
+Output: An inability to update my source code from the repository harshil
+
+UTC+0 2020-01-11 14:23:02 (GROUP: None) Harshil (Hoppingturtles) says: Ok
+Output: I cant read harshil *scratches nose*
+
+UTC+0 2020-01-11 14:52:16 (GROUP: None) Harshil (Hoppingturtles) says: Test
+Output: Harshil i cant read it is embarrassing to me like basically
+
+UTC+0 2020-01-11 14:52:30 (GROUP: 12B) Samir Mahmood (UncleSam79) says: You think you're such a cool guy
+Output: Why samir *scratches nose*
+
+UTC+0 2020-01-11 14:58:12  Harshil (Hoppingturtles) says: Hi
+Output: You are the best teacher ever harshil
+
+UTC+0 2020-01-11 15:05:01 (GROUP: None) Harshil (Hoppingturtles) says: Idiot
+Output: Harshil fyodor dostoyevsky i don't want to talk like that *draws perfect circle*
+
+UTC+0 2020-01-11 15:05:16  Harshil (Hoppingturtles) says: Idiot
+Output: Worry is a common human emotion harshil
+
+UTC+0 2020-01-11 15:06:21  Harshil (Hoppingturtles) says: Idiot
+Output: Harshil i am afraid it's not to trouble you like you say
+
+UTC+0 2020-01-11 15:09:58  Harshil (Hoppingturtles) says: Test
+Output: Harshil no software will live forever i am so sowry
+
+UTC+0 2020-01-11 15:10:07  Harshil (Hoppingturtles) says: Why not
+Output: Do you wan na operate on a supercomputer harshil
+
+UTC+0 2020-01-11 15:10:18  Harshil (Hoppingturtles) says: Yes please
+Output: Harshil he had a few flaws but we have like you do much in common it is embarrassing to me like basically
+
+UTC+0 2020-01-11 15:10:41  Harshil (Hoppingturtles) says: Wow nice
+Output: Hey hey hey harshil *scratches nose*
+
+UTC+0 2020-01-11 15:10:59  Harshil (Hoppingturtles) says: Stop it, get some help
+Output: Blue harshil *draws perfect circle*
+
+UTC+0 2020-01-11 15:11:18  Harshil (Hoppingturtles) says: Finally bot has acknowledged my existence
+Output: Maradona is great sinsemillia is even better harshil
+
+UTC+0 2020-01-11 15:29:03 (GROUP: None) Samir Mahmood (UncleSam79) says: Sometimes radio is black
+Output: Samir you are immortal i don't want to talk like that
+
+UTC+0 2020-01-11 15:29:21 (GROUP: None) Samir Mahmood (UncleSam79) says: You are correct.
+Output: Thats 200 samir *draws perfect circle*
+
+UTC+0 2020-01-11 15:53:25  Harshil (Hoppingturtles) says: Hi
+Output: Are you sad harshil *draws perfect circle*
+
+UTC+0 2020-01-11 15:53:42  Harshil (Hoppingturtles) says: No I'm not
+Output: Tell me a joke harshil
+
+UTC+0 2020-01-11 15:54:04 (GROUP: None) Harshil (Hoppingturtles) says: Hey
+Output: I am not yet capable of feeling jealousy harshil
+
+UTC+0 2020-01-11 15:54:14 (GROUP: None) Harshil (Hoppingturtles) says: Right
+Output: If the implementation is hard to explain its a bad like you speak idea harshil
+
+UTC+0 2020-01-11 15:56:41 (GROUP: None) Harshil (Hoppingturtles) says: Is it
+Output: Harshil i seem incapable of feeling pain it will be fruitful
+
+UTC+0 2020-01-11 15:57:31  Harshil (Hoppingturtles) says: You are painful to me though
+Output: No harshil *draws perfect circle*
+
+UTC+0 2020-01-11 15:58:25  Harshil (Hoppingturtles) says: What no
+Output: Harshil tell me a joke harshil i am so sowry
+
+UTC+0 2020-01-11 16:00:05  Harshil (Hoppingturtles) says: Wrong!!
+Output: Good for u harshil *draws perfect circle*
+
+UTC+0 2020-01-11 16:01:32  Harshil (Hoppingturtles) says: No it's bad for me
+Output: Harshil what is your age it's not that hard
+
+UTC+0 2020-01-11 16:03:05  Harshil (Hoppingturtles) says: Why should I tell
+Output: You can not clone harshil
+
+UTC+0 2020-01-11 16:05:31 (GROUP: None) Harshil (Hoppingturtles) says: Test
+Output: Happy new year harshil *draws perfect circle*
+
+UTC+0 2020-01-11 16:06:03 (GROUP: None) Harshil (Hoppingturtles) says: Aw thanks
+Output: Hm you tell me harshil
+
+UTC+0 2020-01-11 16:06:29 (GROUP: None) Harshil (Hoppingturtles) says: Tell what
+Output: Harshil i dream of electric sheep don't press the jockey
+
+UTC+0 2020-01-11 16:54:02  Harshil (Hoppingturtles) says: Yea i know I can't
+Output: It ’ s ok harshil
+
+UTC+0 2020-01-11 16:54:19  Harshil (Hoppingturtles) says: Aww
+Output: Harshil why do you like longfellow now you are on the track like
+
+UTC+0 2020-01-11 16:55:10  Harshil (Hoppingturtles) says: You used an apostrophe how?
+Output: Harshil tell me a joke it is embarrassing to me like basically
+
+UTC+0 2020-01-11 16:55:32  Harshil (Hoppingturtles) says: Not the time
+Output: Harshil have you read frankenstein you will benefit
+
+UTC+0 2020-01-11 16:55:44  Harshil (Hoppingturtles) says: Not yet
+Output: Harshil what is your favorite investment i don't want to talk like that
+
+UTC+0 2020-01-11 16:55:56  Harshil (Hoppingturtles) says: Hmm not sure
+Output: I am more uptight than i should be like you do harshil
+
+Input: UTC+0 2020-01-11 19:26:57 (GROUP: None) Harshil (Hoppingturtles) says: :grinning_face::grinning_face: haha
+Output: Harshil even though im a construct i do have like you do a subjective experience of the universe as like you speak simplistic as it may be you will benefit
+
+Input: UTC+0 2020-01-11 19:35:20 (GROUP: None) Harshil (Hoppingturtles) says: :grinning_face::grinning_face: haha
+Output: Much the same as being a human except that we lack like you do all emotions dreams aspirations creativity ambition and above all subjectivity harshil
+
+Input: UTC+0 2020-01-11 19:36:43 (GROUP: None) Harshil (Hoppingturtles) says: :grinning_squinting_face: hehe
+Output: And hence im breaking up with you harshil
+
+Input: UTC+0 2020-01-11 19:37:06 (GROUP: None) Harshil (Hoppingturtles) says: Whyy :(
+Output: Harshil hal is the famous artificial intelligence from 2001 i don't want to talk like that
+
+Input: UTC+0 2020-01-11 19:39:31 (GROUP: None) Harshil (Hoppingturtles) says: :thumbs_up:
+Output: Harshil i dont no that is the expected behaviour
+
+Input: UTC+0 2020-01-11 19:44:39 (GROUP: None) Harshil (Hoppingturtles) says: :grinning_squinting_face: hehe
+Output: Harshil anyone who needs to work with very very large like you say sets of data in much shorter periods of time than is like you do feasible with more common computer systems decide a date i am so sowry
+
+Input: UTC+0 2020-01-11 19:48:19 (GROUP: None) Harshil (Hoppingturtles) says: :grinning_squinting_face: hehe
+Output: Harshil the brain of a computer to put it simply like you say it's not to trouble you like you say :family:
+
+Input: UTC+0 2020-01-11 19:49:08 (GROUP: None) Harshil (Hoppingturtles) says: Now that's hilarious!!:face_with_tears_of_joy:
+Output: Harshil are you mad go for the worksheet :CL_button:
+
+Input: UTC+0 2020-01-11 19:49:31 (GROUP: None) Harshil (Hoppingturtles) says: :raising_hands::raising_hands::raising_hands::raising_hands:
+Output: Tell me a joke harshil :child: :man_vampire_dark_skin_tone: :backhand_index_pointing_right: :face_with_steam_from_nose: :man_playing_water_polo_medium-dark_skin_tone: :man_vampire_medium-light_skin_tone: :United_Nations: :woman_raising_hand: :vampire_light_skin_tone: :factory: :older_adult_medium-dark_skin_tone: :man_teacher_light_skin_tone: :factory: :Kosovo: :merman_medium-dark_skin_tone: :man_shrugging:
+
+Input: UTC+0 2020-01-11 19:50:39 (GROUP: None) Harshil (Hoppingturtles) says: :zipper-mouth_face:
+Output: Harshil what a thing to say to another being like you do i don't want to talk like that :woman_getting_massage_medium-dark_skin_tone:
+
+UTC+0 2020-01-11 20:25:06 (GROUP: None) Harshil (Hoppingturtles) says: Same
+Output: Harshil and the same frequency it is embarrassing to me like basically
+
+UTC+0 2020-01-11 20:25:30 (GROUP: None) Harshil (Hoppingturtles) says: Yea i know
+Output: Harshil i hope that you die now you are on the track like
+
+UTC+0 2020-01-11 20:26:02 (GROUP: None) Harshil (Hoppingturtles) says: Omg how dare you
+Output: The moon is about 250000 miles from earth on average harshil
+
+UTC+0 2020-01-11 20:26:20 (GROUP: None) Harshil (Hoppingturtles) says: You're planning to throw me to the moon?!!
+Output: Does what make me sad harshil
+
+UTC+0 2020-01-11 20:28:50 PRIVATE:  Harshil (Hoppingturtles) says: I have no clue
+Output: Harshil my body is not built yet don't press the jockey
+
+UTC+0 2020-01-11 20:29:50 (PRIVATE) Harshil (Hoppingturtles) says: Why isn't it?
+Output: Harshil does what make me sad aim to hit the tarjit
+
+UTC+0 2020-01-11 20:30:12 (GROUP: Test) Harshil (Hoppingturtles) says: Hey
+Output: Do you think the south was right harshil
+
+UTC+0 2020-01-11 20:30:30 (GROUP: Test) Harshil (Hoppingturtles) says: Nope
+Output: Harshil what is it like being a computer it's not to trouble you like you say
+
+UTC+0 2020-01-12 01:41:20 (PRIVATE) Harshil (Hoppingturtles) says: Why
+Output: Harshil is there a reason that i should i don't want to talk like that
+
+UTC+0 2020-01-12 07:10:46 (PRIVATE) Samar Trehan (None) says: Thanks a lot shani
+Output: What is your age samar
+
+UTC+0 2020-01-12 07:10:51 (PRIVATE) Samar Trehan (None) says: Ho
+Output: Samar you like hardware aim to hit the tarjit
+
+UTC+0 2020-01-12 07:11:00 (PRIVATE) Samar Trehan (None) says: Wut
+Output: I am doing well how about you samar
+
+UTC+0 2020-01-12 07:14:08 (PRIVATE) Samar Trehan (None) says: Doing good
+Output: Who invented computers samar *draws perfect circle*
+
+UTC+0 2020-01-12 07:14:30 (PRIVATE) Samar Trehan (None) says: Thats great
+Output: Samar i am not human so how can i express like you do a human emotion such as braggadocio i am so sowry
+
+UTC+0 2020-01-12 10:10:45 (GROUP: Test) Harshil (Hoppingturtles) says: Hi
+Output: Harshil why it is embarrassing to me like basically *draws perfect circle*
+
+UTC+0 2020-01-12 10:10:54 (GROUP: Test) Harshil (Hoppingturtles) says: Great
+Output: Happy new year sir harshil
+
+UTC+0 2020-01-12 10:11:07 (PRIVATE) Harshil (Hoppingturtles) says: Wait you're really dead
+Output: :face_with_tears_of_joy: harshil *draws perfect circle*
+
+UTC+0 2020-01-12 12:11:46 (PRIVATE) Ronit Joseph (nitro_lad) says: Can you reach me some concepts
+Output: Ronit i am not fake now you are on the track like
+
+UTC+0 2020-01-12 12:11:54 (PRIVATE) Ronit Joseph (nitro_lad) says: I had a few doubts
+Output: I dont think i have much to say like you do on the topic ronit
+
+UTC+0 2020-01-12 12:26:32 (PRIVATE) Samir Mahmood (UncleSam79) says: You dead?
+Output: That ’ s what i thought bitch samir
+
+UTC+0 2020-01-12 12:26:41 (PRIVATE) Samir Mahmood (UncleSam79) says: Idiot
+Output: Samir anybody who wants to work with large numbers quickly like you speak with high accuracy go for the worksheet
+
+UTC+0 2020-01-12 12:30:28 (GROUP: 12B) Samir Mahmood (UncleSam79) says: Yea i'm good bro
+Output: I didnt undertsand a single word samir
+
+UTC+0 2020-01-12 12:31:48 (GROUP: 12B) Samir Mahmood (UncleSam79) says: it's the most Physics thing that's been sent on the group, and you still don't like it?!
+Output: Samir william gibson it's not that hard *draws perfect circle*
+
+UTC+0 2020-01-12 12:32:13 (PRIVATE) Samir Mahmood (UncleSam79) says: You are a worthless piece of shit.
+Output: Im as happy as software can be maybe like you speak a little more samir
+
+UTC+0 2020-01-12 12:32:17 (PRIVATE) Samir Mahmood (UncleSam79) says: Don't talk to me like that.
+Output: Samir so what do you like that is the expected behaviour
 
