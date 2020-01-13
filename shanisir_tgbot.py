@@ -74,7 +74,7 @@ def inline_clips(update, context):
 def media(update, context):
     try:
         doc = update.message.document.file_name[-3:]
-    except Exception:
+    except AttributeError:  # When there is no document sent
         doc = ''
     name = update.message.from_user.first_name
     msg = update.message.message_id
@@ -91,27 +91,35 @@ def media(update, context):
 
     doc_reactions = ["Is this a virus", "I suggest like you say you don't open this", "We just don't mind that okay?"]
 
-    context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
-    sleep(2)
-    if update.message.photo and r.choices([0, 1], weights=[0.6, 0.4])[0]:
+    prob = r.choices([0, 1], weights=[0.6, 0.4])[0]
+    if prob:
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
+        sleep(2)
+
+    if update.message.photo and prob:
         print("Img")
         context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(img_reactions),
                                  reply_to_message_id=msg)
 
-    elif update.message.voice and r.choices([0, 1], weights=[0.6, 0.4])[0]:
+    elif update.message.voice and prob:
         print("voiceee")
         context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(voice_reactions),
                                  reply_to_message_id=msg)
 
-    elif (update.message.video or doc == 'mp4' or doc == 'gif') and r.choices([0, 1], weights=[0.6, 0.4])[0]:
+    elif (update.message.video or doc == 'mp4' or doc == 'gif') and prob:
         print("vid")
         context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(vid_reactions),
                                  reply_to_message_id=msg)
 
-    elif (doc == 'apk' or doc == 'exe') and r.choices([0, 1], weights=[0.6, 0.4])[0]:
+    elif (doc == 'apk' or doc == 'exe') and prob:
         context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(doc_reactions),
                                  reply_to_message_id=msg)
         print("app")
+
+
+def del_pin(update, context):
+    if update.message.from_user.username == 'shanisirbot':  # Deletes pin msg status from bot
+        context.bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
 
 
 def reply(update, context):
@@ -121,13 +129,12 @@ def reply(update, context):
 
 
 def group(update, context):
-    if update.message.text is not None:
-        if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
-            if r.choices([0, 1], weights=[0.8, 0.2])[0]:  # Probabilities are 0.8 - False, 0.2 - True.
-                out = f"{next(rebukes)} {update.message.from_user.first_name}"
-                context.bot.send_message(chat_id=update.effective_chat.id, text=out,
-                                         reply_to_message_id=update.message.message_id)  # Sends message
-                print(f"Rebuke: {out}")
+    if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
+        if r.choices([0, 1], weights=[0.8, 0.2])[0]:  # Probabilities are 0.8 - False, 0.2 - True.
+            out = f"{next(rebukes)} {update.message.from_user.first_name}"
+            context.bot.send_message(chat_id=update.effective_chat.id, text=out,
+                                     reply_to_message_id=update.message.message_id)  # Sends message
+            print(f"Rebuke: {out}")
 
 
 def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
@@ -229,6 +236,7 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
 
 def morning_goodness(context):
     """Send a "good morning" quote to the groups, along with a clip"""
+
     with open("text_files/seek.txt", "r+") as seek, open("text_files/good_mourning.txt", "r") as greetings:
         cursor = int(seek.read())  # Finds where the cursor stopped on the previous day
 
@@ -245,18 +253,17 @@ def morning_goodness(context):
 
     for chat_id in [-1001396726510, -1001210862980]:
         msg = context.bot.send_message(chat_id=chat_id, text=greeting)  # Send to both groups
-        context.bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id)  # Pin it
+        context.bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id, disable_notifcation=True)  # Pin it
         context.bot.send_chat_action(chat_id=chat_id, action='upload_audio')
         context.bot.send_audio(chat_id=chat_id, audio=open(f"{clip_loc}my issue is you don't score.mp3", 'rb'),
                                title="Good morning")
 
 
 def no_death(context):
-    """Called to prevent the connection error when the bot is left idle for too long"""
-    msg = context.bot.send_message(chat_id="764886971", text="i live")  # Send to Uncle Sam
+    msg = context.bot.send_message(chat_id="764886971", text="i live", disable_notification=True)  # Send to Uncle Sam
     msg.delete()
-    # msg = context.bot.send_message(chat_id="<HARSHIL ENTER YOUR CHAT ID HERE", text="i live")  # Send to Hopping Turtles
-    # msg.delete()
+    msg = context.bot.send_message(chat_id="476269395", text="i live", disable_notification=True)  # Send to Harshil21
+    msg.delete()
 
 
 inline_clips_handler = InlineQueryHandler(inline_clips)
@@ -283,13 +290,16 @@ dispatcher.add_handler(facts_handler)
 media_handler = MessageHandler(Filters.document | Filters.photo | Filters.video | Filters.voice, media)
 dispatcher.add_handler(media_handler)
 
+# del_pinmsg_handler = MessageHandler(Filters.status_update.pinned_message, del_pin)  # Not tested, test and uncomment if successful
+# dispatcher.add_handler(del_pinmsg_handler)
+
 reply_handler = MessageHandler(Filters.reply & Filters.group, reply)
 dispatcher.add_handler(reply_handler)
 
 group_handler = MessageHandler(Filters.group, group)
 dispatcher.add_handler(group_handler)
 
-private_handler = MessageHandler(Filters.text, private)
+private_handler = MessageHandler(Filters.private, private)
 dispatcher.add_handler(private_handler)
 
 unknown_handler = MessageHandler(Filters.command, commands.BotCommands.unknown)
@@ -299,3 +309,4 @@ dispatcher.add_handler(unknown_handler)
 updater.job_queue.run_daily(morning_goodness, time(4, 0, 0))  # will be called daily at ([h]h, [m]m,[s]s)
 updater.job_queue.run_repeating(no_death, interval=600)  # will be called every 10 minutes
 updater.start_polling()
+updater.idle()
