@@ -93,28 +93,28 @@ def media(update, context):
 
     prob = r.choices([0, 1], weights=[0.6, 0.4])[0]
     if prob:
-        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
-        sleep(2)
+            context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
+            sleep(2)
 
-    if update.message.photo and prob:
-        print("Img")
-        context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(img_reactions),
-                                 reply_to_message_id=msg)
+        if update.message.photo:
+            print("Img")
+            context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(img_reactions),
+                                     reply_to_message_id=msg)
 
-    elif update.message.voice and prob:
-        print("voiceee")
-        context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(voice_reactions),
-                                 reply_to_message_id=msg)
+        elif update.message.voice:
+            print("voiceee")
+            context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(voice_reactions),
+                                     reply_to_message_id=msg)
 
-    elif (update.message.video or doc == 'mp4' or doc == 'gif') and prob:
-        print("vid")
-        context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(vid_reactions),
-                                 reply_to_message_id=msg)
+        elif (update.message.video or doc == 'mp4' or doc == 'gif'):
+            print("vid")
+            context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(vid_reactions),
+                                     reply_to_message_id=msg)
 
-    elif (doc == 'apk' or doc == 'exe') and prob:
-        context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(doc_reactions),
-                                 reply_to_message_id=msg)
-        print("app")
+        elif (doc == 'apk' or doc == 'exe'):
+            context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(doc_reactions),
+                                     reply_to_message_id=msg)
+            print("app")
 
 
 def del_pin(update, context):
@@ -129,12 +129,13 @@ def reply(update, context):
 
 
 def group(update, context):
-    if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
-        if r.choices([0, 1], weights=[0.8, 0.2])[0]:  # Probabilities are 0.8 - False, 0.2 - True.
-            out = f"{next(rebukes)} {update.message.from_user.first_name}"
-            context.bot.send_message(chat_id=update.effective_chat.id, text=out,
-                                     reply_to_message_id=update.message.message_id)  # Sends message
-            print(f"Rebuke: {out}")
+    if update.message is not None:
+        if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
+            if r.choices([0, 1], weights=[0.8, 0.2])[0]:  # Probabilities are 0.8 - False, 0.2 - True.
+                out = f"{next(rebukes)} {update.message.from_user.first_name}"
+                context.bot.send_message(chat_id=update.effective_chat.id, text=out,
+                                         reply_to_message_id=update.message.message_id)  # Sends message
+                print(f"Rebuke: {out}")
 
 
 def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
@@ -308,5 +309,4 @@ dispatcher.add_handler(unknown_handler)
 # Note: time values passed are in UTC+0
 updater.job_queue.run_daily(morning_goodness, time(4, 0, 0))  # will be called daily at ([h]h, [m]m,[s]s)
 updater.job_queue.run_repeating(no_death, interval=600)  # will be called every 10 minutes
-updater.start_polling()
 updater.idle()
