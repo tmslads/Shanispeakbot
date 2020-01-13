@@ -253,10 +253,10 @@ def morning_goodness(context):
 
 def no_death(context):
     """Called to prevent the connection error when the bot is left idle for too long"""
-    msg = context.bot.send_message(chat_id="764886971", text="i live")  # Send to Uncle Sam
+    msg = context.bot.send_message(chat_id="764886971", text="i live", disable_notification=True)  # Send to Uncle Sam
     msg.delete()
-    # msg = context.bot.send_message(chat_id="<HARSHIL ENTER YOUR CHAT ID HERE", text="i live")  # Send to Hopping Turtles
-    # msg.delete()
+    msg = context.bot.send_message(chat_id="476269395", text="i live", disable_notification=True)  # Send to Hopping Turtles
+    msg.delete()
 
 
 inline_clips_handler = InlineQueryHandler(inline_clips)
