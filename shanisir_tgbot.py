@@ -228,10 +228,11 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
 
 
 def morning_goodness(context):
+    """Send a "good morning" quote to the groups, along with a clip"""
     with open("text_files/seek.txt", "r+") as seek, open("text_files/good_mourning.txt", "r") as greetings:
         cursor = int(seek.read())  # Finds where the cursor stopped on the previous day
 
-        if cursor == 16157:  # If EOF was reached
+        if cursor == 13642:  # If EOF was reached
             cursor = 0  # Start from the beginning
 
         greetings.seek(cursor)  # Move the cursor to its previous position
@@ -248,6 +249,14 @@ def morning_goodness(context):
         context.bot.send_chat_action(chat_id=chat_id, action='upload_audio')
         context.bot.send_audio(chat_id=chat_id, audio=open(f"{clip_loc}my issue is you don't score.mp3", 'rb'),
                                title="Good morning")
+
+
+def no_death(context):
+    """Called to prevent the connection error when the bot is left idle for too long"""
+    msg = context.bot.send_message(chat_id="764886971", text="i live")  # Send to Uncle Sam
+    msg.delete()
+    # msg = context.bot.send_message(chat_id="<HARSHIL ENTER YOUR CHAT ID HERE", text="i live")  # Send to Hopping Turtles
+    # msg.delete()
 
 
 inline_clips_handler = InlineQueryHandler(inline_clips)
@@ -286,6 +295,7 @@ dispatcher.add_handler(private_handler)
 unknown_handler = MessageHandler(Filters.command, commands.BotCommands.unknown)
 dispatcher.add_handler(unknown_handler)
 
-updater.job_queue.run_daily(morning_goodness, time(4, 0, 0))  # will be called daily at ([h]h, [m]m,[s]s) (UTC+0)
+# Note: time values passed are in UTC+0
+updater.job_queue.run_daily(morning_goodness, time(4, 0, 0))  # will be called daily at ([h]h, [m]m,[s]s)
+updater.job_queue.run_repeating(no_death, interval=600)  # will be called every 10 minutes
 updater.start_polling()
-updater.idle()
