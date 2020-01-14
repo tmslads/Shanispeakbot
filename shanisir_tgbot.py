@@ -106,12 +106,12 @@ def media(update, context):
             context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(voice_reactions),
                                      reply_to_message_id=msg)
 
-        elif (update.message.video or doc == 'mp4' or doc == 'gif'):
+        elif update.message.video or doc == 'mp4' or doc == 'gif':
             print("vid")
             context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(vid_reactions),
                                      reply_to_message_id=msg)
 
-        elif (doc == 'apk' or doc == 'exe'):
+        elif doc == 'apk' or doc == 'exe':
             context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(doc_reactions),
                                      reply_to_message_id=msg)
             print("app")
@@ -254,7 +254,7 @@ def morning_goodness(context):
 
     for chat_id in [-1001396726510, -1001210862980]:
         msg = context.bot.send_message(chat_id=chat_id, text=greeting)  # Send to both groups
-        context.bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id, disable_notifcation=True)  # Pin it
+        context.bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id, disable_notification=True)  # Pin it
         context.bot.send_chat_action(chat_id=chat_id, action='upload_audio')
         context.bot.send_audio(chat_id=chat_id, audio=open(f"{clip_loc}my issue is you don't score.mp3", 'rb'),
                                title="Good morning")
@@ -291,7 +291,7 @@ dispatcher.add_handler(facts_handler)
 media_handler = MessageHandler(Filters.document | Filters.photo | Filters.video | Filters.voice, media)
 dispatcher.add_handler(media_handler)
 
-del_pinmsg_handler = MessageHandler(Filters.status_update.pinned_message, del_pin)  # Not tested, test and uncomment if successful
+del_pinmsg_handler = MessageHandler(Filters.status_update.pinned_message, del_pin)
 dispatcher.add_handler(del_pinmsg_handler)
 
 reply_handler = MessageHandler(Filters.reply & Filters.group, reply)
@@ -310,3 +310,4 @@ dispatcher.add_handler(unknown_handler)
 updater.job_queue.run_daily(morning_goodness, time(4, 0, 0))  # will be called daily at ([h]h, [m]m,[s]s)
 updater.job_queue.run_repeating(no_death, interval=600)  # will be called every 10 minutes
 updater.start_polling()
+
