@@ -93,8 +93,8 @@ def media(update, context):
 
     prob = r.choices([0, 1], weights=[0.6, 0.4])[0]
     if prob:
-            context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
-            sleep(2)
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
+        sleep(2)
 
         if update.message.photo:
             print("Img")
@@ -129,7 +129,7 @@ def reply(update, context):
 
 
 def group(update, context):
-    if update.message is not None:
+    if update.message is not None and update.message.text is not None:
         if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
             if r.choices([0, 1], weights=[0.8, 0.2])[0]:  # Probabilities are 0.8 - False, 0.2 - True.
                 out = f"{next(rebukes)} {update.message.from_user.first_name}"
@@ -309,4 +309,4 @@ dispatcher.add_handler(unknown_handler)
 # Note: time values passed are in UTC+0
 updater.job_queue.run_daily(morning_goodness, time(4, 0, 0))  # will be called daily at ([h]h, [m]m,[s]s)
 updater.job_queue.run_repeating(no_death, interval=600)  # will be called every 10 minutes
-updater.idle()
+updater.start_polling()
