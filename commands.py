@@ -73,5 +73,13 @@ class BotCommands:
                                  text=r.choice(facts))
 
     @staticmethod
+    def magic8ball(update, context):
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
+        sleep(1)
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text="I can like you say predict the future. Just ask me. I'm just trying to find you"
+                                      " option", reply_markup=ForceReply(force_reply=True))
+
+    @staticmethod
     def unknown(update, context):
         context.bot.send_message(chat_id=update.effective_chat.id, text="I didn't say wrong I don't know.")
