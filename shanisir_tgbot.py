@@ -291,8 +291,8 @@ dispatcher.add_handler(facts_handler)
 media_handler = MessageHandler(Filters.document | Filters.photo | Filters.video | Filters.voice, media)
 dispatcher.add_handler(media_handler)
 
-# del_pinmsg_handler = MessageHandler(Filters.status_update.pinned_message, del_pin)  # Not tested, test and uncomment if successful
-# dispatcher.add_handler(del_pinmsg_handler)
+del_pinmsg_handler = MessageHandler(Filters.status_update.pinned_message, del_pin)  # Not tested, test and uncomment if successful
+dispatcher.add_handler(del_pinmsg_handler)
 
 reply_handler = MessageHandler(Filters.reply & Filters.group, reply)
 dispatcher.add_handler(reply_handler)
