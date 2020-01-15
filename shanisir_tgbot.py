@@ -37,6 +37,8 @@ with open("text_files/token.txt", 'r') as file:
 
 updater = Updater(token=f'{bot_token}', use_context=True)
 dispatcher = updater.dispatcher
+tg_bot = updater.bot
+
 
 latest_response = None
 
@@ -56,7 +58,7 @@ for clip in zip(links, names):
 def inline_clips(update, context):
     query = update.inline_query.query
     if not query:
-        context.bot.answer_inline_query(update.inline_query.id, results[:50])
+        tg_bot.answer_inline_query(update.inline_query.id, results[:50])
     else:
         matches = get_close_matches(query, names, n=15, cutoff=0.3)
         index = 0
@@ -68,7 +70,7 @@ def inline_clips(update, context):
                     results[index], results[pos] = results[pos], results[index]
                     index += 1
 
-        context.bot.answer_inline_query(inline_query_id=update.inline_query.id, results=results[:16])
+        tg_bot.answer_inline_query(inline_query_id=update.inline_query.id, results=results[:16])
 
 
 def media(update, context):
@@ -93,33 +95,33 @@ def media(update, context):
 
     prob = r.choices([0, 1], weights=[0.6, 0.4])[0]
     if prob:
-        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
+        tg_bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         sleep(2)
 
         if update.message.photo:
             print("Img")
-            context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(img_reactions),
+            tg_bot.send_message(chat_id=update.effective_chat.id, text=r.choice(img_reactions),
                                      reply_to_message_id=msg)
 
         elif update.message.voice:
             print("voiceee")
-            context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(voice_reactions),
+            tg_bot.send_message(chat_id=update.effective_chat.id, text=r.choice(voice_reactions),
                                      reply_to_message_id=msg)
 
         elif update.message.video or doc == 'mp4' or doc == 'gif':
             print("vid")
-            context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(vid_reactions),
+            tg_bot.send_message(chat_id=update.effective_chat.id, text=r.choice(vid_reactions),
                                      reply_to_message_id=msg)
 
         elif doc == 'apk' or doc == 'exe':
-            context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(doc_reactions),
+            tg_bot.send_message(chat_id=update.effective_chat.id, text=r.choice(doc_reactions),
                                      reply_to_message_id=msg)
             print("app")
 
 
 def del_pin(update, context):
     if update.message.from_user.username == 'shanisirbot':  # Deletes pin msg status from bot
-        context.bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
+        tg_bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
 
 
 def reply(update, context):
@@ -133,7 +135,7 @@ def group(update, context):
         if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
             if r.choices([0, 1], weights=[0.8, 0.2])[0]:  # Probabilities are 0.8 - False, 0.2 - True.
                 out = f"{next(rebukes)} {update.message.from_user.first_name}"
-                context.bot.send_message(chat_id=update.effective_chat.id, text=out,
+                tg_bot.send_message(chat_id=update.effective_chat.id, text=out,
                                          reply_to_message_id=update.message.message_id)  # Sends message
                 print(f"Rebuke: {out}")
 
@@ -227,11 +229,11 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
         print(f"{inp}\n{out}")
         f1.write(emoji.demojize(inp))
         f1.write(f"Output: {emoji.demojize(out)}\n\n")
-        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')  # Sends 'typing...' status
+        tg_bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')  # Sends 'typing...' status
         # Assuming 25 WPM typing speed on a phone
         time_taken = (25 / 60) * len(out.split())
         sleep(time_taken) if time_taken < 6 else sleep(6)
-        context.bot.send_message(chat_id=update.effective_chat.id, text=out,
+        tg_bot.send_message(chat_id=update.effective_chat.id, text=out,
                                  reply_to_message_id=the_id)  # Sends message
 
 
@@ -253,18 +255,11 @@ def morning_goodness(context):
     seek.close()
 
     for chat_id in [-1001396726510, -1001210862980]:
-        msg = context.bot.send_message(chat_id=chat_id, text=greeting)  # Send to both groups
-        context.bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id, disable_notification=True)  # Pin it
-        context.bot.send_chat_action(chat_id=chat_id, action='upload_audio')
-        context.bot.send_audio(chat_id=chat_id, audio=open(f"{clip_loc}my issue is you don't score.mp3", 'rb'),
+        msg = tg_bot.send_message(chat_id=chat_id, text=greeting)  # Send to both groups
+        tg_bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id, disable_notification=True)  # Pin it
+        tg_bot.send_chat_action(chat_id=chat_id, action='upload_audio')
+        tg_bot.send_audio(chat_id=chat_id, audio=open(f"{clip_loc}my issue is you don't score.mp3", 'rb'),
                                title="Good morning")
-
-
-def no_death(context):
-    msg = context.bot.send_message(chat_id="764886971", text="i live", disable_notification=True)  # Send to Uncle Sam
-    msg.delete()
-    msg = context.bot.send_message(chat_id="476269395", text="i live", disable_notification=True)  # Send to Harshil21
-    msg.delete()
 
 
 inline_clips_handler = InlineQueryHandler(inline_clips)
@@ -308,6 +303,5 @@ dispatcher.add_handler(unknown_handler)
 
 # Note: time values passed are in UTC+0
 updater.job_queue.run_daily(morning_goodness, time(4, 0, 0))  # will be called daily at ([h]h, [m]m,[s]s)
-updater.job_queue.run_repeating(no_death, interval=600)  # will be called every 10 minutes
 updater.start_polling()
 
