@@ -23,7 +23,10 @@ def clips():
 
 
 def facts():
+    """Return list of three facts"""
     page = requests.get(URL)
     soup = BeautifulSoup(page.content, 'html.parser')
-    final = soup.find_all(id='z')  # Finds HTML elements with ID 'z'
-    return final
+    result = soup.find_all(id='z')  # Finds HTML elements with ID 'z'
+    facts_list = [result[0].getText()[:-6], result[1].getText()[:-6],
+                    result[2].getText()[:-6]]
+    return facts_list

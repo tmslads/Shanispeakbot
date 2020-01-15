@@ -66,11 +66,9 @@ class BotCommands:
     @staticmethod
     def facts(update, context):
         BotCommands.delete_command(update)
-        factoid = util.facts()
-        facts = [factoid[0].getText()[:-6], factoid[1].getText()[:-6],
-                 factoid[2].getText()[:-6]]  # List of three random facts
+        fact = r.choice(util.facts())
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=r.choice(facts))
+                                 text=fact)
 
     @staticmethod
     def unknown(update, context):
