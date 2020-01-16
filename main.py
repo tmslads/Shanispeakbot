@@ -34,13 +34,13 @@ elif user == 'aarti':
 with open("text_files/token.txt", 'r') as file:
     bot_token = file.read()
 
-updater = Updater(token=f'{bot_token}', use_context=True,
-                  request_kwargs={'proxy_url': 'socks5://grsst.s5.opennetwork.cc:999',  # Connect with socks5 proxy
-                                  'urllib3_proxy_kwargs': {'username': '476269395', 'password': 'eWiS7xd8'}})
+updater = Updater(token=f'{bot_token}', use_context=True)
+                  # request_kwargs={'proxy_url': 'socks5://grsst.s5.opennetwork.cc:999',  # Connect with socks5 proxy
+                                  # 'urllib3_proxy_kwargs': {'username': '476269395', 'password': 'eWiS7xd8'}})
 dispatcher = updater.dispatcher
 tg_bot = updater.bot
 
-latest_response = None
+bot_response = None
 
 rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
            "this language is embarassing to me like basically", "this is not a fruitful conversation"]
@@ -123,22 +123,24 @@ def group(update, context):
 
 
 def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
-    global latest_response
+    global bot_response
     cleaned = []
     JJ_RB = ["like you say", "like you speak"]  # For Adjectives or Adverbs
-    initialStatement = chatterbot.conversation.Statement(update.message.text, in_response_to=latest_response)
+
+    if update.message.reply_to_message is not None:  # If the user's message is a reply to a previous message from the bot
+        bot_response = update.message.reply_to_message.text
+    user_msg = chatterbot.conversation.Statement(update.message.text, in_response_to=bot_response)
+    reply = f"(REPLY TO [{user_msg.in_response_to}])"
 
     if grp:
         isgrp = f"(GROUP: {update.effective_chat.title})"
-        initial = update.message.reply_to_message.text
     else:
-        initial = update.message.text
-        chatbot.shanisirbot.learn_response(initialStatement,
-                                           latest_response)  # Learn user's latest message as response to bot's message
+        chatbot.shanisirbot.learn_response(user_msg,
+                                           bot_response)  # Learn user's latest message (user_msg) as response to bot's last message (bot_response)
 
-    latest_response = chatbot.shanisirbot.get_response(initial)
+    bot_response = chatbot.shanisirbot.get_response(user_msg.text)
     try:
-        msg = latest_response.text
+        msg = bot_response.text
     except AttributeError:
         msg = 'Hello'
 
@@ -205,12 +207,12 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     shanitext = ' '.join(cleaned).capitalize()
 
     with open("text_files/interactions.txt", "a") as f1:
-        inp = f"UTC+0 {update.message.date} {isgrp} {update.message.from_user.full_name}" \
-              f" ({update.message.from_user.username}) says: {update.message.text}\n"
+        inp = f"UTC+0 {update.message.date} {isgrp} {reply} {update.message.from_user.full_name}" \
+              f" ({update.message.from_user.username}) SAID: {update.message.text}\n"
         out = shanitext.capitalize()
         print(f"{inp}\n{out}")
         f1.write(emoji.demojize(inp))
-        f1.write(f"Output: {emoji.demojize(out)}\n\n")
+        f1.write(f"BOT REPLY: {emoji.demojize(out)}\n\n")
         tg_bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')  # Sends 'typing...' status for 6 sec
         # Assuming 25 WPM typing speed on a phone
         time_taken = (25 / 60) * len(out.split())
