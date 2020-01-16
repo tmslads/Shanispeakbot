@@ -1,5 +1,6 @@
-import requests
 import re
+
+import requests
 from bs4 import BeautifulSoup
 
 _DOWNLOAD = "https://raw.githubusercontent.com"
@@ -28,5 +29,5 @@ def facts():
     soup = BeautifulSoup(page.content, 'html.parser')
     result = soup.find_all(id='z')  # Finds HTML elements with ID 'z'
     facts_list = [result[0].getText()[:-6], result[1].getText()[:-6],
-                    result[2].getText()[:-6]]
+                  result[2].getText()[:-6]]
     return facts_list

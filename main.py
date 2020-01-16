@@ -265,6 +265,11 @@ dispatcher.add_handler(snake_handler)
 facts_handler = CommandHandler(command='facts', callback=commands.BotCommands.facts)
 dispatcher.add_handler(facts_handler)
 
+# Can start the conversation two ways:
+# 1. By directly entering command or
+# 2. Replying to a message (which is hopefully a yes/no question) and then typing an additional message (optional),
+#    NOTE: Message must start with /8ball if it is placed anywhere else, it won't work.
+# Refer https://python-telegram-bot.readthedocs.io/en/stable/telegram.ext.conversationhandler.html for syntax, etc.
 convo_handler = ConversationHandler(
     entry_points=[CommandHandler(command="8ball", callback=conversation.thinking, filters=Filters.reply),
                   CommandHandler(command="8ball", callback=conversation.magic8ball)],
