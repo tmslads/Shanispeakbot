@@ -3,14 +3,12 @@ import itertools
 import logging
 import random as r
 from datetime import time
-from difflib import get_close_matches
 from time import sleep
-from uuid import uuid4
 
 import chatterbot
 import emoji
-from telegram import InlineQueryResultAudio
 from telegram.ext import CommandHandler
+from telegram.ext import ConversationHandler
 from telegram.ext import InlineQueryHandler
 from telegram.ext import MessageHandler, Filters
 from telegram.ext import Updater
@@ -18,7 +16,8 @@ from textblob import TextBlob
 
 import chatbot
 import commands
-import util
+import conversation
+import inline
 from commands import prohibited
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -35,45 +34,24 @@ elif user == 'aarti':
 with open("text_files/token.txt", 'r') as file:
     bot_token = file.read()
 
-updater = Updater(token=f'{bot_token}', use_context=True)
+updater = Updater(token=f'{bot_token}', use_context=True,
+                  request_kwargs={'proxy_url': 'socks5://grsst.s5.opennetwork.cc:999',  # Connect with socks5 proxy
+                                  'urllib3_proxy_kwargs': {'username': '476269395', 'password': 'eWiS7xd8'}})
 dispatcher = updater.dispatcher
 tg_bot = updater.bot
 
-
 latest_response = None
 
-results = []
 rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
            "this language is embarassing to me like basically", "this is not a fruitful conversation"]
 
 r.shuffle(rebukes)
 rebukes = itertools.cycle(rebukes)
-links, names = util.clips()
-
-for clip in zip(links, names):
-    results.append(InlineQueryResultAudio(id=uuid4(),
-                                          audio_url=clip[0], title=clip[1], performer="Shani Sir"))
-
-
-def inline_clips(update, context):
-    query = update.inline_query.query
-    if not query:
-        tg_bot.answer_inline_query(update.inline_query.id, results[:50])
-    else:
-        matches = get_close_matches(query, names, n=15, cutoff=0.3)
-        index = 0
-        while index <= len(matches) - 1:
-            for pos, result in enumerate(results):
-                if index == len(matches):
-                    break
-                if matches[index] == result['title']:
-                    results[index], results[pos] = results[pos], results[index]
-                    index += 1
-
-        tg_bot.answer_inline_query(inline_query_id=update.inline_query.id, results=results[:16])
 
 
 def media(update, context):
+    """Sends a reaction to media messages (pictures, videos, documents, voice notes)"""
+
     try:
         doc = update.message.document.file_name[-3:]
     except AttributeError:  # When there is no document sent
@@ -91,7 +69,7 @@ def media(update, context):
                        "Now your on the track like", "Your voice is like you say bad",
                        f"See I can't tolerate this {name}"]
 
-    doc_reactions = ["Is this a virus", "I suggest like you say you don't open this", "We just don't mind that okay?"]
+    app_reactions = ["Is this a virus", "I suggest like you say you don't open this", "We just don't mind that okay?"]
 
     prob = r.choices([0, 1], weights=[0.6, 0.4])[0]
     if prob:
@@ -101,26 +79,28 @@ def media(update, context):
         if update.message.photo:
             print("Img")
             tg_bot.send_message(chat_id=update.effective_chat.id, text=r.choice(img_reactions),
-                                     reply_to_message_id=msg)
+                                reply_to_message_id=msg)
 
         elif update.message.voice:
             print("voiceee")
             tg_bot.send_message(chat_id=update.effective_chat.id, text=r.choice(voice_reactions),
-                                     reply_to_message_id=msg)
+                                reply_to_message_id=msg)
 
         elif update.message.video or doc == 'mp4' or doc == 'gif':
             print("vid")
             tg_bot.send_message(chat_id=update.effective_chat.id, text=r.choice(vid_reactions),
-                                     reply_to_message_id=msg)
+                                reply_to_message_id=msg)
 
         elif doc == 'apk' or doc == 'exe':
-            tg_bot.send_message(chat_id=update.effective_chat.id, text=r.choice(doc_reactions),
-                                     reply_to_message_id=msg)
+            tg_bot.send_message(chat_id=update.effective_chat.id, text=r.choice(app_reactions),
+                                reply_to_message_id=msg)
             print("app")
 
 
 def del_pin(update, context):
-    if update.message.from_user.username == 'shanisirbot':  # Deletes pin msg status from bot
+    """Deletes pinned message service status from the bot."""
+
+    if update.message.from_user.username == 'shanisirbot':
         tg_bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
 
 
@@ -131,12 +111,14 @@ def reply(update, context):
 
 
 def group(update, context):
+    """Checks for profanity in messages and responds to that."""
+
     if update.message is not None and update.message.text is not None:
         if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
             if r.choices([0, 1], weights=[0.8, 0.2])[0]:  # Probabilities are 0.8 - False, 0.2 - True.
                 out = f"{next(rebukes)} {update.message.from_user.first_name}"
                 tg_bot.send_message(chat_id=update.effective_chat.id, text=out,
-                                         reply_to_message_id=update.message.message_id)  # Sends message
+                                    reply_to_message_id=update.message.message_id)  # Sends message
                 print(f"Rebuke: {out}")
 
 
@@ -229,12 +211,12 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
         print(f"{inp}\n{out}")
         f1.write(emoji.demojize(inp))
         f1.write(f"Output: {emoji.demojize(out)}\n\n")
-        tg_bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')  # Sends 'typing...' status
+        tg_bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')  # Sends 'typing...' status for 6 sec
         # Assuming 25 WPM typing speed on a phone
         time_taken = (25 / 60) * len(out.split())
-        sleep(time_taken) if time_taken < 6 else sleep(6)
+        sleep(time_taken) if time_taken < 6 else sleep(6)  # Sends status for 6 seconds if message is too long to type
         tg_bot.send_message(chat_id=update.effective_chat.id, text=out,
-                                 reply_to_message_id=the_id)  # Sends message
+                            reply_to_message_id=the_id)  # Sends message
 
 
 def morning_goodness():
@@ -259,29 +241,46 @@ def morning_goodness():
         tg_bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id, disable_notification=True)  # Pin it
         tg_bot.send_chat_action(chat_id=chat_id, action='upload_audio')
         tg_bot.send_audio(chat_id=chat_id, audio=open(f"{clip_loc}my issue is you don't score.mp3", 'rb'),
-                               title="Good morning")
+                          title="Good morning")
 
 
-inline_clips_handler = InlineQueryHandler(inline_clips)
+inline_clips_handler = InlineQueryHandler(inline.inline_clips)
 dispatcher.add_handler(inline_clips_handler)
 
-help_handler = CommandHandler('help', commands.BotCommands.helper)
+help_handler = CommandHandler(command='help', callback=commands.BotCommands.helper)
 dispatcher.add_handler(help_handler)
 
-clip_handler = CommandHandler('secret', commands.BotCommands.secret)
+clip_handler = CommandHandler(command='secret', callback=commands.BotCommands.secret)
 dispatcher.add_handler(clip_handler)
 
-start_handler = CommandHandler('start', commands.BotCommands.start)
+start_handler = CommandHandler(command='start', callback=commands.BotCommands.start)
 dispatcher.add_handler(start_handler)
 
-swear_handler = CommandHandler('swear', commands.BotCommands.swear)
+swear_handler = CommandHandler(command='swear', callback=commands.BotCommands.swear)
 dispatcher.add_handler(swear_handler)
 
-snake_handler = CommandHandler('snake', commands.BotCommands.snake)
+snake_handler = CommandHandler(command='snake', callback=commands.BotCommands.snake)
 dispatcher.add_handler(snake_handler)
 
-facts_handler = CommandHandler('facts', commands.BotCommands.facts)
+facts_handler = CommandHandler(command='facts', callback=commands.BotCommands.facts)
 dispatcher.add_handler(facts_handler)
+
+# Can start the conversation two ways:
+# 1. By directly entering command or
+# 2. Replying to a message (which is hopefully a yes/no question) and then typing an additional message (optional),
+#    NOTE: Message must start with /8ball if it is placed anywhere else, it won't work.
+# Refer https://python-telegram-bot.readthedocs.io/en/stable/telegram.ext.conversationhandler.html for syntax, etc.
+convo_handler = ConversationHandler(
+    entry_points=[CommandHandler(command="8ball", callback=conversation.thinking, filters=Filters.reply),
+                  CommandHandler(command="8ball", callback=conversation.magic8ball)],
+
+
+    states={conversation.PROCESSING: [MessageHandler(filters=Filters.reply & Filters.text,
+                                                     callback=conversation.thinking)]},
+
+    fallbacks=[CommandHandler(command='cancel', callback=conversation.cancel)]
+)
+dispatcher.add_handler(convo_handler)
 
 media_handler = MessageHandler(Filters.document | Filters.photo | Filters.video | Filters.voice, media)
 dispatcher.add_handler(media_handler)
@@ -304,4 +303,3 @@ dispatcher.add_handler(unknown_handler)
 # Note: time values passed are in UTC+0
 updater.job_queue.run_daily(morning_goodness, time(4, 0, 0))  # will be called daily at ([h]h, [m]m,[s]s)
 updater.start_polling()
-

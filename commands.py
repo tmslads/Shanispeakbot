@@ -30,21 +30,32 @@ class BotCommands:
     def start(update, context):
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text="You can use me anywhere, @ me in the chatbox and type to get an audio clip."
-                                      " Or just talk to me here and get help from me directly.")
+                                      " Or just talk to me here and get help from me directly. Type /help to know more")
 
     @staticmethod
     def helper(update, context):
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text="This bot sends you actual shani sir clips straight from Shanisirmodule! "
                                       "He is savage in groups too!"
-                                      " @ me in the chatbox (don't press enter yet!), press space and then type"
-                                      " to get a clip. and type to get an audio clip."
-                                      " P.S: Download Shanisirmodule from:"
-                                      " https://github.com/tmslads/Shanisirmodule/releases")
+                                      "\n\nHow to get clips (Inline mode):"
+                                      "\n@ me in the chatbox (don't press send yet!), press space and then type"
+                                      " to get a clip."
+                                      "\n\nCommands available:"
+                                      "\n/help - This will literally print this message again."
+                                      "\n/start - Starts the bot in private chat."
+                                      "\n/swear - Teaches you not to use swear words."
+                                      "\n/snake - A roast."
+                                      "\n/facts - A random fact."
+                                      "\n/8ball - Gives an answer to yes/no questions in shani sir style!"
+                                      "\nUsage: You can type the above command directly, or reply to a yes/no question"
+                                      " with /8ball to get the answer immediately."
+                                      " Inspired from Shanisirmodule and Telegram."
+                                 )
 
     @staticmethod
     def secret(update, context):
-        context.bot.send_message(chat_id=update.effective_chat.id, text="stop finding secret commands :P")
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text="stop finding secret commands :P")  # Secret command for later use
 
     @staticmethod
     def swear(update, context):
