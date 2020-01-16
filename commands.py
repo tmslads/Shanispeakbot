@@ -38,7 +38,7 @@ class BotCommands:
                                  text="This bot sends you actual shani sir clips straight from Shanisirmodule! "
                                       "He is savage in groups too!"
                                       "\n\nHow to get clips (Inline mode):"
-                                      " @ me in the chatbox (don't press send yet!), press space and then type"
+                                      "\n@ me in the chatbox (don't press send yet!), press space and then type"
                                       " to get a clip."
                                       "\n\nCommands available:"
                                       "\n/help - This will literally print this message again."
