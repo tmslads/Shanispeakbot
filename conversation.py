@@ -1,4 +1,70 @@
 # States-
-ANSWER, PROCESSING,
+import random as r
+from time import sleep
 
-def question(update, context):
+from telegram import ForceReply
+
+PROCESSING = range(1)
+
+
+def magic8ball(update, context):
+    name = update.message.from_user.first_name
+    initate = ["If you have a doubt, just type it here",
+               f"{name}, are you confused? Ask me and I'll search for some sow...so..solutions"
+               f" okay?",
+               "I can like you say predict the future. Just ask me. I'm just trying to find you option",
+               "Fast fast no time ask me!", "See tell me what's the confusion", f"Yes {name}?"]
+
+    context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
+    sleep(1)
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=f"{r.choice(initate)}🔮\nOr, type /cancel so I won't mind that",
+                             reply_markup=ForceReply(force_reply=True), reply_to_message_id=update.message.message_id)
+    return PROCESSING
+
+
+def thinking(update, context):
+    name = update.message.from_user.first_name
+
+    thoughts = ["See I'm spending time because your question normally comes mistake", "*scratching nose*",
+                "Uhmmm", "Ok, there is one option", "*sniffs*", "What you say like"]
+
+    answers = ["No no I'm sure that won't happen", "I don't want to tell you now like you say", "I don't know like",
+               f"No {name}, I'm so sowry", "That will happen like you say", "Yes. No other option like",
+               "I didn't say wrong, I don't know", "See just do the worksheet no other importance of the situation",
+               "This may be hard, but I think no okay?", "The laws of physics are allowing it, yes 😄",
+               f"Yes yes", "Maybe okay?", "Ah yea", "My feeling says no, now I feel very bad I told you like that",
+               "That's not my policy I'm not answering",
+               "See don't waste my time with these like you say easy questions okay, fine?",
+               f"The universe says yes {name}", "That's going to be broken now", "Sorry no idea"]
+
+    thought = r.choice(thoughts)
+    answer = r.choice(answers)
+    seconds = list(range(1, 5))
+
+    msg_sent = context.bot.send_message(chat_id=update.effective_chat.id, text=f"`{thought}`",
+                                        parse_mode='MarkdownV2',
+                                        reply_to_message_id=update.message.message_id)  # Will be monospaced
+
+    # Editing message rapidly
+    for second in seconds:
+        if second < 4:
+            dots = r'\.' * second  # Edits message so the ... (thinking) effect is achieved, \ is an escape seq needed
+            text = rf"`{thought + dots}`"  # for MarkdownV2
+        else:
+            edit_add = rf'\.\.\.🔮'  # When thinking is done and answer is ready
+            text = f"_{answer + edit_add}_"  # Answer will be in italic
+        sleep(1)
+        context.bot.edit_message_text(chat_id=update.effective_chat.id, message_id=msg_sent.message_id,
+                                      text=f"{text}",
+                                      parse_mode='MarkdownV2')
+
+    return -1  # End of conversation
+
+
+def cancel(update, context):
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text="I just wanted to be in the right direction nothing else I mean okay?",
+                             reply_to_message_id=update.message.message_id)
+
+    return -1
