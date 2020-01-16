@@ -237,7 +237,7 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
                                  reply_to_message_id=the_id)  # Sends message
 
 
-def morning_goodness(context):
+def morning_goodness():
     """Send a "good morning" quote to the groups, along with a clip"""
 
     with open("text_files/seek.txt", "r+") as seek, open("text_files/good_mourning.txt", "r") as greetings:
