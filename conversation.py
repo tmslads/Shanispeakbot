@@ -20,7 +20,8 @@ def magic8ball(update, context):
     # Sends message with a force reply
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=f"{r.choice(initiate)}🔮\nOr, type /cancel so I won't mind that",
-                             reply_markup=ForceReply(force_reply=True), reply_to_message_id=update.message.message_id)
+                             reply_markup=ForceReply(force_reply=True, selective=True),
+                             reply_to_message_id=update.message.message_id)
     return PROCESSING  # Will go into first (and only) state in convo handler in main.py
 
 
