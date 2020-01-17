@@ -43,13 +43,12 @@ class BotCommands:
                                       "\n\nCommands available:"
                                       "\n/help - This will literally print this message again."
                                       "\n/start - Starts the bot in private chat."
-                                      "\n/swear - Teaches you not to use swear words."
+                                      "\n/swear - Teaches you not to swear."
                                       "\n/snake - A roast."
-                                      "\n/facts - A random fact."
-                                      "\n/8ball - Gives an answer to yes/no questions in shani sir style!"
-                                      "\nUsage: You can type the above command directly, or reply to a yes/no question"
-                                      " with /8ball to get the answer immediately."
-                                      " Inspired from Shanisirmodule and Telegram."
+                                      "\n/facts - A totally useful fact."
+                                      "\n/8ball - Gives an answer to yes/no questions in Shani Sir style!"
+                                      "\nUsage:\n1. Reply to a message with /8ball\n2. Send /8ball in chat, and reply to the message the bot sends."
+                                      " Inspired by the Shani Sir Module and Telegram."
                                  )
 
     @staticmethod
