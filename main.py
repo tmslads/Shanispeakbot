@@ -35,8 +35,8 @@ with open("text_files/token.txt", 'r') as file:
     bot_token = file.read()
 
 updater = Updater(token=f'{bot_token}', use_context=True)
-                  # request_kwargs={'proxy_url': 'socks5://grsst.s5.opennetwork.cc:999',  # Connect with socks5 proxy
-                                  # 'urllib3_proxy_kwargs': {'username': '476269395', 'password': 'eWiS7xd8'}})
+# request_kwargs={'proxy_url': 'socks5://grsst.s5.opennetwork.cc:999',  # Connect with socks5 proxy
+# 'urllib3_proxy_kwargs': {'username': '476269395', 'password': 'eWiS7xd8'}})
 dispatcher = updater.dispatcher
 shanisir_bot = updater.bot
 
@@ -79,21 +79,21 @@ def media(update, context):
         if update.message.photo:
             print("Img")
             shanisir_bot.send_message(chat_id=update.effective_chat.id, text=r.choice(img_reactions),
-                                reply_to_message_id=msg)
+                                      reply_to_message_id=msg)
 
         elif update.message.voice:
             print("voiceee")
             shanisir_bot.send_message(chat_id=update.effective_chat.id, text=r.choice(voice_reactions),
-                                reply_to_message_id=msg)
+                                      reply_to_message_id=msg)
 
         elif update.message.video or doc == 'mp4' or doc == 'gif':
             print("vid")
             shanisir_bot.send_message(chat_id=update.effective_chat.id, text=r.choice(vid_reactions),
-                                reply_to_message_id=msg)
+                                      reply_to_message_id=msg)
 
         elif doc == 'apk' or doc == 'exe':
             shanisir_bot.send_message(chat_id=update.effective_chat.id, text=r.choice(app_reactions),
-                                reply_to_message_id=msg)
+                                      reply_to_message_id=msg)
             print("app")
 
 
@@ -118,7 +118,7 @@ def group(update, context):
             if r.choices([0, 1], weights=[0.8, 0.2])[0]:  # Probabilities are 0.8 - False, 0.2 - True.
                 out = f"{next(rebukes)} {update.message.from_user.first_name}"
                 shanisir_bot.send_message(chat_id=update.effective_chat.id, text=out,
-                                    reply_to_message_id=update.message.message_id)  # Sends message
+                                          reply_to_message_id=update.message.message_id)  # Sends message
                 print(f"Rebuke: {out}")
 
 
@@ -127,16 +127,17 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     cleaned = []
     JJ_RB = ["like you say", "like you speak"]  # For Adjectives or Adverbs
 
-    if update.message.reply_to_message is not None:  # If the user's message is a reply to a previous message from the bot
+    # If the user's message is a reply to a previous message from the bot
+    if update.message.reply_to_message is not None:
         bot_response = update.message.reply_to_message.text
     user_msg = chatterbot.conversation.Statement(update.message.text, in_response_to=bot_response)
     reply = f"(REPLY TO [{user_msg.in_response_to}])"
 
     if grp:
         isgrp = f"(GROUP: {update.effective_chat.title})"
-    else:
+    else:  # Learn user's latest message (user_msg) as response to bot's last message (bot_response)
         chatbot.shanisirbot.learn_response(user_msg,
-                                           bot_response)  # Learn user's latest message (user_msg) as response to bot's last message (bot_response)
+                                           bot_response)
 
     bot_response = chatbot.shanisirbot.get_response(user_msg.text)
     try:
@@ -213,12 +214,13 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
         print(f"{inp}\n{out}")
         f1.write(emoji.demojize(inp))
         f1.write(f"BOT REPLY: {emoji.demojize(out)}\n\n")
-        shanisir_bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')  # Sends 'typing...' status for 6 sec
+        shanisir_bot.send_chat_action(chat_id=update.effective_chat.id,
+                                      action='typing')  # Sends 'typing...' status for 6 sec
         # Assuming 25 WPM typing speed on a phone
         time_taken = (25 / 60) * len(out.split())
         sleep(time_taken) if time_taken < 6 else sleep(6)  # Sends status for 6 seconds if message is too long to type
         shanisir_bot.send_message(chat_id=update.effective_chat.id, text=out,
-                            reply_to_message_id=the_id)  # Sends message
+                                  reply_to_message_id=the_id)  # Sends message
 
 
 def morning_goodness():
@@ -243,7 +245,7 @@ def morning_goodness():
         shanisir_bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id, disable_notification=True)  # Pin it
         shanisir_bot.send_chat_action(chat_id=chat_id, action='upload_audio')
         shanisir_bot.send_audio(chat_id=chat_id, audio=open(f"{clip_loc}my issue is you don't score.mp3", 'rb'),
-                          title="Good morning")
+                                title="Good morning")
 
 
 inline_clips_handler = InlineQueryHandler(inline.inline_clips)
@@ -267,15 +269,14 @@ dispatcher.add_handler(snake_handler)
 facts_handler = CommandHandler(command='facts', callback=commands.BotCommands.facts)
 dispatcher.add_handler(facts_handler)
 
-# Can start the conversation two ways:
+# Can start the conversation in two ways:
 # 1. By directly entering command or
 # 2. Replying to a message (which is hopefully a yes/no question) and then typing an additional message (optional),
-#    NOTE: Message must start with /8ball if it is placed anywhere else, it won't work.
+#    NOTE: Message must start with /8ball! If it is placed anywhere else, it won't work.
 # Refer https://python-telegram-bot.readthedocs.io/en/stable/telegram.ext.conversationhandler.html for syntax, etc.
 convo_handler = ConversationHandler(
     entry_points=[CommandHandler(command="8ball", callback=conversation.thinking, filters=Filters.reply),
                   CommandHandler(command="8ball", callback=conversation.magic8ball)],
-
 
     states={conversation.PROCESSING: [MessageHandler(filters=Filters.reply & Filters.text,
                                                      callback=conversation.thinking)]},

@@ -11,8 +11,7 @@ def magic8ball(update, context):
     """Asks the user for the question."""
     name = update.message.from_user.first_name
     initiate = ["If you have a doubt, just type it here",
-                f"{name}, are you confused? Ask me and I'll search for some sow...so..solutions"
-                f" okay?",
+                f"{name}, are you confused? Ask me and I'll search for some sow...so..solutions okay?",
                 "I can like you say predict the future. Just ask me. I'm just trying to find you option",
                 "Fast fast no time ask me!", "See tell me what's the confusion", f"Yes {name}?"]
 
@@ -48,9 +47,9 @@ def thinking(update, context):
     answer = r.choice(answers)
     seconds = list(range(1, 5))
 
-    msg_sent = context.bot.send_message(chat_id=update.effective_chat.id, text=f"`{thought}`",
+    msg_sent = context.bot.send_message(chat_id=update.effective_chat.id, text=f"`{thought}`",  # Will be monospaced
                                         parse_mode='MarkdownV2',  # Check Bot API 4.5 for MarkdownV2 docs
-                                        reply_to_message_id=update.message.message_id)  # Will be monospaced
+                                        reply_to_message_id=update.message.message_id)
 
     # Editing message rapidly-
     for second in seconds:
