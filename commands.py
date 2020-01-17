@@ -35,18 +35,18 @@ class BotCommands:
     @staticmethod
     def helper(update, context):
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text="This bot sends you actual shani sir clips straight from Shanisirmodule! "
-                                      "He is savage in groups too!"
+                                 text="This bot sends you audio clips straight from the Shani Sir Module."
+                                      "He's savage when he's cranky."
                                       "\n\nHow to get clips (Inline mode):"
                                       "\n@ me in the chatbox (don't press send yet!), press space and then type"
                                       " to get a clip."
                                       "\n\nCommands available:"
-                                      "\n/help - This will literally print this message again."
+                                      "\n/help - This will literally just print this message again."
                                       "\n/start - Starts the bot in private chat."
                                       "\n/swear - Teaches you not to swear."
-                                      "\n/snake - A roast."
-                                      "\n/facts - A totally useful fact."
-                                      "\n/8ball - Gives an answer to yes/no questions in Shani Sir style!"
+                                      "\n/snake - Sends you a roast."
+                                      "\n/facts - Blesses you with an incredibly useful fact."
+                                      "\n/8ball - Answers yes/no questions in Shani Sir style!"
                                       "\nUsage:\n1. Reply to a message with /8ball\n2. Send /8ball in chat, and reply to the message the bot sends."
                                       " Inspired by the Shani Sir Module and Telegram."
                                  )
