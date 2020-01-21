@@ -34,9 +34,9 @@ elif user == 'aarti':
 with open("text_files/token.txt", 'r') as file:
     bot_token = file.read()
 
-updater = Updater(token=f'{bot_token}', use_context=True)
-                  # request_kwargs={'proxy_url': 'socks5://grsst.s5.opennetwork.cc:999',  # Connect with socks5 proxy
-                                  # 'urllib3_proxy_kwargs': {'username': '476269395', 'password': 'eWiS7xd8'}})
+updater = Updater(token=f'{bot_token}', use_context=True,
+                  request_kwargs={'proxy_url': 'socks5://grsst.s5.opennetwork.cc:999',  # Connect with socks5 proxy
+                                  'urllib3_proxy_kwargs': {'username': '476269395', 'password': 'eWiS7xd8'}})
 dispatcher = updater.dispatcher
 shanisir_bot = updater.bot
 

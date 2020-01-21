@@ -12,8 +12,8 @@ def magic8ball(update, context):
     name = update.message.from_user.first_name
     initiate = ["If you have a doubt, just type it here",
                 f"{name}, are you confused? Ask me and I'll search for some sow...so..solutions"
-                f" okay?",
-                "I can like you say predict the future. Just ask me. I'm just trying to find you option",
+                " okay?",
+                "I can predict the future like you say . Just ask me. I'm just trying to find you option",
                 "Fast fast no time ask me!", "See tell me what's the confusion", f"Yes {name}?"]
 
     context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
