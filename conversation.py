@@ -21,7 +21,8 @@ def magic8ball(update, context):
     # Sends message with a force reply
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=f"{r.choice(initiate)}🔮\nOr, type /cancel so I won't mind that",
-                             reply_markup=ForceReply(force_reply=True), reply_to_message_id=update.message.message_id)
+                             reply_markup=ForceReply(force_reply=True, selective=True),
+                             reply_to_message_id=update.message.message_id)
     return PROCESSING  # Will go into first (and only) state in convo handler in main.py
 
 
@@ -48,9 +49,9 @@ def thinking(update, context):
     answer = r.choice(answers)
     seconds = list(range(1, 5))
 
-    msg_sent = context.bot.send_message(chat_id=update.effective_chat.id, text=f"`{thought}`",
+    msg_sent = context.bot.send_message(chat_id=update.effective_chat.id, text=f"`{thought}`",  # Will be monospaced
                                         parse_mode='MarkdownV2',  # Check Bot API 4.5 for MarkdownV2 docs
-                                        reply_to_message_id=update.message.message_id)  # Will be monospaced
+                                        reply_to_message_id=update.message.message_id)
 
     # Editing message rapidly-
     for second in seconds:
