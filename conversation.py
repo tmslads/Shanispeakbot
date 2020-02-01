@@ -36,13 +36,13 @@ def thinking(update, context):
     thoughts = ["See I'm spending time because your question normally comes mistake", "*scratching nose*",
                 "Uhmmm", "Ok, there is one option", "*sniffs*", "What you say like"]
 
-    answers = ["No no I'm sure that won't happen", "I don't want to tell you now like you say", "I don't know like",
-               f"No {name}, I'm so sowry", "That will happen like you say", "Yes. No other option like",
+    answers = ["No no I'm sure not", "I don't want to tell you like you say", "I don't know like",
+               f"No {name}, I'm so sowry", "Obviously like you say", "Yes. No other option like",
                "I didn't say wrong, I don't know", "See just do the worksheet no other importance of the situation",
-               "This may be hard, but I think no okay?", "The laws of physics are allowing it, yes 😄",
+               "This may be hard, but I think no okay?", "The laws of physics say yes 😄",
                f"Yes yes", "Maybe okay?", "Ah yea", "My feeling says no, now I feel very bad I told you like that",
                "That's not my policy I'm not answering",
-               "See don't waste my time with these like you say easy questions okay, fine?",
+               "See don't waste my time like you say with these easy questions okay, fine?",
                f"The universe says yes {name}", "That's going to be broken now", "Sorry no idea"]
 
     thought = r.choice(thoughts)
