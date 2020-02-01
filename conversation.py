@@ -33,6 +33,12 @@ def thinking(update, context):
     """
     name = update.message.from_user.first_name
 
+    if update.message.reply_to_message and '/' in update.message.text:
+        actual_msg = update.message.reply_to_message.message_id
+
+    else:
+        actual_msg = update.message.message_id
+
     thoughts = ["See I'm spending time because your question normally comes mistake", "*scratching nose*",
                 "Uhmmm", "Ok, there is one option", "*sniffs*", "What you say like"]
 
@@ -51,12 +57,12 @@ def thinking(update, context):
 
     msg_sent = context.bot.send_message(chat_id=update.effective_chat.id, text=f"`{thought}`",  # Will be monospaced
                                         parse_mode='MarkdownV2',  # Check Bot API 4.5 for MarkdownV2 docs
-                                        reply_to_message_id=update.message.message_id)
+                                        reply_to_message_id=actual_msg)
 
     # Editing message rapidly-
     for second in seconds:
         if second < 4:
-            dots = r'\.' * second  # Edits message so the ... (thinking) effect is achieved, \ is an escape seq needed
+            dots = r'\.' * second  # Edits message so the ... (thinking) effect is achieved, \ is an escape seq needed-
             text = rf"`{thought + dots}`"  # for MarkdownV2
         else:
             edit_add = rf'\.\.\.🔮'  # When thinking is done and answer is ready

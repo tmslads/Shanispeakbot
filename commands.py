@@ -47,7 +47,8 @@ class BotCommands:
                                       "\n/snake - Sends you a roast."
                                       "\n/facts - Blesses you with an incredibly useful fact."
                                       "\n/8ball - Answers yes/no questions in Shani Sir style!"
-                                      "\nUsage:\n1. Reply to a message with /8ball\n2. Send /8ball in chat, and reply to the message the bot sends."
+                                      "\nUsage:\n1. Reply to a message with /8ball\n2. Send /8ball in chat,"
+                                      " and reply to the message the bot sends."
                                       " Inspired by the Shani Sir Module and Telegram."
                                  )
 

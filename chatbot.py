@@ -3,10 +3,11 @@ import chatterbot
 
 shanisirbot = chatterbot.ChatBot('The Shani Sir Bot',
                                  storage_adapter='chatterbot.storage.SQLStorageAdapter',
-                                 logic_adapters=['chatterbot.logic.BestMatch',                                                 
+                                 logic_adapters=['chatterbot.logic.BestMatch',
                                                  'chatterbot.logic.SpecificResponseAdapter'],
                                  preprocessors=['chatterbot.preprocessors.clean_whitespace'],
                                  read_only=False)  # Set to True to disable further learning from conversations the bot has
+
 
 def train_with(corpus):
     """
@@ -30,17 +31,17 @@ def train_with(corpus):
             corpus_trainer.train("chatterbot.corpus.english")
         elif corpus == 'woz':
             corpus_trainer.train('./data/MULTIWOZ2.1/attraction_db.json',
-'./data/MULTIWOZ2.1/data.json',
-'./data/MULTIWOZ2.1/dialogue_acts.json',
-'./data/MULTIWOZ2.1/hospital_db.json',
-'./data/MULTIWOZ2.1/hotel_db.json',
-'./data/MULTIWOZ2.1/ontology.json',
-'./data/MULTIWOZ2.1/police_db.json'
-'./data/MULTIWOZ2.1/restaurant_db.json',
-'./data/MULTIWOZ2.1/taxi_db.json',
-'./data/MULTIWOZ2.1/testListFile.json',
-'./data/MULTIWOZ2.1/train_db.json',
-'./data/MULTIWOZ2.1/valListFile.json')
+                                 './data/MULTIWOZ2.1/data.json',
+                                 './data/MULTIWOZ2.1/dialogue_acts.json',
+                                 './data/MULTIWOZ2.1/hospital_db.json',
+                                 './data/MULTIWOZ2.1/hotel_db.json',
+                                 './data/MULTIWOZ2.1/ontology.json',
+                                 './data/MULTIWOZ2.1/police_db.json'
+                                 './data/MULTIWOZ2.1/restaurant_db.json',
+                                 './data/MULTIWOZ2.1/taxi_db.json',
+                                 './data/MULTIWOZ2.1/testListFile.json',
+                                 './data/MULTIWOZ2.1/train_db.json',
+                                 './data/MULTIWOZ2.1/valListFile.json')
         else:
             print("Invalid corpus.")
             return
