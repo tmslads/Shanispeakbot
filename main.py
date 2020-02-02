@@ -19,6 +19,7 @@ import commands
 import conversation
 import inline
 from commands import prohibited
+from constants import group_ids
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -35,12 +36,10 @@ with open("text_files/token.txt", 'r') as file:
     bot_token = file.read()
 
 updater = Updater(token=f'{bot_token}', use_context=True)
-##                  request_kwargs={'proxy_url': 'socks5://grsst.s5.opennetwork.cc:999',  # Connect with socks5 proxy
-##                                  'urllib3_proxy_kwargs': {'username': '476269395', 'password': 'eWiS7xd8'}})
-dispatcher = updater.dispatcher
-shanisir_bot = updater.bot
 
-group_ids = {'12b' : '-1001396726510', 'grade12' : '-1001210862980', 'wait' : '-1001427310423'}
+dispatcher = updater.dispatcher
+shanisir_bot = updater.bot  # The identifier is literally longer than the value it represents. Is it needed really?
+
 bot_response = None
 
 rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
@@ -241,7 +240,7 @@ def morning_goodness():
     seek.write(str(cursor))  # Store the new position of the cursor, to be used when morning_goodness() is next called
     seek.close()
 
-    for chat_id in [group_ids['12b'], group_ids['grade12']]:  # [12B, Grade 12]
+    for chat_id in group_ids.values():  # [12B, Grade 12]
         msg = shanisir_bot.send_message(chat_id=chat_id, text=greeting)  # Send to both groups
         shanisir_bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id, disable_notification=True)  # Pin it
         shanisir_bot.send_chat_action(chat_id=chat_id, action='upload_audio')

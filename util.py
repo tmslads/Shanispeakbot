@@ -3,9 +3,8 @@ import re
 import requests
 from bs4 import BeautifulSoup
 
-_DOWNLOAD = "https://raw.githubusercontent.com"
-_LINK = "https://github.com/tmslads/Shanisirmodule/tree/haunya/Assets/clips"
-URL = 'http://randomfactgenerator.net/'  # To be scraped for facts()
+from constants import _LINK, _DOWNLOAD, URL
+
 dl_links = []
 names = []
 
