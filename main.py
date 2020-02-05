@@ -35,7 +35,7 @@ elif user == 'aarti':
 with open("text_files/token.txt", 'r') as file:
     bot_token = file.read()
 
-updater = Updater(token=f'{bot_token}', use_context=True)
+updater = Updater(token=f'{bot_token}', use_context=True, request_kwargs={'con_pool_size': 2, 'connect_timeout': 10})
 
 dispatcher = updater.dispatcher
 shanisir_bot = updater.bot  # The identifier is literally longer than the value it represents. Is it needed really?
