@@ -27,4 +27,4 @@ The following commands are currently available to use:
 * It still reacts to media files just like in groups.
 
 ### Inline mode:
-This bot will give you clips from Shanisirmodule, @ the bot and type a name of a clip and click on a result to send it to the target chat as a mp3 file.
+This bot will give you clips from [Shanisirmodule](https://github.com/tmslads/Shanisirmodule), @ the bot and type a name of a clip and click on a result to send it to the target chat as a mp3 file.
