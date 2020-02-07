@@ -11,15 +11,17 @@ from telegram.ext import CommandHandler
 from telegram.ext import ConversationHandler
 from telegram.ext import InlineQueryHandler
 from telegram.ext import MessageHandler, Filters
+from telegram.ext import PicklePersistence
 from telegram.ext import Updater
 from textblob import TextBlob
 
 import chatbot
 import commands
-import conversation
 import inline
 from commands import prohibited
 from constants import group_ids
+from conversations import conversation1
+from conversations.conversation2 import CHOICE, initiate, UserChoices
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -35,7 +37,9 @@ elif user == 'aarti':
 with open("text_files/token.txt", 'r') as file:
     bot_token = file.read()
 
-updater = Updater(token=f'{bot_token}', use_context=True, request_kwargs={'con_pool_size': 2, 'connect_timeout': 10})
+pp = PicklePersistence(filename='user_data')
+updater = Updater(token=f'{bot_token}', use_context=True, persistence=pp,
+                  request_kwargs={'con_pool_size': 2, 'connect_timeout': 10})
 
 dispatcher = updater.dispatcher
 shanisir_bot = updater.bot  # The identifier is literally longer than the value it represents. Is it needed really?
@@ -248,6 +252,12 @@ def morning_goodness():
                                 title="Good morning")
 
 
+def forward_id(update, context):
+    user_id = update.message.forward_from.id
+    name = update.message.forward_from.first_name
+    print(f"{name}'s user id is: {user_id}")
+
+
 inline_clips_handler = InlineQueryHandler(inline.inline_clips)
 dispatcher.add_handler(inline_clips_handler)
 
@@ -275,18 +285,38 @@ dispatcher.add_handler(facts_handler)
 #    NOTE: Message must start with /8ball! If it is placed anywhere else, it won't work.
 # Refer https://python-telegram-bot.readthedocs.io/en/stable/telegram.ext.conversationhandler.html for syntax, etc.
 convo_handler = ConversationHandler(
-    entry_points=[CommandHandler(command="8ball", callback=conversation.thinking, filters=Filters.reply),
-                  CommandHandler(command="8ball", callback=conversation.magic8ball)],
+    entry_points=[CommandHandler(command="8ball", callback=conversation1.thinking, filters=Filters.reply),
+                  CommandHandler(command="8ball", callback=conversation1.magic8ball)],
 
-    states={conversation.PROCESSING: [MessageHandler(filters=Filters.reply & Filters.text,
-                                                     callback=conversation.thinking)]},
+    states={conversation1.PROCESSING: [MessageHandler(filters=Filters.reply & Filters.text,
+                                                      callback=conversation1.thinking)]},
 
-    fallbacks=[CommandHandler(command='cancel', callback=conversation.cancel)]
+    fallbacks=[CommandHandler(command='cancel', callback=conversation1.cancel)]
 )
 dispatcher.add_handler(convo_handler)
 
+convo2_handler = ConversationHandler(
+    entry_points=[CommandHandler('tell', initiate)],
+    states={
+        CHOICE: [MessageHandler(filters=Filters.regex("^Birthday$"), callback=UserChoices.bday),
+                 # MessageHandler(filters=Filters.regex("^Secret$"), callback=choice),
+                 # MessageHandler(filters=Filters.regex("^Nickname$"), callback=choice),
+                 # MessageHandler(filters=Filters.regex("^Other$"), callback=choice)
+                 ],
+
+    },
+    fallbacks=[CommandHandler('start', initiate)],
+
+    name="/tell convo",
+    persistent=True, allow_reentry=True
+)
+dispatcher.add_handler(convo2_handler)
+
 media_handler = MessageHandler(Filters.document | Filters.photo | Filters.video | Filters.voice, media)
 dispatcher.add_handler(media_handler)
+
+forward_handler = MessageHandler(Filters.forwarded, forward_id)
+dispatcher.add_handler(forward_handler)
 
 del_pinmsg_handler = MessageHandler(Filters.status_update.pinned_message, del_pin)
 dispatcher.add_handler(del_pinmsg_handler)

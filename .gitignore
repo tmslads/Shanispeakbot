@@ -1,3 +1,4 @@
 *.pyc
 token.txt
 sentence_tokenizer.pickle
+credentials.json
