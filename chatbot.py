@@ -5,7 +5,7 @@ from chatterbot import response_selection
 shanisirbot = chatterbot.ChatBot('The Shani Sir Bot',
                                  storage_adapter='chatterbot.storage.SQLStorageAdapter',
                                  logic_adapters=['chatterbot.logic.BestMatch'],
-                                 response_selection_method=response_selection.get_random_response,
+                                 response_selection_method=response_selection.get_first_response,  # or get_random_response or get_most_frequent_response
                                  preprocessors=['chatterbot.preprocessors.clean_whitespace'],
                                  read_only=False)  # Set to True to disable further learning from conversations the bot has
 
