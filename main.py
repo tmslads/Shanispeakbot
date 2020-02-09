@@ -125,6 +125,11 @@ def group(update, context):
 
 def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     global bot_response
+    # temporary====================================================================================================================
+    f=open('tempids.txt', 'a')
+    f.write(f"Full name: {update.message.from_user.full_name}\nUsername: {update.message.from_user.username}\nID:update.message.from_user.id\nChat ID:update.effective_chat.id")
+    f.close()
+    # temporary====================================================================================================================
     cleaned = []
     JJ_RB = ["like you say", "like you speak"]  # For Adjectives or Adverbs
 
