@@ -16,12 +16,13 @@ from telegram.ext import Updater
 from textblob import TextBlob
 
 import chatbot
-import commands
+import convos.magic8ball_conversation as magic
+import convos.bday_convo as tell
 import inline
+from commands import BotCommands as bc
 from commands import prohibited
 from constants import group_ids
-from conversations import conversation1
-from conversations.conversation2 import CHOICE, initiate, UserChoices
+from convos import start
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -37,7 +38,7 @@ elif user == 'aarti':
 with open("text_files/token.txt", 'r') as file:
     bot_token = file.read()
 
-pp = PicklePersistence(filename='user_data')
+pp = PicklePersistence(filename=r'text_files/user_data')
 updater = Updater(token=f'{bot_token}', use_context=True, persistence=pp,
                   request_kwargs={'con_pool_size': 2, 'connect_timeout': 10})
 
@@ -258,54 +259,47 @@ def forward_id(update, context):
     print(f"{name}'s user id is: {user_id}")
 
 
-inline_clips_handler = InlineQueryHandler(inline.inline_clips)
-dispatcher.add_handler(inline_clips_handler)
+dispatcher.add_handler(InlineQueryHandler(inline.inline_clips))
+dispatcher.add_handler(CommandHandler(command='help', callback=bc.helper))
+dispatcher.add_handler(CommandHandler(command='secret', callback=bc.secret))
+dispatcher.add_handler(CommandHandler(command='start', callback=bc.start))
+dispatcher.add_handler(CommandHandler(command='swear', callback=bc.swear))
+dispatcher.add_handler(CommandHandler(command='snake', callback=bc.snake))
+dispatcher.add_handler(CommandHandler(command='facts', callback=bc.facts))
 
-help_handler = CommandHandler(command='help', callback=commands.BotCommands.helper)
-dispatcher.add_handler(help_handler)
-
-clip_handler = CommandHandler(command='secret', callback=commands.BotCommands.secret)
-dispatcher.add_handler(clip_handler)
-
-start_handler = CommandHandler(command='start', callback=commands.BotCommands.start)
-dispatcher.add_handler(start_handler)
-
-swear_handler = CommandHandler(command='swear', callback=commands.BotCommands.swear)
-dispatcher.add_handler(swear_handler)
-
-snake_handler = CommandHandler(command='snake', callback=commands.BotCommands.snake)
-dispatcher.add_handler(snake_handler)
-
-facts_handler = CommandHandler(command='facts', callback=commands.BotCommands.facts)
-dispatcher.add_handler(facts_handler)
-
-# Can start the conversation in two ways:
-# 1. By directly entering command or
-# 2. Replying to a message (which is hopefully a yes/no question) and then typing an additional message (optional),
-#    NOTE: Message must start with /8ball! If it is placed anywhere else, it won't work.
-# Refer https://python-telegram-bot.readthedocs.io/en/stable/telegram.ext.conversationhandler.html for syntax, etc.
+# /8ball conversation-
 convo_handler = ConversationHandler(
-    entry_points=[CommandHandler(command="8ball", callback=conversation1.thinking, filters=Filters.reply),
-                  CommandHandler(command="8ball", callback=conversation1.magic8ball)],
+    entry_points=[CommandHandler(command="8ball", callback=magic.thinking, filters=Filters.reply),
+                  CommandHandler(command="8ball", callback=magic.magic8ball)],
 
-    states={conversation1.PROCESSING: [MessageHandler(filters=Filters.reply & Filters.text,
-                                                      callback=conversation1.thinking)]},
+    states={magic.PROCESSING: [MessageHandler(filters=Filters.reply & Filters.text, callback=magic.thinking)]},
 
-    fallbacks=[CommandHandler(command='cancel', callback=conversation1.cancel)]
+    fallbacks=[CommandHandler(command='cancel', callback=magic.cancel)]
 )
 dispatcher.add_handler(convo_handler)
 
+# /tell conversation
 convo2_handler = ConversationHandler(
-    entry_points=[CommandHandler('tell', initiate)],
+    entry_points=[CommandHandler('tell', start.initiate)],
     states={
-        CHOICE: [MessageHandler(filters=Filters.regex("^Birthday$"), callback=UserChoices.bday),
-                 # MessageHandler(filters=Filters.regex("^Secret$"), callback=choice),
-                 # MessageHandler(filters=Filters.regex("^Nickname$"), callback=choice),
-                 # MessageHandler(filters=Filters.regex("^Other$"), callback=choice)
-                 ],
+        start.CHOICE: [MessageHandler(filters=Filters.regex("^Birthday$"), callback=tell.bday),
+                       # MessageHandler(filters=Filters.regex("^Secret$"), callback=choice),
+                       # MessageHandler(filters=Filters.regex("^Nickname$"), callback=choice),
+                       # MessageHandler(filters=Filters.regex("^Other$"), callback=choice)
+                       MessageHandler(filters=Filters.regex("^Nothing$"), callback=start.leave)
+                       ],
+        tell.INPUT: [MessageHandler(
+            filters=Filters.regex("^([1-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])|(Update my birthday sir)$"),
+            callback=tell.bday_add_or_update)],  # Accepts only dates
 
+        tell.MODIFY: [MessageHandler(filters=Filters.regex("^Forget my birthday sir$"), callback=tell.bday_del),
+
+                      MessageHandler(filters=Filters.regex("^Update my birthday sir$"),
+                                     callback=tell.bday_mod)
+                      ]
     },
-    fallbacks=[CommandHandler('start', initiate)],
+    fallbacks=[MessageHandler(Filters.regex("^No, thank you sir$"), callback=tell.reject),
+               MessageHandler(Filters.text, tell.wrong)],
 
     name="/tell convo",
     persistent=True, allow_reentry=True
@@ -330,7 +324,7 @@ dispatcher.add_handler(group_handler)
 private_handler = MessageHandler(Filters.private, private)
 dispatcher.add_handler(private_handler)
 
-unknown_handler = MessageHandler(Filters.command, commands.BotCommands.unknown)
+unknown_handler = MessageHandler(Filters.command, bc.unknown)
 dispatcher.add_handler(unknown_handler)
 
 # Note: time values passed are in UTC+0
