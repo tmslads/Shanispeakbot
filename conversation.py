@@ -56,7 +56,7 @@ def thinking(update, context):
     seconds = list(range(1, 5))
 
     msg_sent = context.bot.send_message(chat_id=update.effective_chat.id, text=f"`{thought}`",  # Will be monospaced
-                                        parse_mode='MarkdownV2',  # Check Bot API 4.5 for MarkdownV2 docs - https://core.telegram.org/bots/api#markdownv2-style
+                                        parse_mode='MarkdownV2',  # https://core.telegram.org/bots/api#markdownv2-style
                                         reply_to_message_id=actual_msg)
 
     # Editing message rapidly-
