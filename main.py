@@ -26,6 +26,7 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
                     level=logging.INFO)
 
 chatbot.shanisirbot.initialize()  # Does any work that needs to be done before the chatbot can process responses.
+get_tags = chatbot.shanisirbot.storage.tagger.get_bigram_pair_string
 
 user = getpass.getuser()  # To determine which location to provide for clips
 if user == 'Uncle Sam':
@@ -46,7 +47,7 @@ shanisir_bot = updater.bot  # The identifier is literally longer than the value 
 bot_response = None
 
 rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
-           "this language is embarassing to me like basically", "this is not a fruitful conversation"]
+           "this language is embarrassingassing to me like basically", "this is not a fruitful conversation"]
 
 r.shuffle(rebukes)
 rebukes = itertools.cycle(rebukes)
@@ -138,13 +139,30 @@ def group(update, context):
 
 def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     global bot_response
+    # temporary====================================================================================================================
+    f=open('text_files/tempids.txt', 'a')
+    f.write(f"Full name: {update.message.from_user.full_name}\nUsername: {update.message.from_user.username}\nID:{update.message.from_user.id}\nChat ID:{update.effective_chat.id}\n\n")
+    f.close()
+    # temporary====================================================================================================================
     cleaned = []
     JJ_RB = ["like you say", "like you speak"]  # For Adjectives or Adverbs
 
-    # If the user's message is a reply to a previous message from the bot
+    if bot_response == None:
+        temp = None
+        search_in_response_text = None
+    else:
+        temp = bot_response.text
+        search_in_response_text = get_tags(temp)
+
+    # If the user's message is a reply to a message
     if update.message.reply_to_message is not None:
-        bot_response = update.message.reply_to_message.text
-    user_msg = chatterbot.conversation.Statement(update.message.text, in_response_to=bot_response)
+        bot_response = chatterbot.conversation.Statement(text=update.message.reply_to_message.text,search_text=get_tags(update.message.reply_to_message.text))
+        user_msg = chatterbot.conversation.Statement(text=update.message.text, search_text=get_tags(update.message.text),
+                                                                                    in_response_to=bot_response, search_in_response_to=get_tags(update.message.reply_to_message.text))
+    else:
+        user_msg = chatterbot.conversation.Statement(text=update.message.text, search_text=get_tags(update.message.text),
+                                                                                    in_response_to=bot_response, search_in_response_to=search_in_response_text)
+
     reply = f"(REPLY TO [{user_msg.in_response_to}])"
 
     if grp:

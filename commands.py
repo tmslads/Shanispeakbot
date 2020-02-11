@@ -20,6 +20,15 @@ r.shuffle(swear_advice)
 swear_advice = itertools.cycle(swear_advice)
 
 
+def ladcased(normal):
+    """Convert a string to 'ladcase' (Alternating uppercase and lowercase)"""
+
+    ladified = ''
+    for i, c in enumerate(normal):
+        ladified += c.lower() if (i % 2 == 0) else c.upper()
+
+    return ladified
+
 class BotCommands:
     @staticmethod
     def delete_command(update):
@@ -65,8 +74,8 @@ class BotCommands:
             if len(set(swears)) == len(swears):  # i.e. if there is a duplicate element
                 break
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=f"'{swears[0]}',\n'{swears[1]}',\n'{swears[2]}',\n'{swears[3]}'\n\n"
-                                      f"{next(swear_advice)}".swapcase())
+                                 text=ladcased(f"'{swears[0]}',\n'{swears[1]}',\n'{swears[2]}',\n'{swears[3]}'\n\n"
+                                      f"{next(swear_advice)}"))
 
     @staticmethod
     def snake(update, context):

@@ -1,5 +1,5 @@
 *.pyc
 token.txt
 sentence_tokenizer.pickle
-credentials.json
+creds/credentials.json
 creds/token.pickle
