@@ -1,27 +1,25 @@
 import getpass
 import itertools
 import logging
+import pickle
 import random as r
 from datetime import time
 from time import sleep
 
 import chatterbot
 import emoji
-from telegram.ext import CommandHandler
-from telegram.ext import ConversationHandler
-from telegram.ext import InlineQueryHandler
-from telegram.ext import MessageHandler, Filters
-from telegram.ext import PicklePersistence
-from telegram.ext import Updater
+from telegram.ext import (CommandHandler, ConversationHandler, InlineQueryHandler, MessageHandler, Filters,
+                          PicklePersistence, Updater)
 from textblob import TextBlob
 
 import chatbot
-import convos.magic8ball_conversation as magic
-import convos.bday_convo as tell
+# import convos.bday_convo as tell
+# import convos.magic_convo as magic
+# import convos.nick_convo as nick
 import inline
-from commands import BotCommands as bc
-from commands import prohibited
+from commands import BotCommands as bc, prohibited
 from constants import group_ids
+from convos import (bday_convo as bday, magic_convo as magic, nick_convo as nick)
 from convos import start
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
@@ -54,6 +52,15 @@ r.shuffle(rebukes)
 rebukes = itertools.cycle(rebukes)
 
 
+def nicknamer(update, context):
+    try:
+        name = context.user_data['nickname']
+    except KeyError:
+        context.user_data['nickname'] = update.message.from_user.first_name
+    finally:
+        return context.user_data['nickname']
+
+
 def media(update, context):
     """Sends a reaction to media messages (pictures, videos, documents, voice notes)"""
 
@@ -61,7 +68,8 @@ def media(update, context):
         doc = update.message.document.file_name[-3:]
     except AttributeError:  # When there is no document sent
         doc = ''
-    name = update.message.from_user.first_name
+    name = nicknamer(update, context)
+
     msg = update.message.message_id
 
     img_reactions = ["😂", "🤣", "😐", f"Not funny {name} okay?", "This is not fine like you say", "*giggles*",
@@ -118,13 +126,14 @@ def reply(update, context):
 def group(update, context):
     """Checks for profanity in messages and responds to that."""
 
-    if update.message is not None and update.message.text is not None:
-        if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
-            if r.choices([0, 1], weights=[0.8, 0.2])[0]:  # Probabilities are 0.8 - False, 0.2 - True.
-                out = f"{next(rebukes)} {update.message.from_user.first_name}"
-                shanisir_bot.send_message(chat_id=update.effective_chat.id, text=out,
-                                          reply_to_message_id=update.message.message_id)  # Sends message
-                print(f"Rebuke: {out}")
+    if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
+        if r.choices([0, 1], weights=[0.8, 0.2])[0]:  # Probabilities are 0.8 - False, 0.2 - True.
+            name = nicknamer(update, context)
+
+            out = f"{next(rebukes)} {name}"
+            shanisir_bot.send_message(chat_id=update.effective_chat.id, text=out,
+                                      reply_to_message_id=update.message.message_id)  # Sends message
+            print(f"Rebuke: {out}")
 
 
 def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
@@ -187,6 +196,8 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
             lydcount += 1
             temp = index
 
+    name = nicknamer(update, context)
+
     if r.choice([0, 1]):
         if r.choice([0, 1]):
             cleaned.append(r.choice(["I am so sowry", "i don't want to talk like that",
@@ -196,9 +207,9 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
             cleaned.append(r.choice(["it will be fruitful", "you will benefit", "that is the expected behaviour",
                                      "now you are on the track like", "now class is in the flow like",
                                      "aim to hit the tarjit", "don't press the jockey"]))
-        cleaned.insert(0, update.message.from_user.first_name)
+        cleaned.insert(0, name)
     else:
-        cleaned.append(update.message.from_user.first_name)
+        cleaned.append(name)
 
     if len(cleaned) < 5:  # Will run if input is too short
         cleaned.append(r.choice(["*draws perfect circle*", "*scratches nose*"]))
@@ -259,6 +270,18 @@ def forward_id(update, context):
     print(f"{name}'s user id is: {user_id}")
 
 
+def transfer(update, context):
+    with open("text_files/user_data", 'rb') as f:
+        print(pickle.load(f))
+
+    for k, v in context.user_data.items():
+        print(k, v)
+    print(context.user_data)
+    print("Bot data global is:")
+    for k, v in context.bot_data.items():
+        print(k, v)
+
+
 dispatcher.add_handler(InlineQueryHandler(inline.inline_clips))
 dispatcher.add_handler(CommandHandler(command='help', callback=bc.helper))
 dispatcher.add_handler(CommandHandler(command='secret', callback=bc.secret))
@@ -266,15 +289,19 @@ dispatcher.add_handler(CommandHandler(command='start', callback=bc.start))
 dispatcher.add_handler(CommandHandler(command='swear', callback=bc.swear))
 dispatcher.add_handler(CommandHandler(command='snake', callback=bc.snake))
 dispatcher.add_handler(CommandHandler(command='facts', callback=bc.facts))
+dispatcher.add_handler(CommandHandler(command='transfer', callback=transfer))
 
 # /8ball conversation-
 convo_handler = ConversationHandler(
-    entry_points=[CommandHandler(command="8ball", callback=magic.thinking, filters=Filters.reply),
-                  CommandHandler(command="8ball", callback=magic.magic8ball)],
+    entry_points=[
+        CommandHandler(command="8ball", callback=magic.magic8ball),
+        MessageHandler(filters=Filters.command(False) & Filters.text & Filters.regex("8ball"),
+                       callback=magic.thinking)],
 
-    states={magic.PROCESSING: [MessageHandler(filters=Filters.reply & Filters.text, callback=magic.thinking)]},
+    states={magic.PROCESSING: [
+        MessageHandler(filters=(Filters.reply & Filters.text), callback=magic.thinking)]},
 
-    fallbacks=[CommandHandler(command='cancel', callback=magic.cancel)]
+    fallbacks=[CommandHandler(command='cancel', callback=magic.cancel)], conversation_timeout=15
 )
 dispatcher.add_handler(convo_handler)
 
@@ -282,27 +309,32 @@ dispatcher.add_handler(convo_handler)
 convo2_handler = ConversationHandler(
     entry_points=[CommandHandler('tell', start.initiate)],
     states={
-        start.CHOICE: [MessageHandler(filters=Filters.regex("^Birthday$"), callback=tell.bday),
+        start.CHOICE: [MessageHandler(filters=Filters.regex("^Birthday$"), callback=bday.bday),
                        # MessageHandler(filters=Filters.regex("^Secret$"), callback=choice),
-                       # MessageHandler(filters=Filters.regex("^Nickname$"), callback=choice),
+                       MessageHandler(filters=Filters.regex("^Nickname$"), callback=nick.nick),
                        # MessageHandler(filters=Filters.regex("^Other$"), callback=choice)
                        MessageHandler(filters=Filters.regex("^Nothing$"), callback=start.leave)
                        ],
-        tell.INPUT: [MessageHandler(
+        bday.INPUT: [MessageHandler(
             filters=Filters.regex("^([1-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])|(Update my birthday sir)$"),
-            callback=tell.bday_add_or_update)],  # Accepts only dates
+            callback=bday.bday_add_or_update)],  # Accepts only dates
 
-        tell.MODIFY: [MessageHandler(filters=Filters.regex("^Forget my birthday sir$"), callback=tell.bday_del),
+        bday.MODIFY: [MessageHandler(filters=Filters.regex("^Forget my birthday sir$"), callback=bday.bday_del),
 
                       MessageHandler(filters=Filters.regex("^Update my birthday sir$"),
-                                     callback=tell.bday_mod)
-                      ]
+                                     callback=bday.bday_mod)
+                      ],
+        nick.SET_NICK: [MessageHandler(filters=Filters.text & Filters.reply, callback=nick.add_edit_nick)],
+
+        nick.MODIFY_NICK: [MessageHandler(filters=Filters.regex("^Change nickname$"), callback=nick.edit_nick),
+                           MessageHandler(filters=Filters.regex("^Remove nickname$"), callback=nick.del_nick),
+                           MessageHandler(filters=Filters.regex("^Back$"), callback=nick.back)]
     },
-    fallbacks=[MessageHandler(Filters.regex("^No, thank you sir$"), callback=tell.reject),
-               MessageHandler(Filters.text, tell.wrong)],
+    fallbacks=[MessageHandler(Filters.regex("^No, thank you sir$"), callback=bday.reject),
+               MessageHandler(Filters.text & Filters.reply, bday.wrong)],
 
     name="/tell convo",
-    persistent=True, allow_reentry=True
+    persistent=True, allow_reentry=True, conversation_timeout=15
 )
 dispatcher.add_handler(convo2_handler)
 
@@ -318,7 +350,7 @@ dispatcher.add_handler(del_pinmsg_handler)
 reply_handler = MessageHandler(Filters.reply & Filters.group, reply)
 dispatcher.add_handler(reply_handler)
 
-group_handler = MessageHandler(Filters.group, group)
+group_handler = MessageHandler(Filters.group & Filters.text, group)
 dispatcher.add_handler(group_handler)
 
 private_handler = MessageHandler(Filters.private, private)

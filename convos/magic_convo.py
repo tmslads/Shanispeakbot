@@ -7,9 +7,19 @@ from telegram import ForceReply
 PROCESSING = range(1)
 
 
+def nicknamer(update, context):
+    try:
+        name = context.user_data['nickname']
+    except KeyError:
+        context.user_data['nickname'] = update.message.from_user.first_name
+    finally:
+        return context.user_data['nickname']
+
+
 def magic8ball(update, context):
     """Asks the user for the question."""
-    name = update.message.from_user.first_name
+    name = nicknamer(update, context)
+
     initiate = ["If you have a doubt, just type it here",
                 f"{name}, are you confused? Ask me and I'll search for some sow...so..solutions"
                 " okay?",
@@ -31,9 +41,9 @@ def thinking(update, context):
     First sends a message indicating his thinking process for 3 seconds, then on the 4th second he gives the answer
     by editing his message.
     """
-    name = update.message.from_user.first_name
+    name = nicknamer(update, context)
 
-    if update.message.reply_to_message and '/' in update.message.text:
+    if update.message.reply_to_message:
         actual_msg = update.message.reply_to_message.message_id
 
     else:
@@ -43,7 +53,7 @@ def thinking(update, context):
                 "Uhmmm", "Ok, there is one option", "*sniffs*", "What you say like"]
 
     answers = ["No no I'm sure not", "I don't want to tell you like you say", "I don't know like",
-               f"No {name}, I'm so sowry", "Obviously like you say", "Yes. No other option like",
+               f"No {name}, I'm so sowry", "Obviously like you say", r"Yes\. No other option like",
                "I didn't say wrong, I don't know", "See just do the worksheet no other importance of the situation",
                "This may be hard, but I think no okay?", "The laws of physics say yes 😄",
                f"Yes yes", "Maybe okay?", "Ah yea", "My feeling says no, now I feel very bad I told you like that",
