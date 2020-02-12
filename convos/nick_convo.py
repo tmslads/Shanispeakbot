@@ -9,7 +9,7 @@ SET_NICK, MODIFY_NICK = range(3, 5)
 def nick(update, context):
     name = update.message.from_user.first_name
 
-    if 'nickname' not in context.user_data or context.user_data['nickname'] == name:
+    if 'nickname' not in context.user_data or context.user_data['nickname'][-1] == name:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text="What is your uhh what you say like ni...nick..nickname?",
                                  reply_to_message_id=update.message.message_id, reply_markup=ForceReply(selective=True))
@@ -21,7 +21,7 @@ def nick(update, context):
                    [KeyboardButton("Back")]]
 
         nick_markup = ReplyKeyboardMarkup(nick_kb, one_time_keyboard=True)
-        nick_name = context.user_data["nickname"]
+        nick_name = context.user_data["nickname"][-1]
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=f"Hi {nick_name}, what you want to do like?", reply_markup=nick_markup,
                                  reply_to_message_id=update.message.message_id)
@@ -33,7 +33,7 @@ def del_nick(update, context):  # MODIFY_NICK
     user_id = update.message.from_user.id
     name = update.message.from_user.first_name
 
-    context.user_data['nickname'] = name
+    context.user_data['nickname'].append(name)
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=f"I'm forgetting your nic.. {name}",
                              reply_to_message_id=update.message.message_id,
@@ -50,8 +50,12 @@ def edit_nick(update, context):  # MODIFY_NICK
 
 def add_edit_nick(update, context):  # SET_NICK
 
-    context.user_data['nickname'] = update.message.text
-    nicky = context.user_data['nickname']
+    if 'nickname' not in context.user_data:
+        context.user_data['nickname'] = []
+
+    context.user_data['nickname'].append(update.message.text)
+
+    nicky = context.user_data['nickname'][-1]
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=f"Hi {nicky} what you're doing like",
                              reply_to_message_id=update.message.message_id, reply_markup=markup)
