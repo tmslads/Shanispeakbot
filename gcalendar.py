@@ -1,10 +1,11 @@
 # Connection to 12B class calendar, using Google Calendar API
 
-# from __future__ import print_function
+from __future__ import print_function
 
 import datetime
 import os.path
 import pickle
+from datetime import date
 from datetime import timedelta
 
 from google.auth.transport.requests import Request
@@ -112,6 +113,33 @@ def formatter(date: datetime.date, days: int = 0, format_style=""):
     return
 
 
+def get_next_bday():
+    page_token = None
+    bday_list = []
+    while True:
+        events = service.events().list(calendarId='primary', pageToken=page_token).execute()
+        for event in events['items']:
+            if 'birthday' in event['summary']:
+                index = event['summary'].find("'")
+                bday_list.append(
+                    (datetime.datetime.strptime(event['start']['date'], "%Y-%m-%d"), event['summary'][:index]))
+
+        page_token = events.get('nextPageToken')
+        if not page_token:
+            break
+
+    today = date.today()
+    today = datetime.datetime.strptime(str(today), "%Y-%m-%d")
+
+    diff = []
+    for bday_date in bday_list:
+        day_diff = bday_date[0] - today
+        diff.append((day_diff.days, bday_date[1]))
+
+    print(min(diff))
+    return min(diff)
+
+
 def main():
     """
     Sets up the Google Calendar API for easy use.
@@ -146,6 +174,7 @@ def main():
 
 if __name__ == '__main__':
     main()
+    get_next_bday()
     # bdays = [("Ruchika", datetime.datetime(2021, 1, 17)),
     #          ("Nikil", datetime.datetime(2021, 1, 26)),
     #          ("Samir", datetime.datetime(2021, 2, 2)),

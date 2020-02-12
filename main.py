@@ -1,4 +1,3 @@
-import getpass
 import itertools
 import logging
 import pickle
@@ -13,14 +12,12 @@ from telegram.ext import (CommandHandler, ConversationHandler, InlineQueryHandle
 from textblob import TextBlob
 
 import chatbot
-# import convos.bday_convo as tell
-# import convos.magic_convo as magic
-# import convos.nick_convo as nick
 import inline
 from commands import BotCommands as bc, prohibited
 from constants import group_ids
 from convos import (bday_convo as bday, magic_convo as magic, nick_convo as nick)
 from convos import start
+import gcalendar
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -28,18 +25,13 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 chatbot.shanisirbot.initialize()  # Does any work that needs to be done before the chatbot can process responses.
 get_tags = chatbot.shanisirbot.storage.tagger.get_bigram_pair_string
 
-user = getpass.getuser()  # To determine which location to provide for clips
-if user == 'Uncle Sam':
-    clip_loc = r'C:/Users/Uncle Sam/Desktop/sthyaVERAT/4 FUN ya Practice/Shanisirmodule/Assets/clips/'
-elif user == 'aarti':
-    clip_loc = r'C:/Users/aarti/Documents/Python stuff/Bored/Shanisirmodule/Assets/clips/'
-
 with open("text_files/token.txt", 'r') as file:
     bot_token = file.read()
 
 pp = PicklePersistence(filename=r'text_files/user_data')
 updater = Updater(token=f'{bot_token}', use_context=True, persistence=pp,
-                  request_kwargs={'con_pool_size': 2, 'connect_timeout': 10})
+                  # request_kwargs={'con_pool_size': 2, 'connect_timeout': 10}
+                  )
 
 dispatcher = updater.dispatcher
 shanisir_bot = updater.bot  # The identifier is literally longer than the value it represents. Is it needed really?
@@ -139,29 +131,51 @@ def group(update, context):
 
 def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     global bot_response
-    # temporary====================================================================================================================
-    f=open('text_files/tempids.txt', 'a')
-    f.write(f"Full name: {update.message.from_user.full_name}\nUsername: {update.message.from_user.username}\nID:{update.message.from_user.id}\nChat ID:{update.effective_chat.id}\n\n")
-    f.close()
-    # temporary====================================================================================================================
+
+    user = update.message.from_user
+    chat_id = update.effective_chat.id
+    if 'username' not in context.user_data:
+        context.user_data['username'] = [user.username]
+
+    elif user.username != context.user_data['username'][0]:
+        context.user_data['username'].append(user.username)
+
+    if 'full_name' not in context.user_data:
+        context.user_data['full_name'] = [user.full_name]
+
+    elif user.full_name != context.user_data['full_name'][0]:
+        context.user_data['full_name'].append(user.full_name)
+
+    if chat_id not in context.chat_data['chat_ids']:  # Gets chat id of the user in which they have talked to the bot
+        context.chat_data['chat_ids'].append(chat_id)
+
     cleaned = []
     JJ_RB = ["like you say", "like you speak"]  # For Adjectives or Adverbs
 
-    if bot_response == None:
+    if bot_response is None:
         temp = None
         search_in_response_text = None
     else:
         temp = bot_response.text
         search_in_response_text = get_tags(temp)
 
+    text = update.message.text
     # If the user's message is a reply to a message
     if update.message.reply_to_message is not None:
-        bot_response = chatterbot.conversation.Statement(text=update.message.reply_to_message.text,search_text=get_tags(update.message.reply_to_message.text))
-        user_msg = chatterbot.conversation.Statement(text=update.message.text, search_text=get_tags(update.message.text),
-                                                                                    in_response_to=bot_response, search_in_response_to=get_tags(update.message.reply_to_message.text))
+        reply_text = update.message.reply_to_message.text
+
+        bot_response = chatterbot.conversation.Statement(text=reply_text,
+                                                         search_text=get_tags(reply_text))
+        user_msg = chatterbot.conversation.Statement(text=text,
+                                                     search_text=get_tags(text),
+                                                     in_response_to=bot_response,
+                                                     search_in_response_to=get_tags(
+                                                         reply_text))
     else:
-        user_msg = chatterbot.conversation.Statement(text=update.message.text, search_text=get_tags(update.message.text),
-                                                                                    in_response_to=bot_response, search_in_response_to=search_in_response_text)
+        user_msg = chatterbot.conversation.Statement(text=update.message.text,
+                                                     search_text=get_tags(text),
+                                                     in_response_to=bot_response,
+                                                     search_in_response_to=search_in_response_text)
 
     reply = f"(REPLY TO [{user_msg.in_response_to}])"
 
@@ -257,28 +271,26 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
                                   reply_to_message_id=the_id)  # Sends message
 
 
-def morning_goodness():
+def morning_goodness(context):
     """Send a "good morning" quote to the groups, along with a clip"""
 
-    with open("text_files/seek.txt", "r+") as seek, open("text_files/good_mourning.txt", "r") as greetings:
-        cursor = int(seek.read())  # Finds where the cursor stopped on the previous day
+    with open("text_files/good_mourning.txt", "r") as greetings:
+        position = context.bot_data['seek']
+        if position == 13642:  # If EOF was reached
+            position = 0  # Start from the beginning
+        greetings.seek(position)
 
-        if cursor == 13642:  # If EOF was reached
-            cursor = 0  # Start from the beginning
-
-        greetings.seek(cursor)  # Move the cursor to its previous position
-        greeting = greetings.readline()  # And read the next line
+        greeting = greetings.readline()
         print(greeting)
-        cursor = greetings.tell()  # Position of cursor after reading the greeting
-    seek = open("text_files/seek.txt", "w")
-    seek.write(str(cursor))  # Store the new position of the cursor, to be used when morning_goodness() is next called
-    seek.close()
+        context.bot_data['seek'] = greetings.tell()
 
     for chat_id in group_ids.values():  # [12B, Grade 12]
         msg = shanisir_bot.send_message(chat_id=chat_id, text=greeting)  # Send to both groups
         shanisir_bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id, disable_notification=True)  # Pin it
         shanisir_bot.send_chat_action(chat_id=chat_id, action='upload_audio')
-        shanisir_bot.send_audio(chat_id=chat_id, audio=open(f"{clip_loc}my issue is you don't score.mp3", 'rb'),
+        shanisir_bot.send_audio(chat_id=chat_id,
+                                audio="https://raw.githubusercontent.com/tmslads/Shanisirmodule/haunya/Assets/"
+                                      "clips/my%20issue%20is%20you%20don't%20score.mp3",
                                 title="Good morning")
 
 
@@ -289,6 +301,7 @@ def forward_id(update, context):
 
 
 def transfer(update, context):
+    print(context.bot_data['seek'])
     with open("text_files/user_data", 'rb') as f:
         print(pickle.load(f))
 
@@ -298,6 +311,19 @@ def transfer(update, context):
     print("Bot data global is:")
     for k, v in context.bot_data.items():
         print(k, v)
+    if 'chat_ids' not in context.chat_data:
+        context.chat_data['chat_ids'] = []
+    print(context.chat_data)
+
+
+def bday_wish(context):
+    print("Running bday func")
+    gcalendar.main()
+    days_remaining, name = gcalendar.get_next_bday()
+
+    if days_remaining == 0:
+        context.bot.send_message(chat_id=group_ids['12b'],
+                                 text=f"Happy birthday {name}! May the mass times acceleration be with you!🎉")
 
 
 dispatcher.add_handler(InlineQueryHandler(inline.inline_clips))
@@ -328,13 +354,11 @@ convo2_handler = ConversationHandler(
     entry_points=[CommandHandler('tell', start.initiate)],
     states={
         start.CHOICE: [MessageHandler(filters=Filters.regex("^Birthday$"), callback=bday.bday),
-                       # MessageHandler(filters=Filters.regex("^Secret$"), callback=choice),
                        MessageHandler(filters=Filters.regex("^Nickname$"), callback=nick.nick),
-                       # MessageHandler(filters=Filters.regex("^Other$"), callback=choice)
                        MessageHandler(filters=Filters.regex("^Nothing$"), callback=start.leave)
                        ],
         bday.INPUT: [MessageHandler(
-            filters=Filters.regex("^([1-9][0-9][0-9][0-9]-[0-9][0-9]-[0-9][0-9])|(Update my birthday sir)$"),
+            filters=Filters.regex("^([1-9][0-9]{3}-[0-9]{2}-[0-9]{2})$"),
             callback=bday.bday_add_or_update)],  # Accepts only dates
 
         bday.MODIFY: [MessageHandler(filters=Filters.regex("^Forget my birthday sir$"), callback=bday.bday_del),
@@ -379,4 +403,5 @@ dispatcher.add_handler(unknown_handler)
 
 # Note: time values passed are in UTC+0
 updater.job_queue.run_daily(morning_goodness, time(4, 0, 0))  # will be called daily at ([h]h, [m]m,[s]s)
+updater.job_queue.run_repeating(bday_wish, 86400, first=1)
 updater.start_polling()

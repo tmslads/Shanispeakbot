@@ -1,8 +1,7 @@
 from telegram import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 
 keyboard = [
-    [KeyboardButton(text="Birthday"), KeyboardButton(text="Secret")],
-    [KeyboardButton(text="Nickname"), KeyboardButton(text="Other")],
+    [KeyboardButton(text="Birthday"), KeyboardButton(text="Nickname")],
     [KeyboardButton(text="Nothing")]
 ]
 markup = ReplyKeyboardMarkup(keyboard=keyboard, one_time_keyboard=True)
