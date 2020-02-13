@@ -1,4 +1,4 @@
-python-telegram-bot~=12.3.0
+python-telegram-bot~=12.4.0
 textblob~=0.15.3
 Chatterbot~=1.0.5
 google-api-python-client~=1.7.11
