@@ -161,21 +161,20 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
         temp = bot_response.text
         search_in_response_text = get_tags(temp)
 
-    text = update.message.text
     # If the user's message is a reply to a message
     if update.message.reply_to_message is not None:
         reply_text = update.message.reply_to_message.text
 
         bot_response = chatterbot.conversation.Statement(text=reply_text,
                                                          search_text=get_tags(reply_text))
-        user_msg = chatterbot.conversation.Statement(text=text,
-                                                     search_text=get_tags(text),
+        user_msg = chatterbot.conversation.Statement(text=update.message.text,
+                                                     search_text=get_tags(update.message.text),
                                                      in_response_to=bot_response,
                                                      search_in_response_to=get_tags(
                                                          reply_text))
     else:
         user_msg = chatterbot.conversation.Statement(text=update.message.text,
-                                                     search_text=get_tags(text),
+                                                     search_text=get_tags(update.message.text),
                                                      in_response_to=bot_response,
                                                      search_in_response_to=search_in_response_text)
 
