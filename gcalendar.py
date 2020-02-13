@@ -114,14 +114,20 @@ def formatter(date: datetime.date, days: int = 0, format_style=""):
 
 
 def get_next_bday():
+    """
+    Fetches a birthday from google calendar (12B only) and returns the number of days till the next birthday of a
+    person along with their name.
+
+    :returns tuple(int, string)
+    """
     page_token = None
     bday_list = []
     while True:
         events = service.events().list(calendarId='primary', pageToken=page_token).execute()
         for event in events['items']:
             if 'birthday' in event['summary']:
-                index = event['summary'].find("'")
-                bday_list.append(
+                index = event['summary'].find("'")  # Find index of "'" so we can get name from event.
+                bday_list.append(  # Parse string to datetime object, and append that along with name of the person
                     (datetime.datetime.strptime(event['start']['date'], "%Y-%m-%d"), event['summary'][:index]))
 
         page_token = events.get('nextPageToken')
@@ -129,15 +135,15 @@ def get_next_bday():
             break
 
     today = date.today()
-    today = datetime.datetime.strptime(str(today), "%Y-%m-%d")
+    today = datetime.datetime.strptime(str(today), "%Y-%m-%d")  # Parses today's date (time object) into datetime object
 
     diff = []
     for bday_date in bday_list:
-        day_diff = bday_date[0] - today
+        day_diff = bday_date[0] - today  # Finds diff from today to birthday
         diff.append((day_diff.days, bday_date[1]))
 
     print(min(diff))
-    return min(diff)
+    return min(diff)  # Returns lowest (i.e. next bday) in the calendar
 
 
 def main():
@@ -175,6 +181,7 @@ def main():
 if __name__ == '__main__':
     main()
     get_next_bday()
+    # Commented out just in case we need it again-
     # bdays = [("Ruchika", datetime.datetime(2021, 1, 17)),
     #          ("Nikil", datetime.datetime(2021, 1, 26)),
     #          ("Samir", datetime.datetime(2021, 2, 2)),

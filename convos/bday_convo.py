@@ -23,23 +23,24 @@ def nicknamer(update, context):
 
 
 def bday(update, context):  # CHOICE
+    """Asks user for their birthday if it is not known, else gives options on what to do with them."""
 
+    # Asks user for birthday if we don't have it stored.
     if 'birthday' not in context.user_data:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text="I don't know your birthday like you say. When? \nEnter your DOB as: YYYY-MM-DD",
                                  reply_to_message_id=update.message.message_id,
                                  reply_markup=ForceReply(selective=True)
                                  )
-        print("Not present")
         return INPUT
 
     else:
+        # Gives options for users by asking them what to do with their birthdays.
         bday_keyboard = [
             [KeyboardButton(text="Update my birthday sir"), KeyboardButton(text="Forget my birthday sir")],
             [KeyboardButton(text="No, thank you sir")]]
 
         bday_markup = ReplyKeyboardMarkup(keyboard=bday_keyboard, one_time_keyboard=True)
-        print("user id present, bday present")
 
         b_date = context.user_data['birthday']
         context.bot.send_message(chat_id=update.effective_chat.id,
@@ -49,38 +50,25 @@ def bday(update, context):  # CHOICE
                                  reply_to_message_id=update.message.message_id,
                                  reply_markup=bday_markup
                                  )
-        print("Returning modify..")
         return MODIFY
 
 
 def bday_add_or_update(update, context):  # INPUT
+    """Changes or adds your birthday into our records."""
+
     bday_date = update.message.text
 
     try:
         dt_obj = datetime.datetime.strptime(bday_date, "%Y-%m-%d")
 
-    except Exception as e:
+    except Exception as e:  # If user didn't enter birthday in the right format
         print(e)
-        wrong(update, context)
+        wrong(update, context)  # Asks for a valid input
 
     else:
         name = nicknamer(update, context)
-
-        if context.user_data:
-            print("id was present")
-
-        else:
-            print("id wasn't present. Adding")
-
-        if 'birthday' in context.user_data:
-            print("Birthday present")
-            if isinstance(context.user_data['birthday'], datetime.datetime):
-                print("Birthday present, updating...")
-                print("Old bday ", context.user_data['birthday'])
-                print("Updated bday ", dt_obj)
         context.user_data['birthday'] = dt_obj
-        for k, v in context.user_data.items():
-            print(k, v)
+
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=f"Ok {name}, I'll remember your birthday like you say.",
                                  reply_markup=markup)
@@ -88,9 +76,9 @@ def bday_add_or_update(update, context):  # INPUT
 
 
 def bday_mod(update, context):  # MODIFY
-    name = nicknamer(update, context)
+    """Asks user for input so we can update their birthday"""
 
-    print("in modify state")
+    name = nicknamer(update, context)
 
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"{name}, I know your birthday yes? If it is"
                                                                     f" wrong you can come and tell me the correct"
@@ -102,33 +90,37 @@ def bday_mod(update, context):  # MODIFY
 
 
 def bday_del(update, context):  # MODIFY
+    """Deletes birthday from our records. Then goes back to main menu."""
+
     name = nicknamer(update, context)
 
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"Ok {name}, I forgot your birthday",
                              reply_to_message_id=update.message.message_id, reply_markup=markup)
 
-    try:
-        del context.user_data['birthday']
-    except KeyError:
-        print("User not found!")
-    finally:
-        return CHOICE
+    del context.user_data['birthday']
+    return CHOICE
 
 
 def age_cal(date: datetime.datetime):
+    """Returns your age based on your birth date."""
+
     today = datetime.datetime.utcnow()
     age = today - date
     return age.days // 365
 
 
-def reject(update, context):
+def reject(update, context):  # fallback
+    """When user cancels current operation. Goes back to main menu."""
+
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"Ok, what you want to do like?",
                              reply_to_message_id=update.message.message_id, reply_markup=markup)
 
     return CHOICE
 
 
-def wrong(update, context):
+def wrong(update, context):  # fallback
+    """Asks user to enter his birthdate correctly."""
+
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=f"This is not correct. Aim to hit the tarjit.\nEnter your DOB as: YYYY-MM-DD",
                              reply_markup=ForceReply(selective=True),

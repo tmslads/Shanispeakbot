@@ -1,5 +1,7 @@
 from telegram import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 
+# This is the main menu. Shown when /tell is invoked.
+
 keyboard = [
     [KeyboardButton(text="Birthday"), KeyboardButton(text="Nickname")],
     [KeyboardButton(text="Nothing")]

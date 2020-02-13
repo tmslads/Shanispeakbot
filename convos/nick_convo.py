@@ -7,6 +7,10 @@ SET_NICK, MODIFY_NICK = range(3, 5)
 
 
 def nick(update, context):
+    """
+    Checks if nickname is set or not, if set, then gives options on what to do with them. Else will ask to set
+    a nickname.
+    """
     name = update.message.from_user.first_name
 
     if 'nickname' not in context.user_data or context.user_data['nickname'][-1] == name:
@@ -30,6 +34,8 @@ def nick(update, context):
 
 
 def del_nick(update, context):  # MODIFY_NICK
+    """Deletes nickname (i.e.) sets it to your first name."""
+
     user_id = update.message.from_user.id
     name = update.message.from_user.first_name
 
@@ -42,6 +48,8 @@ def del_nick(update, context):  # MODIFY_NICK
 
 
 def edit_nick(update, context):  # MODIFY_NICK
+    """Asks for new nickname."""
+
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=f"What is your like you say new nickname?",
                              reply_to_message_id=update.message.message_id, reply_markup=ForceReply(selective=True))
@@ -49,6 +57,7 @@ def edit_nick(update, context):  # MODIFY_NICK
 
 
 def add_edit_nick(update, context):  # SET_NICK
+    """Adds or updates your nickname. Then goes back to main menu."""
 
     if 'nickname' not in context.user_data:
         context.user_data['nickname'] = []
@@ -63,6 +72,8 @@ def add_edit_nick(update, context):  # SET_NICK
 
 
 def back(update, context):  # MODIFY_NICK
+    """Goes back to main menu."""
+
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=f"What you want?",
                              reply_to_message_id=update.message.message_id,

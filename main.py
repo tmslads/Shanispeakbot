@@ -1,6 +1,5 @@
 import itertools
 import logging
-import pickle
 import random as r
 from datetime import time
 from time import sleep
@@ -12,12 +11,12 @@ from telegram.ext import (CommandHandler, ConversationHandler, InlineQueryHandle
 from textblob import TextBlob
 
 import chatbot
+import gcalendar
 import inline
 from commands import BotCommands as bc, prohibited
 from constants import group_ids
 from convos import (bday_convo as bday, magic_convo as magic, nick_convo as nick)
 from convos import start
-import gcalendar
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -29,12 +28,10 @@ with open("text_files/token.txt", 'r') as file:
     bot_token = file.read()
 
 pp = PicklePersistence(filename=r'text_files/user_data')
-updater = Updater(token=f'{bot_token}', use_context=True, persistence=pp,
-                  # request_kwargs={'con_pool_size': 2, 'connect_timeout': 10}
-                  )
+updater = Updater(token=f'{bot_token}', use_context=True, persistence=pp)
 
 dispatcher = updater.dispatcher
-shanisir_bot = updater.bot  # The identifier is literally longer than the value it represents. Is it needed really?
+shanisir_bot = updater.bot
 
 bot_response = None
 
@@ -46,6 +43,8 @@ rebukes = itertools.cycle(rebukes)
 
 
 def nicknamer(update, context):
+    """Uses current nickname set by user."""
+
     try:
         name = context.user_data['nickname'][-1]
     except (KeyError, IndexError):
@@ -135,16 +134,18 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
 
     user = update.message.from_user
     chat_id = update.effective_chat.id
+
+    # Checks if your username or fullname or chat id is present in our records. If not, adds them.
     if 'username' not in context.user_data:
         context.user_data['username'] = [user.username]
 
-    elif user.username != context.user_data['username'][0]:
+    elif user.username != context.user_data['username'][-1]:
         context.user_data['username'].append(user.username)
 
     if 'full_name' not in context.user_data:
         context.user_data['full_name'] = [user.full_name]
 
-    elif user.full_name != context.user_data['full_name'][0]:
+    elif user.full_name != context.user_data['full_name'][-1]:
         context.user_data['full_name'].append(user.full_name)
 
     if chat_id not in context.chat_data['chat_ids']:  # Gets chat id of the user in which they have talked to the bot
@@ -295,30 +296,8 @@ def morning_goodness(context):
                                 title="Good morning")
 
 
-def forward_id(update, context):
-    user_id = update.message.forward_from.id
-    name = update.message.forward_from.first_name
-    print(f"{name}'s user id is: {user_id}")
-
-
-def transfer(update, context):
-    print(context.bot_data['seek'])
-    with open("text_files/user_data", 'rb') as f:
-        print(pickle.load(f))
-
-    for k, v in context.user_data.items():
-        print(k, v)
-    print(context.user_data)
-    print("Bot data global is:")
-    for k, v in context.bot_data.items():
-        print(k, v)
-    if 'chat_ids' not in context.chat_data:
-        context.chat_data['chat_ids'] = []
-    print(context.chat_data)
-
-
 def bday_wish(context):
-    print("Running bday func")
+    """Wishes you on your birthday."""
     gcalendar.main()
     days_remaining, name = gcalendar.get_next_bday()
 
@@ -334,7 +313,6 @@ dispatcher.add_handler(CommandHandler(command='start', callback=bc.start))
 dispatcher.add_handler(CommandHandler(command='swear', callback=bc.swear))
 dispatcher.add_handler(CommandHandler(command='snake', callback=bc.snake))
 dispatcher.add_handler(CommandHandler(command='facts', callback=bc.facts))
-dispatcher.add_handler(CommandHandler(command='transfer', callback=transfer))
 
 # /8ball conversation-
 convo_handler = ConversationHandler(
@@ -359,7 +337,7 @@ convo2_handler = ConversationHandler(
                        MessageHandler(filters=Filters.regex("^Nothing$"), callback=start.leave)
                        ],
         bday.INPUT: [MessageHandler(
-            filters=Filters.regex("^([1-9][0-9]{3}-[0-9]{2}-[0-9]{2})$"),
+            filters=Filters.regex("^([1-9][0-9]{3}-[0-9]{2}-[0-9]{2})$"),  # Regex to see if you've added a valid date
             callback=bday.bday_add_or_update)],  # Accepts only dates
 
         bday.MODIFY: [MessageHandler(filters=Filters.regex("^Forget my birthday sir$"), callback=bday.bday_del),
@@ -384,9 +362,6 @@ dispatcher.add_handler(convo2_handler)
 media_handler = MessageHandler(Filters.document | Filters.photo | Filters.video | Filters.voice, media)
 dispatcher.add_handler(media_handler)
 
-forward_handler = MessageHandler(Filters.forwarded, forward_id)
-dispatcher.add_handler(forward_handler)
-
 del_pinmsg_handler = MessageHandler(Filters.status_update.pinned_message, del_pin)
 dispatcher.add_handler(del_pinmsg_handler)
 
@@ -404,5 +379,5 @@ dispatcher.add_handler(unknown_handler)
 
 # Note: time values passed are in UTC+0
 updater.job_queue.run_daily(morning_goodness, time(4, 0, 0))  # will be called daily at ([h]h, [m]m,[s]s)
-updater.job_queue.run_repeating(bday_wish, 86400, first=1)
+updater.job_queue.run_repeating(bday_wish, 86400, first=1)  # Will run every time script is started, and once a day.
 updater.start_polling()
