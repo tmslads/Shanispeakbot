@@ -29,6 +29,7 @@ def ladcased(normal):
 
     return ladified
 
+
 class BotCommands:
     @staticmethod
     def delete_command(update):
