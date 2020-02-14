@@ -147,8 +147,11 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
 
     elif user.full_name != context.user_data['full_name'][-1]:
         context.user_data['full_name'].append(user.full_name)
+    
+    if "chat_ids" not in context.chat_data:
+        context.chat_data["chat_ids"] = []
 
-    if chat_id not in context.chat_data['chat_ids']:  # Gets chat id of the user in which they have talked to the bot
+    elif chat_id not in context.chat_data['chat_ids']:  # Gets chat id of the user in which they have talked to the bot
         context.chat_data['chat_ids'].append(chat_id)
 
     cleaned = []
