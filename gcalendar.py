@@ -1,7 +1,5 @@
 # Connection to 12B class calendar, using Google Calendar API
 
-from __future__ import print_function
-
 import datetime
 import os.path
 import pickle

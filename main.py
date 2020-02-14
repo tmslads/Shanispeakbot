@@ -147,7 +147,7 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
 
     elif user.full_name != context.user_data['full_name'][-1]:
         context.user_data['full_name'].append(user.full_name)
-    
+
     if "chat_ids" not in context.chat_data:
         context.chat_data["chat_ids"] = []
 
@@ -290,7 +290,7 @@ def morning_goodness(context):
         print(greeting)
         context.bot_data['seek'] = greetings.tell()
 
-    for chat_id in (group_ids['12b'], group_ids['grade12'])  # Send to groups: [12B, Grade 12]
+    for chat_id in (group_ids['12b'], group_ids['grade12']):  # Send to groups: [12B, Grade 12]
         msg = shanisir_bot.send_message(chat_id=chat_id, text=greeting)  # Send to both groups
         shanisir_bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id, disable_notification=True)  # Pin it
         shanisir_bot.send_chat_action(chat_id=chat_id, action='upload_audio')

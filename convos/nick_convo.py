@@ -1,7 +1,8 @@
-from start import markup, CHOICE
 from telegram import ForceReply
 from telegram import KeyboardButton
 from telegram import ReplyKeyboardMarkup
+
+from .start import markup, CHOICE
 
 SET_NICK, MODIFY_NICK = range(3, 5)
 
