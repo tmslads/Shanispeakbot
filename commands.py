@@ -76,7 +76,7 @@ class BotCommands:
                 break
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=ladcased(f"'{swears[0]}',\n'{swears[1]}',\n'{swears[2]}',\n'{swears[3]}'\n\n"
-                                      f"{next(swear_advice)}"))
+                                               f"{next(swear_advice)}"))
 
     @staticmethod
     def snake(update, context):

@@ -305,9 +305,13 @@ def bday_wish(context):
     gcalendar.main()
     days_remaining, name = gcalendar.get_next_bday()
 
+    # Wishes from Google Calendar-
     if days_remaining == 0:
         context.bot.send_message(chat_id=group_ids['12b'],
                                  text=f"Happy birthday {name}! May the mass times acceleration be with you!🎉")
+
+    # Wishes from /tell birthday input-
+    # WIP
 
 
 dispatcher.add_handler(InlineQueryHandler(inline.inline_clips))
@@ -340,9 +344,12 @@ convo2_handler = ConversationHandler(
                        MessageHandler(filters=Filters.regex("^Nickname$"), callback=nick.nick),
                        MessageHandler(filters=Filters.regex("^Nothing$"), callback=start.leave)
                        ],
-        bday.INPUT: [MessageHandler(
-            filters=Filters.regex("^([1-9][0-9]{3}-[0-9]{2}-[0-9]{2})$"),  # Regex to see if you've added a valid date
-            callback=bday.bday_add_or_update)],  # Accepts only dates
+        bday.INPUT: [
+            MessageHandler(
+                filters=Filters.regex("^([1-9][0-9]{3}-[0-9]{2}-[0-9]{2})$"),
+                # Regex to see if you've added a valid date
+                callback=bday.bday_add_or_update),
+            MessageHandler(filters=Filters.text, callback=bday.wrong)],  # Accepts only dates
 
         bday.MODIFY: [MessageHandler(filters=Filters.regex("^Forget my birthday sir$"), callback=bday.bday_del),
 
@@ -353,10 +360,11 @@ convo2_handler = ConversationHandler(
 
         nick.MODIFY_NICK: [MessageHandler(filters=Filters.regex("^Change nickname$"), callback=nick.edit_nick),
                            MessageHandler(filters=Filters.regex("^Remove nickname$"), callback=nick.del_nick),
-                           MessageHandler(filters=Filters.regex("^Back$"), callback=nick.back)]
+                           MessageHandler(filters=Filters.regex("^Back$"), callback=nick.back)
+                           ],
     },
     fallbacks=[MessageHandler(Filters.regex("^No, thank you sir$"), callback=bday.reject),
-               MessageHandler(Filters.text & Filters.reply, bday.wrong)],
+               CommandHandler("cancel", start.leave)],
 
     name="/tell convo",
     persistent=True, allow_reentry=True, conversation_timeout=15

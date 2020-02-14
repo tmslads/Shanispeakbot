@@ -40,7 +40,7 @@ def bday(update, context):  # CHOICE
             [KeyboardButton(text="Update my birthday sir"), KeyboardButton(text="Forget my birthday sir")],
             [KeyboardButton(text="No, thank you sir")]]
 
-        bday_markup = ReplyKeyboardMarkup(keyboard=bday_keyboard, one_time_keyboard=True)
+        bday_markup = ReplyKeyboardMarkup(keyboard=bday_keyboard, one_time_keyboard=True, selective=True)
 
         b_date = context.user_data['birthday']
         context.bot.send_message(chat_id=update.effective_chat.id,
@@ -66,6 +66,7 @@ def bday_add_or_update(update, context):  # INPUT
         wrong(update, context)  # Asks for a valid input
 
     else:
+        print("Correct")
         name = nicknamer(update, context)
         context.user_data['birthday'] = dt_obj
 
@@ -118,7 +119,7 @@ def reject(update, context):  # fallback
     return CHOICE
 
 
-def wrong(update, context):  # fallback
+def wrong(update, context):  # INPUT
     """Asks user to enter his birthdate correctly."""
 
     context.bot.send_message(chat_id=update.effective_chat.id,

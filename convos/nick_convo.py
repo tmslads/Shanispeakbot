@@ -2,6 +2,7 @@ from telegram import ForceReply
 from telegram import KeyboardButton
 from telegram import ReplyKeyboardMarkup
 
+from commands import prohibited
 from .start import markup, CHOICE
 
 SET_NICK, MODIFY_NICK = range(3, 5)
@@ -25,7 +26,7 @@ def nick(update, context):
         nick_kb = [[KeyboardButton("Change nickname"), KeyboardButton("Remove nickname")],
                    [KeyboardButton("Back")]]
 
-        nick_markup = ReplyKeyboardMarkup(nick_kb, one_time_keyboard=True)
+        nick_markup = ReplyKeyboardMarkup(nick_kb, one_time_keyboard=True, selective=True)
         nick_name = context.user_data["nickname"][-1]
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=f"Hi {nick_name}, what you want to do like?", reply_markup=nick_markup,
@@ -37,7 +38,6 @@ def nick(update, context):
 def del_nick(update, context):  # MODIFY_NICK
     """Deletes nickname (i.e.) sets it to your first name."""
 
-    user_id = update.message.from_user.id
     name = update.message.from_user.first_name
 
     context.user_data['nickname'].append(name)
@@ -52,7 +52,7 @@ def edit_nick(update, context):  # MODIFY_NICK
     """Asks for new nickname."""
 
     context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=f"What is your like you say new nickname?",
+                             text="What is your like you say new nickname?",
                              reply_to_message_id=update.message.message_id, reply_markup=ForceReply(selective=True))
     return SET_NICK
 
@@ -63,13 +63,21 @@ def add_edit_nick(update, context):  # SET_NICK
     if 'nickname' not in context.user_data:
         context.user_data['nickname'] = []
 
-    context.user_data['nickname'].append(update.message.text)
+    if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=f"See this language is embarrassing to me ok. I'm giving you one more chance"
+                                      f" that's it.",
+                                 reply_to_message_id=update.message.message_id, reply_markup=ForceReply(selective=True))
+        return SET_NICK
 
-    nicky = context.user_data['nickname'][-1]
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=f"Hi {nicky} what you're doing like",
-                             reply_to_message_id=update.message.message_id, reply_markup=markup)
-    return CHOICE
+    else:
+        context.user_data['nickname'].append(update.message.text)
+        nicky = context.user_data['nickname'][-1]
+
+        context.bot.send_message(chat_id=update.effective_chat.id,
+                                 text=f"Hi {nicky} what you're doing like",
+                                 reply_to_message_id=update.message.message_id, reply_markup=markup)
+        return CHOICE
 
 
 def back(update, context):  # MODIFY_NICK
