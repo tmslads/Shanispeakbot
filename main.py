@@ -154,6 +154,8 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     cleaned = []
     JJ_RB = ["like you say", "like you speak"]  # For Adjectives or Adverbs
 
+    msg_text = update.message.text
+
     if bot_response is None:
         temp = None
         search_in_response_text = None
@@ -167,14 +169,14 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
 
         bot_response = chatterbot.conversation.Statement(text=reply_text,
                                                          search_text=get_tags(reply_text))
-        user_msg = chatterbot.conversation.Statement(text=update.message.text,
-                                                     search_text=get_tags(update.message.text),
+        user_msg = chatterbot.conversation.Statement(text=msg_text,
+                                                     search_text=get_tags(msg_text),
                                                      in_response_to=bot_response,
                                                      search_in_response_to=get_tags(
                                                          reply_text))
     else:
-        user_msg = chatterbot.conversation.Statement(text=update.message.text,
-                                                     search_text=get_tags(update.message.text),
+        user_msg = chatterbot.conversation.Statement(text=msg_text,
+                                                     search_text=get_tags(msg_text),
                                                      in_response_to=bot_response,
                                                      search_in_response_to=search_in_response_text)
 
@@ -188,13 +190,13 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
 
     bot_response = chatbot.shanisirbot.get_response(user_msg.text)
     try:
-        msg = bot_response.text
+        bot_msg = bot_response.text
     except AttributeError:
-        msg = 'Hello'
+        bot_msg = 'Hello'
 
     punctuation = r"""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
-    msg = ''.join(c for c in msg if c not in punctuation)
-    blob = TextBlob(msg)
+    bot_msg = ''.join(c for c in bot_msg if c not in punctuation)
+    blob = TextBlob(bot_msg)
     cleaned = blob.words  # Returns list with no punctuation marks
 
     flag = 0  # To check if a modal is present in the sentence
