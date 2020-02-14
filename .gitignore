@@ -1,4 +1,5 @@
 *.pyc
 token.txt
 sentence_tokenizer.pickle
-
+db.sqlite3-shm
+db.sqlite3-wal
