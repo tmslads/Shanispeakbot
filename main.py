@@ -362,12 +362,14 @@ convo2_handler = ConversationHandler(
                            MessageHandler(filters=Filters.regex("^Remove nickname$"), callback=nick.del_nick),
                            MessageHandler(filters=Filters.regex("^Back$"), callback=nick.back)
                            ],
+
+        ConversationHandler.TIMEOUT: [MessageHandler(filters=Filters.all, callback=start.timedout)]
     },
     fallbacks=[MessageHandler(Filters.regex("^No, thank you sir$"), callback=bday.reject),
                CommandHandler("cancel", start.leave)],
 
     name="/tell convo",
-    persistent=True, allow_reentry=True, conversation_timeout=15
+    persistent=True, allow_reentry=True, conversation_timeout=20
 )
 dispatcher.add_handler(convo2_handler)
 

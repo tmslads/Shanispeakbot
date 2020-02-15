@@ -39,3 +39,10 @@ def leave(update, context):
                              reply_markup=ReplyKeyboardRemove(selective=True))
 
     return -1
+
+
+def timedout(update, context):
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text="Ok I am fine being seenzoned",
+                             reply_to_message_id=update.message.message_id,
+                             reply_markup=ReplyKeyboardRemove(selective=True))

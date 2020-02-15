@@ -1,5 +1,6 @@
 import itertools
 import random as r
+from telegram import error
 
 import util
 
@@ -34,7 +35,11 @@ class BotCommands:
     @staticmethod
     def delete_command(update):
         """Delete the command message sent by the user"""
-        update.message.delete()
+        try:
+            update.message.delete()
+
+        except error.BadRequest:
+            pass
 
     @staticmethod
     def start(update, context):
@@ -69,6 +74,7 @@ class BotCommands:
 
     @staticmethod
     def swear(update, context):
+
         BotCommands.delete_command(update)
         while True:
             swears = r.choices(prohibited, k=4)  # Returns a list of 4 elements
@@ -80,12 +86,14 @@ class BotCommands:
 
     @staticmethod
     def snake(update, context):
+
         BotCommands.delete_command(update)
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=snake_roast)
 
     @staticmethod
     def facts(update, context):
+
         BotCommands.delete_command(update)
         fact = r.choice(util.facts())
         context.bot.send_message(chat_id=update.effective_chat.id,
