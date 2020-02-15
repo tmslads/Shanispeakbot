@@ -338,7 +338,7 @@ dispatcher.add_handler(convo_handler)
 
 # /tell conversation
 convo2_handler = ConversationHandler(
-    entry_points=[CommandHandler('tell', start.initiate)],
+    entry_points=[CommandHandler('tell', start.initiate, filters=Filters.private)],
     states={
         start.CHOICE: [MessageHandler(filters=Filters.regex("^Birthday$"), callback=bday.bday),
                        MessageHandler(filters=Filters.regex("^Nickname$"), callback=nick.nick),
