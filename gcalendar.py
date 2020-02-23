@@ -140,7 +140,8 @@ def get_next_bday():
         day_diff = bday_date[0] - today  # Finds diff from today to birthday
         diff.append((day_diff.days, bday_date[1]))
 
-    print(min(diff))
+    print(diff, '\n')
+    print("Next birthday: ", min(diff), '\n')
     return min(diff)  # Returns lowest (i.e. next bday) in the calendar
 
 
