@@ -329,12 +329,12 @@ dispatcher.add_handler(CommandHandler(command='facts', callback=bc.facts))
 # /8ball conversation-
 convo_handler = ConversationHandler(
     entry_points=[
-        CommandHandler(command="8ball", callback=magic.magic8ball),
-        MessageHandler(filters=Filters.command(False) & Filters.text & Filters.regex("8ball"),
+        CommandHandler(command="8ball", callback=magic.magic8ball, filters=~Filters.reply),
+        MessageHandler(filters=Filters.command(False) & Filters.regex("8ball") & Filters.reply,
                        callback=magic.thinking)],
 
     states={magic.PROCESSING: [
-        MessageHandler(filters=(Filters.reply & Filters.text), callback=magic.thinking)]},
+        MessageHandler(filters=Filters.reply & Filters.text, callback=magic.thinking)]},
 
     fallbacks=[CommandHandler(command='cancel', callback=magic.cancel)], conversation_timeout=15
 )
