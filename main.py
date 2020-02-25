@@ -1,7 +1,6 @@
 import itertools
 import logging
 import random as r
-from datetime import time
 from time import sleep
 
 import chatterbot
@@ -308,10 +307,15 @@ def bday_wish(context):
     # Wishes from Google Calendar-
     if days_remaining == 0:
         context.bot.send_message(chat_id=group_ids['12b'],
-                                 text=f"Happy birthday {name}! May the mass times acceleration be with you!🎉")
+                                 text=f"Happy birthday {name}! May the mass times acceleration be with you!🎉"
+                                      f"What your going to do today like?")
 
     # Wishes from /tell birthday input-
     # WIP
+
+
+def add_job_q():
+    updater.job_queue.run_repeating(morning_goodness, 86400, first=1)
 
 
 dispatcher.add_handler(InlineQueryHandler(inline.inline_clips))
@@ -373,25 +377,12 @@ convo2_handler = ConversationHandler(
 )
 dispatcher.add_handler(convo2_handler)
 
-media_handler = MessageHandler(Filters.document | Filters.photo | Filters.video | Filters.voice, media)
-dispatcher.add_handler(media_handler)
+dispatcher.add_handler(MessageHandler(Filters.document | Filters.photo | Filters.video | Filters.voice, media))
+dispatcher.add_handler(MessageHandler(Filters.status_update.pinned_message, del_pin))
+dispatcher.add_handler(MessageHandler(Filters.reply & Filters.group, reply))
+dispatcher.add_handler(MessageHandler(Filters.group & Filters.text, group))
+dispatcher.add_handler(MessageHandler(Filters.private, private))
+dispatcher.add_handler(MessageHandler(Filters.command, bc.unknown))
 
-del_pinmsg_handler = MessageHandler(Filters.status_update.pinned_message, del_pin)
-dispatcher.add_handler(del_pinmsg_handler)
-
-reply_handler = MessageHandler(Filters.reply & Filters.group, reply)
-dispatcher.add_handler(reply_handler)
-
-group_handler = MessageHandler(Filters.group & Filters.text, group)
-dispatcher.add_handler(group_handler)
-
-private_handler = MessageHandler(Filters.private, private)
-dispatcher.add_handler(private_handler)
-
-unknown_handler = MessageHandler(Filters.command, bc.unknown)
-dispatcher.add_handler(unknown_handler)
-
-# Note: time values passed are in UTC+0
-updater.job_queue.run_daily(morning_goodness, time(4, 0, 0))  # will be called daily at ([h]h, [m]m,[s]s)
 updater.job_queue.run_repeating(bday_wish, 86400, first=1)  # Will run every time script is started, and once a day.
 updater.start_polling()
