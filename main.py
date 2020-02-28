@@ -3,6 +3,7 @@ import logging
 import random as r
 from datetime import time
 from time import sleep
+from time import time as cur_time
 
 import chatterbot
 import emoji
@@ -33,6 +34,7 @@ updater = Updater(token=f'{bot_token}', use_context=True, persistence=pp)
 dispatcher = updater.dispatcher
 shanisir_bot = updater.bot
 
+last_reacted_at = 0
 bot_response = None
 
 rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
@@ -57,6 +59,11 @@ def nicknamer(update, context):
 def media(update, context):
     """Sends a reaction to media messages (pictures, videos, documents, voice notes)"""
 
+    global last_reacted_at
+    now = cur_time()
+    if now - last_reacted_at < 60:  # If a reaction was sent less than a minute ago
+        return  # Don't send a reaction
+    last_reacted_at = cur_time()
     try:
         doc = update.message.document.file_name[-3:]
     except AttributeError:  # When there is no document sent
