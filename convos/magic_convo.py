@@ -44,7 +44,7 @@ def thinking(update, context):
     """
     name = nicknamer(update, context)
 
-    if update.message.reply_to_message:
+    if update.message.reply_to_message.from_user.username != "shanisirbot":
         actual_msg = update.message.reply_to_message.message_id
 
     else:
