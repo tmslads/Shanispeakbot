@@ -2,6 +2,7 @@ import itertools
 import logging
 import random as r
 from time import sleep
+from time import time as cur_time
 
 import chatterbot
 import emoji
@@ -32,6 +33,7 @@ updater = Updater(token=f'{bot_token}', use_context=True, persistence=pp)
 dispatcher = updater.dispatcher
 shanisir_bot = updater.bot
 
+last_reacted_at = 0
 bot_response = None
 
 rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
@@ -56,6 +58,11 @@ def nicknamer(update, context):
 def media(update, context):
     """Sends a reaction to media messages (pictures, videos, documents, voice notes)"""
 
+    global last_reacted_at
+    now = cur_time()
+    if now - last_reacted_at < 60:  # If a reaction was sent less than a minute ago
+        return  # Don't send a reaction
+    last_reacted_at = cur_time()
     try:
         doc = update.message.document.file_name[-3:]
     except AttributeError:  # When there is no document sent
@@ -71,10 +78,10 @@ def media(update, context):
                      "Now I feel very bad like", f"Are you fine {name}?"]
 
     voice_reactions = ["What is this", f"I can't hear you {name}", f"Are you fine {name}?",
-                       "Now your on the track like", "Your voice is like you say bad",
-                       f"See I can't tolerate this {name}"]
+                       "Now your on the track like", "Your voice is funny like you say",
+                       f"See I can't tolerate this {name}", "What your saying??"]
 
-    app_reactions = ["Is this a virus", "I suggest like you say you don't open this", "We just don't mind that okay?"]
+    app_reactions = ["Is this a virus", "I'm just suggesting like, don't open this", "We just don't mind that okay?"]
 
     prob = r.choices([0, 1], weights=[0.6, 0.4])[0]
     if prob:
