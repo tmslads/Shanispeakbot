@@ -83,7 +83,7 @@ def media(update, context):
 
     app_reactions = ["Is this a virus", "I'm just suggesting like, don't open this", "We just don't mind that okay?"]
 
-    prob = r.choices([0, 1], weights=[0.6, 0.4])[0]
+    prob = r.choices([0, 1], weights=[0.7, 0.3])[0]
     if prob:
         shanisir_bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         sleep(2)
