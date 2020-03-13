@@ -10,7 +10,7 @@ names = []
 
 getting = requests.get(_LINK)
 scraped = BeautifulSoup(getting.content, 'html.parser')
-results = scraped.find_all(href=re.compile('/tmslads/Shanisirmodule/blob/haunya/Assets/clips/'))
+results = scraped.find_all(href=re.compile('/tmslads/Shanisirmodule/blob/master/Assets/clips/'))
 
 
 def clips():

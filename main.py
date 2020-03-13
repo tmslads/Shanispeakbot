@@ -301,7 +301,7 @@ def morning_goodness(context):
         shanisir_bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id, disable_notification=True)  # Pin it
         shanisir_bot.send_chat_action(chat_id=chat_id, action='upload_audio')
         shanisir_bot.send_audio(chat_id=chat_id,
-                                audio="https://raw.githubusercontent.com/tmslads/Shanisirmodule/haunya/Assets/"
+                                audio="https://raw.githubusercontent.com/tmslads/Shanisirmodule/master/Assets/"
                                       "clips/my%20issue%20is%20you%20don't%20score.mp3",
                                 title="Good morning")
 
