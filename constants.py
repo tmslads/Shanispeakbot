@@ -20,5 +20,5 @@ sql_table = """
 # Websites to scrape from-
 
 _DOWNLOAD = "https://raw.githubusercontent.com"
-_LINK = "https://github.com/tmslads/Shanisirmodule/tree/haunya/Assets/clips"
+_LINK = "https://github.com/tmslads/Shanisirmodule/tree/master/Assets/clips"
 URL = 'http://randomfactgenerator.net/'  # To be scraped for facts()
