@@ -66,26 +66,23 @@ class CalendarEventManager(object):
         # Get event id of the event to be modified
         print(new_date)
         print(self.name)
-        page_token = None
-        while True:
-            events = service.events().list(calendarId='primary', pageToken=page_token).execute()
-            # print(events['items'])
-            for event in events['items']:
-                if self.name in event['summary']:
-                    print("Match: ", event['summary'])
-                    self.event['start']['date'] = f"{formatter(new_date)}"
-                    self.event['end']['date'] = f"{formatter(new_date + timedelta(days=1))}"
 
-                    print("Updated dates")
-                    updated_event = service.events().update(calendarId='primary', eventId=event['id'],
-                                                            body=self.event).execute()
+        events = service.events().list(calendarId='primary').execute()
 
-                    print(f"Successfully updated {self.name}'s birthday: {updated_event['start']['date']}")
-                    break
+        for event in events['items']:
+            if self.name in event['summary']:
+                print(f"Match: {event['summary']}")
+                self.event['start']['date'] = f"{formatter(new_date)}"
+                self.event['end']['date'] = f"{formatter(new_date + timedelta(days=1))}"
 
-            page_token = events.get('nextPageToken')
-            if not page_token:
-                raise ValueError("Failed to update. Event not found.")
+                print("Updated dates in the event.")
+                updated_event = service.events().update(calendarId='primary', eventId=event['id'],
+                                                        body=self.event).execute()
+
+                print(f"Successfully updated {self.name}'s birthday: {updated_event['start']['date']}")
+                break
+        else:
+            raise ValueError("Event not found")
 
 
 def formatter(date: datetime.date, days: int = 0, format_style=""):
@@ -118,31 +115,30 @@ def get_next_bday():
 
     :returns tuple(int, string)
     """
-    page_token = None
-    bday_list = []
-    while True:
-        events = service.events().list(calendarId='primary', pageToken=page_token).execute()
-        for event in events['items']:
-            if 'birthday' in event['summary']:
-                index = event['summary'].find("'")  # Find index of "'" so we can get name from event.
-                bday_list.append(  # Parse string to datetime object, and append that along with name of the person
-                    (datetime.datetime.strptime(event['start']['date'], "%Y-%m-%d"), event['summary'][:index]))
 
-        page_token = events.get('nextPageToken')
-        if not page_token:
-            break
+    bday_list = []
+
+    events = service.events().list(calendarId='primary').execute()
+
+    for event in events['items']:
+        if 'birthday' in event['summary']:
+            index = event['summary'].find("'")  # Find index of "'" so we can get name from event.
+            bday_list.append(  # Parse string to datetime object, and append that along with name of the person
+                (datetime.datetime.strptime(event['start']['date'], "%Y-%m-%d"), event['summary'][:index]))
 
     today = date.today()
     today = datetime.datetime.strptime(str(today), "%Y-%m-%d")  # Parses today's date (time object) into datetime object
 
     diff = []
+
     for bday_date in bday_list:
         day_diff = bday_date[0] - today  # Finds diff from today to birthday
         diff.append((day_diff.days, bday_date[1]))
 
     print(diff, '\n')
-    print("Next birthday: ", min(diff), '\n')
-    return min(diff)  # Returns lowest (i.e. next bday) in the calendar
+    next_bday = min(lowest for lowest in diff if lowest[0] >= 0)
+    print(f"Next birthday: {next_bday}\n")
+    return next_bday  # Returns lowest (i.e. next bday) in the calendar
 
 
 def main():

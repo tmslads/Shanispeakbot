@@ -1,10 +1,12 @@
 import itertools
 import logging
+import pickle
+import pprint
 import random as r
 import re
 import sqlite3
-from time import sleep
-from time import time as cur_time
+from datetime import datetime, date
+from time import sleep, time as cur_time
 
 import chatterbot
 import emoji
@@ -15,10 +17,8 @@ from textblob import TextBlob
 import chatbot
 import inline
 from commands import BotCommands as bc, prohibited
+from convos import (bday, magic, nick, settings_gui, start)
 from constants import group_ids
-from convos import (bday, magic, nick)
-from convos import settings_gui
-from convos import start
 from files import settings_filter
 from online import gcalendar
 
@@ -116,9 +116,7 @@ def media(update, context):
 
 def del_pin(update, context):
     """Deletes pinned message service status from the bot."""
-
-    if update.message.from_user.username == 'shanisirbot':
-        shanisir_bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
+    shanisir_bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
 
 
 def reply(update, context):
@@ -263,11 +261,8 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     if len(cleaned) < 5:  # Will run if input is too short
         cleaned.append(r.choice(["*draws perfect circle*", "*scratches nose*"]))
 
-    if re.search('when|time', cleaned, flags=re.IGNORECASE):
+    if re.search('when|time', ' '.join(cleaned), flags=re.IGNORECASE):
         cleaned.insert(-1, 'decide a date')
-
-    # if 'when' in cleaned or 'When' in cleaned or 'time' in cleaned or 'Time' in cleaned:  # If question is present
-    #     cleaned.insert(-1, 'decide a date')
 
     for word in update.message.text:
         if word in emoji.UNICODE_EMOJI:  # Checks if emoji is present in message
@@ -316,14 +311,14 @@ def morning_goodness(context):
     clip_loc = r"C:/Users/Uncle Sam/Desktop/sthyaVERAT/4 FUN ya Practice/Shanisirmodule/Assets/clips/good mourning.mp3"
 
     for chat_id in ids:  # Send to groups: [12B, Grade 12]
-        msg = shanisir_bot.send_message(chat_id=chat_id[0], text=greeting)  # Send to both groups
+        msg = shanisir_bot.send_message(chat_id=chat_id[0], text=greeting)
 
         try:
             shanisir_bot.pin_chat_message(chat_id=chat_id[0], message_id=msg.message_id,
                                           disable_notification=True)  # Pin it
+
         except Exception as e:  # When chat is private, or no rights to pin message
             print(e)
-            pass
 
         shanisir_bot.send_chat_action(chat_id=chat_id[0], action='upload_audio')
         shanisir_bot.send_audio(chat_id=chat_id[0],
@@ -342,11 +337,22 @@ def bday_wish(context):
                                  text=f"Happy birthday {name}! May the mass times acceleration be with you!🎉"
                                       f"What your going to do today like?")
 
+        now = str(date.today())
+        today = datetime.strptime(now, "%Y-%m-%d")  # Parses today's date (time object) into datetime object
+        new_date = today.replace(year=today.year + 1)
+
+        gcalendar.CalendarEventManager(name=name).update_event(new_date)  # Updates bday to next year
+
     # TODO: Wishes from /tell birthday input-
 
 
 def add_job_q():
     updater.job_queue.run_repeating(morning_goodness, 86400, first=1)
+
+
+def prettyprintview():
+    with open('files/user_data', 'rb') as f:
+        pprint.PrettyPrinter(indent=2).pprint(pickle.load(f))
 
 
 dispatcher.add_handler(InlineQueryHandler(inline.inline_clips))
@@ -421,9 +427,10 @@ dispatcher.add_handler(settings_gui_handler)
 
 media_filters = (Filters.document | Filters.photo | Filters.video | Filters.voice)
 edit_filter = Filters.update.edited_message
+pin_filter = Filters.status_update.pinned_message
 
 dispatcher.add_handler(MessageHandler(media_filters & settings.reactions, media))
-dispatcher.add_handler(MessageHandler(Filters.status_update.pinned_message, del_pin))
+dispatcher.add_handler(MessageHandler(pin_filter & Filters.user(username="shanisirbot"), del_pin))
 dispatcher.add_handler(MessageHandler(Filters.reply & Filters.group & ~ edit_filter, reply))
 dispatcher.add_handler(MessageHandler(Filters.group & Filters.text & settings.profanity & ~ edit_filter, group))
 dispatcher.add_handler(MessageHandler(Filters.private & Filters.text & ~ edit_filter, private))
@@ -431,3 +438,4 @@ dispatcher.add_handler(MessageHandler(Filters.command, bc.unknown))
 
 updater.job_queue.run_repeating(bday_wish, 86400, first=1)  # Will run every time script is started, and once a day.
 updater.start_polling()
+# prettyprintview()
