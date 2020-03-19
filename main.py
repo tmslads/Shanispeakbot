@@ -331,6 +331,7 @@ def morning_goodness(context):
                                 thumb=open("files/shanisir.jpeg", 'rb'))
 
 
+
 def bday_wish(context):
     """Wishes you on your birthday."""
     gcalendar.main()
