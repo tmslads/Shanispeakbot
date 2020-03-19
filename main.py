@@ -168,6 +168,11 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
 
     msg_text = update.message.text
 
+    if '@shanisirbot' in msg_text:  # Sends response if bot is @'ed in group
+        msg_text = re.sub(r"(\s*)@shanisirbot(\s*)", ' ', msg_text)  # Remove mention from text so response is better
+        the_id = update.message.message_id
+        grp = True
+
     if bot_response is None:
         temp = None
         search_in_response_text = None
@@ -310,7 +315,7 @@ def morning_goodness(context):
 
     clip_loc = r"C:/Users/Uncle Sam/Desktop/sthyaVERAT/4 FUN ya Practice/Shanisirmodule/Assets/clips/good mourning.mp3"
 
-    for chat_id in ids:  # Send to groups: [12B, Grade 12]
+    for chat_id in ids:
         msg = shanisir_bot.send_message(chat_id=chat_id[0], text=greeting)
 
         try:
@@ -432,6 +437,7 @@ pin_filter = Filters.status_update.pinned_message
 dispatcher.add_handler(MessageHandler(media_filters & settings.reactions, media))
 dispatcher.add_handler(MessageHandler(pin_filter & Filters.user(username="shanisirbot"), del_pin))
 dispatcher.add_handler(MessageHandler(Filters.reply & Filters.group & ~ edit_filter, reply))
+dispatcher.add_handler(MessageHandler(Filters.regex("@shanisirbot") & Filters.group & ~ edit_filter, private))
 dispatcher.add_handler(MessageHandler(Filters.group & Filters.text & settings.profanity & ~ edit_filter, group))
 dispatcher.add_handler(MessageHandler(Filters.private & Filters.text & ~ edit_filter, private))
 dispatcher.add_handler(MessageHandler(Filters.command, bc.unknown))

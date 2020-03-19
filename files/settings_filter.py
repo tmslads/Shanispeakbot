@@ -5,6 +5,8 @@ from constants import sql_table
 
 
 def connection(update, query):
+    """Connect to database and execute given query."""
+
     conn = sqlite3.connect('./files/bot_settings.db')
     c = conn.cursor()
     chat_id = update.effective_chat.id
@@ -15,7 +17,7 @@ def connection(update, query):
         result = c.fetchone()
         if not result[0]:
             raise Exception
-    except Exception as e:
+    except Exception as e:  # If /settings was never called
         print(e)
         name = update.effective_chat.title
         if name is None:
@@ -32,6 +34,8 @@ def connection(update, query):
 
     return result[0]
 
+# See docs for how these work-
+
 
 class MediaReactions(BaseFilter):
     update_filter = True
@@ -40,10 +44,6 @@ class MediaReactions(BaseFilter):
     def filter(self, update):
         result = connection(update,
                             f"SELECT media_reactions from chat_settings where CHAT_ID={update.effective_chat.id};")
-
-        print()
-        print(result)
-        print(bool(result))
 
         return bool(result)
 
@@ -58,9 +58,6 @@ class ProfanityCheck(BaseFilter):
     def filter(self, update):
         result = connection(update,
                             f"SELECT profanity_check from CHAT_SETTINGS where CHAT_ID={update.effective_chat.id};")
-        print()
-        print(result)
-        print(bool(result))
 
         return bool(result)
 
@@ -74,9 +71,6 @@ class MorningMsgs(BaseFilter):
 
     def filter(self, update):
         result = connection(update, f"SELECT morning_msgs from CHAT_SETTINGS where CHAT_ID={update.effective_chat.id};")
-        print()
-        print(result)
-        print(bool(result))
 
         return bool(result)
 
