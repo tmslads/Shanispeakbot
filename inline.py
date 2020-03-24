@@ -3,7 +3,7 @@ from uuid import uuid4
 
 from telegram import InlineQueryResultAudio
 
-import util
+from online import util
 
 results = []
 links, names = util.clips()

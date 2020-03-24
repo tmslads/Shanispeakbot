@@ -11,13 +11,16 @@ The following commands are currently available to use:
 3. `/facts` - Get a random fact from the internet.
 4. `/8ball` - Magic 8 ball on messages. Usage: reply to a message with /8ball, or just type /8ball and then type the question.
 5. `/snake` - A roast
-6. More coming soon...
+6. `/tell` - Get more personal with the bot by providing a nickname and/or birthday, which it uses in regular conversations.
+7. `/settings` - Modify the behaviour of the bot in groups and private chat. You can toggle on/off morning messages, media reactions and profanity checks. More precise control on the probability of it reacting to media and profanity will come in a later update.
+8. More coming soon...
 
 ### Behaviour in groups:
 
 * If this bot is added to a group, it will try and behave like an actual user and reply to media sent (40% of the time) with some reactions.
 * The bot will also check for profanity (20% of the time) and will suggest to stop using it.
 * If any user replies to a message from the bot, it will reply to the user just like it would in private chat. The only difference is that here it does not learn from your replies.
+* The bot will reply to the user if he is mentioned (@) in the message.
 
 ### Behaviour in private chat:
 

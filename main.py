@@ -1,22 +1,26 @@
 import itertools
 import logging
+import pickle
+import pprint
 import random as r
-from time import sleep
-from time import time as cur_time
+import re
+import sqlite3
+from datetime import datetime, date
+from time import sleep, time as cur_time
 
 import chatterbot
 import emoji
 from telegram.ext import (CommandHandler, ConversationHandler, InlineQueryHandler, MessageHandler, Filters,
-                          PicklePersistence, Updater)
+                          PicklePersistence, Updater, CallbackQueryHandler)
 from textblob import TextBlob
 
 import chatbot
-import gcalendar
 import inline
 from commands import BotCommands as bc, prohibited
+from convos import (bday, magic, nick, settings_gui, start)
 from constants import group_ids
-from convos import (bday_convo as bday, magic_convo as magic, nick_convo as nick)
-from convos import start
+from files import settings_filter
+from online import gcalendar
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
                     level=logging.INFO)
@@ -24,14 +28,15 @@ logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s
 chatbot.shanisirbot.initialize()  # Does any work that needs to be done before the chatbot can process responses.
 get_tags = chatbot.shanisirbot.storage.tagger.get_bigram_pair_string
 
-with open("text_files/token.txt", 'r') as file:
+with open("files/token.txt", 'r') as file:
     bot_token = file.read()
 
-pp = PicklePersistence(filename=r'text_files/user_data')
+pp = PicklePersistence(filename=r'files/user_data')
 updater = Updater(token=f'{bot_token}', use_context=True, persistence=pp)
 
 dispatcher = updater.dispatcher
 shanisir_bot = updater.bot
+settings = settings_filter
 
 last_reacted_at = 0
 bot_response = None
@@ -83,7 +88,7 @@ def media(update, context):
 
     app_reactions = ["Is this a virus", "I'm just suggesting like, don't open this", "We just don't mind that okay?"]
 
-    prob = r.choices([0, 1], weights=[0.6, 0.4])[0]
+    prob = r.choices([0, 1], weights=[0.7, 0.3])[0]
     if prob:
         shanisir_bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
         sleep(2)
@@ -111,9 +116,7 @@ def media(update, context):
 
 def del_pin(update, context):
     """Deletes pinned message service status from the bot."""
-
-    if update.message.from_user.username == 'shanisirbot':
-        shanisir_bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
+    shanisir_bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
 
 
 def reply(update, context):
@@ -164,6 +167,11 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     JJ_RB = ["like you say", "like you speak"]  # For Adjectives or Adverbs
 
     msg_text = update.message.text
+
+    if '@shanisirbot' in msg_text:  # Sends response if bot is @'ed in group
+        msg_text = re.sub(r"(\s*)@shanisirbot(\s*)", ' ', msg_text)  # Remove mention from text so response is better
+        the_id = update.message.message_id
+        grp = True
 
     if bot_response is None:
         temp = None
@@ -258,7 +266,7 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     if len(cleaned) < 5:  # Will run if input is too short
         cleaned.append(r.choice(["*draws perfect circle*", "*scratches nose*"]))
 
-    if 'when' in cleaned or 'When' in cleaned or 'time' in cleaned or 'Time' in cleaned:  # If question is present
+    if re.search('when|time', ' '.join(cleaned), flags=re.IGNORECASE):
         cleaned.insert(-1, 'decide a date')
 
     for word in update.message.text:
@@ -267,7 +275,7 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
 
     shanitext = ' '.join(cleaned).capitalize()
 
-    with open("text_files/interactions.txt", "a") as f1:
+    with open("files/interactions.txt", "a") as f1:
         inp = f"UTC+0 {update.message.date} {isgrp} {reply} {update.message.from_user.full_name}" \
               f" ({update.message.from_user.username}) SAID: {update.message.text}\n"
         out = shanitext.capitalize()
@@ -286,7 +294,7 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
 def morning_goodness(context):
     """Send a "good morning" quote to the groups, along with a clip"""
 
-    with open("text_files/good_mourning.txt", "r") as greetings:
+    with open("files/good_mourning.txt", "r") as greetings:
         position = context.bot_data['seek']
         if position == 13642:  # If EOF was reached
             position = 0  # Start from the beginning
@@ -296,14 +304,32 @@ def morning_goodness(context):
         print(greeting)
         context.bot_data['seek'] = greetings.tell()
 
-    for chat_id in (group_ids['12b'], group_ids['grade12']):  # Send to groups: [12B, Grade 12]
-        msg = shanisir_bot.send_message(chat_id=chat_id, text=greeting)  # Send to both groups
-        shanisir_bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id, disable_notification=True)  # Pin it
-        shanisir_bot.send_chat_action(chat_id=chat_id, action='upload_audio')
-        shanisir_bot.send_audio(chat_id=chat_id,
-                                audio="https://raw.githubusercontent.com/tmslads/Shanisirmodule/master/Assets/"
-                                      "clips/my%20issue%20is%20you%20don't%20score.mp3",
-                                title="Good morning")
+    conn = sqlite3.connect('./files/bot_settings.db')
+    c = conn.cursor()
+    c.execute(f"SELECT CHAT_ID FROM CHAT_SETTINGS WHERE MORNING_MSGS=1;")
+    ids = c.fetchall()
+    conn.close()
+
+    # Bug with ptb where performer,title,thumb might be ignored when a url is supplied in 'audio' param in 'send_audio'.
+    # Workaround for now is to just open mp3 from desktop-
+
+    clip_loc = r"C:/Users/Uncle Sam/Desktop/sthyaVERAT/4 FUN ya Practice/Shanisirmodule/Assets/clips/good mourning.mp3"
+
+    for chat_id in ids:
+        msg = shanisir_bot.send_message(chat_id=chat_id[0], text=greeting)
+
+        try:
+            shanisir_bot.pin_chat_message(chat_id=chat_id[0], message_id=msg.message_id,
+                                          disable_notification=True)  # Pin it
+
+        except Exception as e:  # When chat is private, or no rights to pin message
+            print(e)
+
+        shanisir_bot.send_chat_action(chat_id=chat_id[0], action='upload_audio')
+        shanisir_bot.send_audio(chat_id=chat_id[0],
+                                audio=open(clip_loc, "rb"), title="Good morning", performer="Shani sir",
+                                thumb=open("files/shanisir.jpeg", 'rb'))
+
 
 
 def bday_wish(context):
@@ -317,12 +343,22 @@ def bday_wish(context):
                                  text=f"Happy birthday {name}! May the mass times acceleration be with you!🎉"
                                       f"What your going to do today like?")
 
-    # Wishes from /tell birthday input-
-    # WIP
+        now = str(date.today())
+        today = datetime.strptime(now, "%Y-%m-%d")  # Parses today's date (time object) into datetime object
+        new_date = today.replace(year=today.year + 1)
+
+        gcalendar.CalendarEventManager(name=name).update_event(new_date)  # Updates bday to next year
+
+    # TODO: Wishes from /tell birthday input-
 
 
 def add_job_q():
     updater.job_queue.run_repeating(morning_goodness, 86400, first=1)
+
+
+def prettyprintview():
+    with open('files/user_data', 'rb') as f:
+        pprint.PrettyPrinter(indent=2).pprint(pickle.load(f))
 
 
 dispatcher.add_handler(InlineQueryHandler(inline.inline_clips))
@@ -334,7 +370,7 @@ dispatcher.add_handler(CommandHandler(command='snake', callback=bc.snake))
 dispatcher.add_handler(CommandHandler(command='facts', callback=bc.facts))
 
 # /8ball conversation-
-convo_handler = ConversationHandler(
+magicball_handler = ConversationHandler(
     entry_points=[
         CommandHandler(command="8ball", callback=magic.magic8ball, filters=~Filters.reply),
         MessageHandler(filters=Filters.command(False) & Filters.regex("8ball") & Filters.reply,
@@ -345,10 +381,10 @@ convo_handler = ConversationHandler(
 
     fallbacks=[CommandHandler(command='cancel', callback=magic.cancel)], conversation_timeout=15
 )
-dispatcher.add_handler(convo_handler)
+dispatcher.add_handler(magicball_handler)
 
 # /tell conversation
-convo2_handler = ConversationHandler(
+tell_handler = ConversationHandler(
     entry_points=[CommandHandler('tell', start.initiate, filters=Filters.private)],
     states={
         start.CHOICE: [MessageHandler(filters=Filters.regex("^Birthday$"), callback=bday.bday),
@@ -382,14 +418,31 @@ convo2_handler = ConversationHandler(
     name="/tell convo",
     persistent=True, allow_reentry=True, conversation_timeout=20
 )
-dispatcher.add_handler(convo2_handler)
+dispatcher.add_handler(tell_handler)
 
-dispatcher.add_handler(MessageHandler(Filters.document | Filters.photo | Filters.video | Filters.voice, media))
-dispatcher.add_handler(MessageHandler(Filters.status_update.pinned_message, del_pin))
-dispatcher.add_handler(MessageHandler(Filters.reply & Filters.group, reply))
-dispatcher.add_handler(MessageHandler(Filters.group & Filters.text, group))
-dispatcher.add_handler(MessageHandler(Filters.private, private))
+settings_gui_handler = ConversationHandler(
+    entry_points=[CommandHandler('settings', settings_gui.start)],
+
+    states={
+        settings_gui.UPDATED: [CallbackQueryHandler(settings_gui.changed_setting, pattern="0|1|2"),
+                               CallbackQueryHandler(settings_gui.cancel, pattern="SAVE")]
+    },
+    fallbacks=[CommandHandler('cancel', settings_gui.cancel)]
+)
+dispatcher.add_handler(settings_gui_handler)
+
+media_filters = (Filters.document | Filters.photo | Filters.video | Filters.voice)
+edit_filter = Filters.update.edited_message
+pin_filter = Filters.status_update.pinned_message
+
+dispatcher.add_handler(MessageHandler(media_filters & settings.reactions, media))
+dispatcher.add_handler(MessageHandler(pin_filter & Filters.user(username="shanisirbot"), del_pin))
+dispatcher.add_handler(MessageHandler(Filters.reply & Filters.group & ~ edit_filter, reply))
+dispatcher.add_handler(MessageHandler(Filters.regex("@shanisirbot") & Filters.group & ~ edit_filter & ~ Filters.command, private))
+dispatcher.add_handler(MessageHandler(Filters.group & Filters.text & settings.profanity & ~ edit_filter, group))
+dispatcher.add_handler(MessageHandler(Filters.private & Filters.text & ~ edit_filter, private))
 dispatcher.add_handler(MessageHandler(Filters.command, bc.unknown))
 
 updater.job_queue.run_repeating(bday_wish, 86400, first=1)  # Will run every time script is started, and once a day.
 updater.start_polling()
+# prettyprintview()

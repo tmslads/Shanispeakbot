@@ -6,7 +6,7 @@ from telegram import ForceReply
 from telegram import KeyboardButton
 from telegram import ReplyKeyboardMarkup
 
-from gcalendar import formatter
+from online.gcalendar import formatter
 from .start import markup, CHOICE
 
 INPUT, MODIFY = range(1, 3)
