@@ -1,13 +1,14 @@
 import itertools
 import random as r
+
 from telegram import error
 
-import util
+from online import util
 
-with open(r"text_files/lad_words.txt", "r") as f:
+with open(r"files/lad_words.txt", "r") as f:
     prohibited = f.read().lower().split('\n')
 
-with open(r"text_files/snake.txt", "r") as f:
+with open(r"files/snake.txt", "r") as f:
     snake_roast = f.read()
 
 swear_advice = ["Don't use such words. Okay, fine?", "Such language fails to hit the tarjit.",
