@@ -438,7 +438,7 @@ pin_filter = Filters.status_update.pinned_message
 dispatcher.add_handler(MessageHandler(media_filters & settings.reactions, media))
 dispatcher.add_handler(MessageHandler(pin_filter & Filters.user(username="shanisirbot"), del_pin))
 dispatcher.add_handler(MessageHandler(Filters.reply & Filters.group & ~ edit_filter, reply))
-dispatcher.add_handler(MessageHandler(Filters.regex("@shanisirbot") & Filters.group & ~ edit_filter, private))
+dispatcher.add_handler(MessageHandler(Filters.regex("@shanisirbot") & Filters.group & ~ edit_filter & ~ Filters.command, private))
 dispatcher.add_handler(MessageHandler(Filters.group & Filters.text & settings.profanity & ~ edit_filter, group))
 dispatcher.add_handler(MessageHandler(Filters.private & Filters.text & ~ edit_filter, private))
 dispatcher.add_handler(MessageHandler(Filters.command, bc.unknown))
