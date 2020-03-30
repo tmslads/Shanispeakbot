@@ -11,9 +11,9 @@ sql_table = """
             CREATE TABLE IF NOT EXISTS CHAT_SETTINGS(
                 CHAT_ID INTEGER PRIMARY KEY,
                 CHAT_NAME TEXT,
-                MEDIA_REACTIONS BOOLEAN,
-                PROFANITY_CHECK BOOLEAN,
-                MORNING_MSGS BOOLEAN
+                MORNING_MSGS BOOLEAN,
+                MEDIA_PROB DECIMAL(2,1),
+                PROFANE_PROB DECIMAL(2,1)
             );
             """
 
@@ -21,3 +21,7 @@ sql_table = """
 _DOWNLOAD = "https://raw.githubusercontent.com"
 _LINK = "https://github.com/tmslads/Shanisirmodule/tree/master/Assets/clips"
 URL = 'http://randomfactgenerator.net/'  # To be scraped for facts()
+
+# Bot usernames-
+shanibot = "@shanisirbot"
+testbot = "@Ttessttingbot"
