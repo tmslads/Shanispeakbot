@@ -30,7 +30,7 @@ get_tags = chatbot.shanisirbot.storage.tagger.get_bigram_pair_string
 with open("files/token.txt", 'r') as file:
     shanisir_token, test_token = file.read().split(',')
 
-pp = PicklePersistence(filename=r'files/user_data')
+pp = PicklePersistence(filename='files/user_data')
 updater = Updater(token=f'{test_token}', use_context=True, persistence=pp)
 
 dp = updater.dispatcher
@@ -216,6 +216,10 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
         print(context.chat_data["chat_ids"])
         print("Already present")
 
+    # Attempted fix-
+    pp.update_user_data(update.effective_user.id, context.user_data)
+    pp.update_chat_data(chat_id, context.chat_data)
+
     if testbot in msg_text:  # Sends response if bot is @'ed in group
         msg_text = re.sub(r"(\s*)@Ttessttingbot(\s*)", ' ', msg_text)  # Remove mention from text so response is better
         the_id = update.message.message_id
@@ -342,6 +346,17 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
 def morning_goodness(context):
     """Send a "good morning" quote to the groups, along with a clip"""
 
+    right_now = datetime.now()
+
+    if 'last_sent' not in context.bot_data:
+        context.bot_data['last_sent'] = right_now
+
+    diff = right_now - context.bot_data['last_sent']
+
+    # Send only if it has been over a day since last good morning message-
+    if diff.days < 1:
+        return
+
     with open("files/good_mourning.txt", "r") as greetings:
         position = context.bot_data['seek']
         if position == 13642:  # If EOF was reached
@@ -373,6 +388,9 @@ def morning_goodness(context):
                                 audio=open(clip_loc, "rb"), title="Good morning", performer="Shani sir",
                                 thumb=open("files/shanisir.jpeg", 'rb'))
 
+    context.bot_data['last_sent'] = datetime(right_now.year, right_now.month, right_now.day, 8)  # Set it as 8AM today
+    pp.update_bot_data(context.bot_data)  # Have to update this manually as ptb 12.5 has new bug
+
 
 def bday_wish(context):
     """Wishes you on your birthday."""
@@ -397,10 +415,6 @@ def bday_wish(context):
     # TODO: Wishes from /tell birthday input-
 
 
-def add_job_q():
-    updater.job_queue.run_repeating(morning_goodness, 86400, first=1)
-
-
 def prettyprintview():
     with open('files/user_data', 'rb') as f:
         pprint.PrettyPrinter(indent=2).pprint(pickle.load(f))
@@ -414,6 +428,7 @@ dp.add_handler(CommandHandler(command='swear', callback=bc.swear))
 dp.add_handler(CommandHandler(command='snake', callback=bc.snake))
 dp.add_handler(CommandHandler(command='facts', callback=bc.facts))
 
+
 # /8ball conversation-
 magicball_handler = ConversationHandler(
     entry_points=[
@@ -424,7 +439,7 @@ magicball_handler = ConversationHandler(
     states={magic.PROCESSING: [
         MessageHandler(filters=Filters.reply & Filters.text, callback=magic.thinking)]},
 
-    fallbacks=[CommandHandler(command='cancel', callback=magic.cancel)], conversation_timeout=15
+    fallbacks=[CommandHandler(command='cancel', callback=magic.cancel)], conversation_timeout=20
 )
 dp.add_handler(magicball_handler)
 
@@ -493,5 +508,8 @@ dp.add_handler(MessageHandler(Filters.private & Filters.text & ~ edit_filter, pr
 dp.add_handler(MessageHandler(Filters.command, bc.unknown))
 
 updater.job_queue.run_repeating(bday_wish, 86400, first=1)  # Will run every time script is started, and once a day.
+updater.job_queue.run_repeating(morning_goodness, 86400, first=1)
+
 updater.start_polling()
+updater.idle()
 # prettyprintview()
