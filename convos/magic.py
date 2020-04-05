@@ -4,7 +4,7 @@ from time import sleep
 
 from telegram import ForceReply
 
-from constants import testbot
+from constants import shanibot
 from .namer import nicknamer
 
 PROCESSING = range(1)
@@ -40,7 +40,7 @@ def thinking(update, context):
     name = nicknamer(update, context)
     chat_id = update.effective_chat.id
 
-    if update.message.reply_to_message.from_user.username != testbot.replace('@', ''):
+    if update.message.reply_to_message.from_user.username != shanibot.replace('@', ''):
         actual_msg = update.message.reply_to_message.message_id
 
     else:

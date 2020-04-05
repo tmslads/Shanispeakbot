@@ -17,7 +17,7 @@ from textblob import TextBlob
 import chatbot
 import inline
 from commands import BotCommands as bc, prohibited
-from constants import group_ids, testbot
+from constants import group_ids, shanibot
 from convos import (bday, magic, nick, settings_gui, start)
 from convos.namer import nicknamer
 from online import gcalendar
@@ -31,7 +31,7 @@ with open("files/token.txt", 'r') as file:
     shanisir_token, test_token = file.read().split(',')
 
 pp = PicklePersistence(filename='files/user_data')
-updater = Updater(token=f'{test_token}', use_context=True, persistence=pp)
+updater = Updater(token=f'{shanisir_token}', use_context=True, persistence=pp)
 
 dp = updater.dispatcher
 shanisir_bot = updater.bot
@@ -141,7 +141,7 @@ def del_pin(update, context):
 
 
 def reply(update, context):
-    if update.message.reply_to_message.from_user.username == testbot:  # If the reply is from a bot:
+    if update.message.reply_to_message.from_user.username == shanibot:  # If the reply is from a bot:
         private(update, context, grp=True, the_id=update.message.message_id)  # send a response like in private chat
 
 
@@ -195,8 +195,8 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     pp.update_user_data(update.effective_user.id, context.user_data)
     pp.update_chat_data(chat_id, context.chat_data)
 
-    if testbot in msg_text:  # Sends response if bot is @'ed in group
-        msg_text = re.sub(r"(\s*)@Ttessttingbot(\s*)", ' ', msg_text)  # Remove mention from text so response is better
+    if shanibot in msg_text:  # Sends response if bot is @'ed in group
+        msg_text = re.sub(r"(\s*)@shanisirbot(\s*)", ' ', msg_text)  # Remove mention from text so response is better
         the_id = update.message.message_id
         grp = True
 
@@ -474,9 +474,9 @@ media_filters = (Filters.document | Filters.photo | Filters.video | Filters.voic
 edit_filter = Filters.update.edited_message
 
 dp.add_handler(MessageHandler(media_filters, media))
-dp.add_handler(MessageHandler(Filters.status_update.pinned_message & Filters.user(username=testbot), del_pin))
+dp.add_handler(MessageHandler(Filters.status_update.pinned_message & Filters.user(username=shanibot), del_pin))
 dp.add_handler(MessageHandler(Filters.reply & Filters.group & ~ edit_filter, reply))
-dp.add_handler(MessageHandler(Filters.regex(testbot) & Filters.group & ~ edit_filter & ~ Filters.command, private))
+dp.add_handler(MessageHandler(Filters.regex(shanibot) & Filters.group & ~ edit_filter & ~ Filters.command, private))
 dp.add_handler(MessageHandler(Filters.group & Filters.text & ~ edit_filter, group))
 dp.add_handler(MessageHandler(Filters.private & Filters.text & ~ edit_filter, private))
 dp.add_handler(MessageHandler(Filters.command, bc.unknown))
