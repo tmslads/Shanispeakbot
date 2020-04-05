@@ -19,10 +19,10 @@ import inline
 from commands import BotCommands as bc, prohibited
 from constants import group_ids, testbot
 from convos import (bday, magic, nick, settings_gui, start)
+from convos.namer import nicknamer
 from online import gcalendar
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
-                    level=logging.INFO)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
 chatbot.shanisirbot.initialize()  # Does any work that needs to be done before the chatbot can process responses.
 get_tags = chatbot.shanisirbot.storage.tagger.get_bigram_pair_string
@@ -46,18 +46,6 @@ r.shuffle(rebukes)
 rebukes = itertools.cycle(rebukes)
 
 
-def nicknamer(update, context):
-    """Uses current nickname set by user."""
-
-    try:
-        name = context.user_data['nickname'][-1]
-    except (KeyError, IndexError):
-        context.user_data['nickname'] = []
-        context.user_data['nickname'].append(update.message.from_user.first_name)
-    finally:
-        return context.user_data['nickname'][-1]
-
-
 def connection(query: str, update=None, fetchall=False):
     """Connect to database and execute given query."""
 
@@ -71,10 +59,10 @@ def connection(query: str, update=None, fetchall=False):
 
         if not result[0]:  # If /settings was never called
             name = update.effective_chat.title
-            if name is None:
+            if name is None:  # Will be None when it is a private chat
                 name = update.effective_chat.first_name
 
-            c.execute(f"INSERT INTO CHAT_SETTINGS VALUES({chat_id},'{name}',False,0.3,0.2);")  # First time use
+            c.execute(f"INSERT INTO CHAT_SETTINGS VALUES({chat_id},'{name}','❌',0.3,0.2);")  # First time use
             conn.commit()
 
     c.execute(query)
@@ -93,18 +81,19 @@ def media(update, context):
     """Sends a reaction to media messages (pictures, videos, documents, voice notes)"""
 
     global last_reacted_at
+
     now = cur_time()
+
     if now - last_reacted_at < 60:  # If a reaction was sent less than a minute ago
         return  # Don't send a reaction
+
     last_reacted_at = cur_time()
 
     chat_id = update.effective_chat.id
     msg = update.message.message_id
 
-    result = connection(f"SELECT MEDIA_PROB FROM CHAT_SETTINGS WHERE CHAT_ID={chat_id};", update)
-    true = result
+    true = connection(f"SELECT MEDIA_PROB FROM CHAT_SETTINGS WHERE CHAT_ID={chat_id};", update)
     false = 1 - true
-    print(true, false)
 
     try:
         doc = update.message.document.file_name[-3:]
@@ -113,7 +102,7 @@ def media(update, context):
     name = nicknamer(update, context)
 
     img_reactions = ["😂", "🤣", "😐", f"Not funny {name} okay?", "This is not fine like you say", "*giggles*",
-                     f"this is embarrassing to me {name}", "What your doing?! Go for the worksheet"]
+                     f"This is embarrassing to me {name}", "What your doing?! Go for the worksheet"]
 
     vid_reactions = ["😂", "🤣", "😐", f"I've never seen anything like this {name}", "What is this",
                      "Now I feel very bad like", f"Are you fine {name}?"]
@@ -142,8 +131,8 @@ def media(update, context):
             shanisir_bot.send_message(chat_id=chat_id, text=r.choice(vid_reactions), reply_to_message_id=msg)
 
         elif doc == 'apk' or doc == 'exe':
-            shanisir_bot.send_message(chat_id=chat_id, text=r.choice(app_reactions), reply_to_message_id=msg)
             print("app")
+            shanisir_bot.send_message(chat_id=chat_id, text=r.choice(app_reactions), reply_to_message_id=msg)
 
 
 def del_pin(update, context):
@@ -152,25 +141,23 @@ def del_pin(update, context):
 
 
 def reply(update, context):
-    if update.message.reply_to_message.from_user.username == testbot:  # If reply is from bot:
-        private(update, context, grp=True,
-                the_id=update.message.message_id)  # send a response as you would in private chat
+    if update.message.reply_to_message.from_user.username == testbot:  # If the reply is from a bot:
+        private(update, context, grp=True, the_id=update.message.message_id)  # send a response like in private chat
 
 
 def group(update, context):
     """Checks for profanity in messages and responds to that."""
 
+    chat_id = update.effective_chat.id
     if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
-        result = connection(f"SELECT PROFANE_PROB FROM CHAT_SETTINGS WHERE CHAT_ID={update.effective_chat.id};", update)
-        true = result
+        true = connection(f"SELECT PROFANE_PROB FROM CHAT_SETTINGS WHERE CHAT_ID={chat_id};", update)
         false = 1 - true
-        print(true, false)
 
         if r.choices([0, 1], weights=[false, true])[0]:  # Probabilities are 0.8 - False, 0.2 - True by default.
             name = nicknamer(update, context)
 
             out = f"{next(rebukes)} {name}"
-            shanisir_bot.send_message(chat_id=update.effective_chat.id, text=out,
+            shanisir_bot.send_message(chat_id=chat_id, text=out,
                                       reply_to_message_id=update.message.message_id)  # Sends message
             print(f"Rebuke: {out}")
 
@@ -192,29 +179,17 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     elif user.username != context.user_data['username'][-1]:
         context.user_data['username'].append(user.username)
 
-    else:
-        print(context.user_data['username'])
-        print("Already present")
-
     if 'full_name' not in context.user_data:
         context.user_data['full_name'] = [user.full_name]
 
     elif user.full_name != context.user_data['full_name'][-1]:
         context.user_data['full_name'].append(user.full_name)
 
-    else:
-        print(context.user_data['full_name'])
-        print("Already present")
-
     if "chat_ids" not in context.chat_data:
         context.chat_data["chat_ids"] = []
 
     elif chat_id not in context.chat_data['chat_ids']:  # Gets chat id of the user in which they have talked to the bot
         context.chat_data['chat_ids'].append(chat_id)
-
-    else:
-        print(context.chat_data["chat_ids"])
-        print("Already present")
 
     # Attempted fix-
     pp.update_user_data(update.effective_user.id, context.user_data)
@@ -236,8 +211,7 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     if update.message.reply_to_message is not None:
         reply_text = update.message.reply_to_message.text
 
-        bot_response = chatterbot.conversation.Statement(text=reply_text,
-                                                         search_text=get_tags(reply_text))
+        bot_response = chatterbot.conversation.Statement(text=reply_text, search_text=get_tags(reply_text))
         user_msg = chatterbot.conversation.Statement(text=msg_text,
                                                      search_text=get_tags(msg_text),
                                                      in_response_to=bot_response,
@@ -253,8 +227,7 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     if grp:
         isgrp = f"(GROUP: {update.effective_chat.title})"
     else:  # Learn user's latest message (user_msg) as response to bot's last message (bot_response)
-        chatbot.shanisirbot.learn_response(user_msg,
-                                           bot_response)
+        chatbot.shanisirbot.learn_response(user_msg, bot_response)
 
     bot_response = chatbot.shanisirbot.get_response(user_msg.text)
     try:
@@ -346,7 +319,7 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
 def morning_goodness(context):
     """Send a "good morning" quote to the groups, along with a clip"""
 
-    right_now = datetime.now()
+    right_now = datetime.now()  # returns: Datetime obj
 
     if 'last_sent' not in context.bot_data:
         context.bot_data['last_sent'] = right_now
@@ -367,7 +340,7 @@ def morning_goodness(context):
         print(greeting)
         context.bot_data['seek'] = greetings.tell()
 
-    ids = connection("SELECT CHAT_ID FROM CHAT_SETTINGS WHERE MORNING_MSGS=1;", fetchall=True)
+    ids = connection("SELECT CHAT_ID FROM CHAT_SETTINGS WHERE MORNING_MSGS='✅';", fetchall=True)
 
     # Bug with ptb where performer,title,thumb might be ignored when a url is supplied in 'audio' param in 'send_audio'.
     # Workaround for now is to just open mp3 from desktop-
@@ -377,16 +350,13 @@ def morning_goodness(context):
     for chat_id in ids:
         try:
             msg = shanisir_bot.send_message(chat_id=chat_id[0], text=greeting)
-            shanisir_bot.pin_chat_message(chat_id=chat_id[0], message_id=msg.message_id,
-                                          disable_notification=True)  # Pin it
+            shanisir_bot.pin_chat_message(chat_id=chat_id[0], message_id=msg.message_id, disable_notification=True)
+            shanisir_bot.send_chat_action(chat_id=chat_id[0], action='upload_audio')
+            shanisir_bot.send_audio(chat_id=chat_id[0], title="Good morning", performer="Shani sir",
+                                    audio=open(clip_loc, "rb"), thumb=open("files/shanisir.jpeg", 'rb'))
 
         except Exception as e:  # When chat is private, no rights to pin message, or if bot was removed.
             print(e)
-
-        shanisir_bot.send_chat_action(chat_id=chat_id[0], action='upload_audio')
-        shanisir_bot.send_audio(chat_id=chat_id[0],
-                                audio=open(clip_loc, "rb"), title="Good morning", performer="Shani sir",
-                                thumb=open("files/shanisir.jpeg", 'rb'))
 
     context.bot_data['last_sent'] = datetime(right_now.year, right_now.month, right_now.day, 8)  # Set it as 8AM today
     pp.update_bot_data(context.bot_data)  # Have to update this manually as ptb 12.5 has new bug
@@ -394,6 +364,7 @@ def morning_goodness(context):
 
 def bday_wish(context):
     """Wishes you on your birthday."""
+
     gcalendar.main()
     days_remaining, name = gcalendar.get_next_bday()
 
@@ -403,8 +374,7 @@ def bday_wish(context):
                                        text=f"Happy birthday {name}! May the mass times acceleration be with you!🎉"
                                             f"What your going to do today like?")
 
-        shanisir_bot.pin_chat_message(chat_id=group_ids['12b'], message_id=msg.message_id,
-                                      disable_notification=True)  # Pin it
+        shanisir_bot.pin_chat_message(chat_id=group_ids['12b'], message_id=msg.message_id, disable_notification=True)
 
         now = str(date.today())
         today = datetime.strptime(now, "%Y-%m-%d")  # Parses today's date (time object) into datetime object
@@ -428,41 +398,43 @@ dp.add_handler(CommandHandler(command='swear', callback=bc.swear))
 dp.add_handler(CommandHandler(command='snake', callback=bc.snake))
 dp.add_handler(CommandHandler(command='facts', callback=bc.facts))
 
-
 # /8ball conversation-
 magicball_handler = ConversationHandler(
     entry_points=[
         CommandHandler(command="8ball", callback=magic.magic8ball, filters=~Filters.reply),
         MessageHandler(filters=Filters.command(False) & Filters.regex("8ball") & Filters.reply,
-                       callback=magic.thinking)],
+                       callback=magic.thinking)
+                  ],
 
-    states={magic.PROCESSING: [
-        MessageHandler(filters=Filters.reply & Filters.text, callback=magic.thinking)]},
+    states={
+        magic.PROCESSING: [MessageHandler(filters=Filters.reply & Filters.text, callback=magic.thinking)]
+    },
 
-    fallbacks=[CommandHandler(command='cancel', callback=magic.cancel)], conversation_timeout=20
+    fallbacks=[CommandHandler(command='cancel', callback=magic.cancel)
+               ],
+    conversation_timeout=20
 )
 dp.add_handler(magicball_handler)
 
 # /tell conversation
 tell_handler = ConversationHandler(
     entry_points=[CommandHandler('tell', start.initiate, filters=Filters.private)],
+
     states={
         start.CHOICE: [MessageHandler(filters=Filters.regex("^Birthday$"), callback=bday.bday),
                        MessageHandler(filters=Filters.regex("^Nickname$"), callback=nick.nick),
                        MessageHandler(filters=Filters.regex("^Nothing$"), callback=start.leave)
                        ],
-        bday.INPUT: [
-            MessageHandler(
-                filters=Filters.regex("^([1-9][0-9]{3}-[0-9]{2}-[0-9]{2})$"),
-                # Regex to see if you've added a valid date
-                callback=bday.bday_add_or_update),
-            MessageHandler(filters=Filters.text, callback=bday.wrong)],  # Accepts only dates
+        bday.INPUT: [MessageHandler(filters=Filters.regex("^([1-9][0-9]{3}-[0-9]{2}-[0-9]{2})$"),  # Valid date check
+                                    callback=bday.bday_add_or_update),
+                     MessageHandler(filters=Filters.text, callback=bday.wrong)  # If it is not a date
+                     ],
 
         bday.MODIFY: [MessageHandler(filters=Filters.regex("^Forget my birthday sir$"), callback=bday.bday_del),
 
-                      MessageHandler(filters=Filters.regex("^Update my birthday sir$"),
-                                     callback=bday.bday_mod)
+                      MessageHandler(filters=Filters.regex("^Update my birthday sir$"), callback=bday.bday_mod)
                       ],
+
         nick.SET_NICK: [MessageHandler(filters=Filters.text & Filters.reply, callback=nick.add_edit_nick)],
 
         nick.MODIFY_NICK: [MessageHandler(filters=Filters.regex("^Change nickname$"), callback=nick.edit_nick),
@@ -471,12 +443,12 @@ tell_handler = ConversationHandler(
                            ],
 
         ConversationHandler.TIMEOUT: [MessageHandler(filters=Filters.all, callback=start.timedout)]
-    },
+        },
     fallbacks=[MessageHandler(Filters.regex("^No, thank you sir$"), callback=bday.reject),
-               CommandHandler("cancel", start.leave)],
+               CommandHandler("cancel", start.leave)
+               ],
 
-    name="/tell convo",
-    persistent=True, allow_reentry=True, conversation_timeout=20
+    name="/tell convo", persistent=True, allow_reentry=True, conversation_timeout=20
 )
 dp.add_handler(tell_handler)
 
@@ -486,11 +458,13 @@ settings_gui_handler = ConversationHandler(
     states={
         settings_gui.UPDATED: [CallbackQueryHandler(settings_gui.change_prob, pattern="MEDIA_PROB|PROFANE_PROB"),
                                CallbackQueryHandler(settings_gui.morn_swap, pattern="Morning"),
-                               CallbackQueryHandler(settings_gui.save, pattern="SAVE")],
+                               CallbackQueryHandler(settings_gui.save, pattern="SAVE")
+                               ],
 
         settings_gui.PROBABILITY:
             [CallbackQueryHandler(settings_gui.prob_updater, pattern="0.0|-0.1|-0.05|0.05|0.1|1.0"),
-             CallbackQueryHandler(settings_gui.go_back, pattern="Back")]
+             CallbackQueryHandler(settings_gui.go_back, pattern="Back")
+             ]
     },
     fallbacks=[CommandHandler('cancel', settings_gui.save)]
 )

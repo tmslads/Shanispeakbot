@@ -65,8 +65,8 @@ def add_edit_nick(update, context):  # SET_NICK
 
     if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=f"See this language is embarrassing to me ok. I'm giving you one more chance"
-                                      f" that's it.",
+                                 text="See this language is embarrassing to me ok. I'm giving you one more chance "
+                                      "that's it.",
                                  reply_to_message_id=update.message.message_id, reply_markup=ForceReply(selective=True))
         return SET_NICK
 

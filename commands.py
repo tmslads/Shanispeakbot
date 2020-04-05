@@ -1,7 +1,7 @@
 import itertools
 import random as r
 
-from telegram import error
+from telegram import error, InlineKeyboardButton, InlineKeyboardMarkup
 
 from online import util
 
@@ -51,6 +51,11 @@ class BotCommands:
 
     @staticmethod
     def helper(update, context):
+
+        buttons = [[InlineKeyboardButton(text="Try out inline mode", switch_inline_query_current_chat="")],
+                   [InlineKeyboardButton(text="Use inline mode in another chat", switch_inline_query="")]]
+        markup = InlineKeyboardMarkup(buttons)
+
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=r"This bot sends you audio clips straight from the Shani Sir Module\."
                                       "He's savage when he's cranky\."
@@ -64,11 +69,12 @@ class BotCommands:
                                       "\n/snake \- Sends you a roast\."
                                       "\n/facts \- Blesses you with an incredibly useful fact\."
                                       "\n/8ball \- Answers yes/no questions in Shani Sir style\!"
-                                      "\n/settings \- Modify how the bot behaviour with granular precision\."
+                                      "\n/settings \- Modify my behaviour with granular precision\."
                                       "\n\nHow to use /8ball:\n1\. Reply to a message with /8ball\n2\. Send /8ball in"
                                       " chat and reply to the message the bot sends\.\n\n"
                                       r"Inspired by the [Shani Sir Module](https://github.com/tmslads/Shanisirmodule)"
-                                      r" and Telegram\.", parse_mode="MarkdownV2", disable_web_page_preview=True
+                                      r" and Telegram\.",
+                                 parse_mode="MarkdownV2", disable_web_page_preview=True, reply_markup=markup
                                  )
 
     @staticmethod

@@ -7,19 +7,10 @@ from telegram import KeyboardButton
 from telegram import ReplyKeyboardMarkup
 
 from online.gcalendar import formatter
+from .namer import nicknamer
 from .start import markup, CHOICE
 
 INPUT, MODIFY = range(1, 3)
-
-
-def nicknamer(update, context):
-    try:
-        name = context.user_data['nickname'][-1]
-    except (KeyError, IndexError):
-        context.user_data['nickname'] = []
-        context.user_data['nickname'].append(update.message.from_user.first_name)
-    finally:
-        return context.user_data['nickname'][-1]
 
 
 def bday(update, context):  # CHOICE
@@ -66,7 +57,6 @@ def bday_add_or_update(update, context):  # INPUT
         wrong(update, context)  # Asks for a valid input
 
     else:
-        print("Correct")
         name = nicknamer(update, context)
         context.user_data['birthday'] = dt_obj
 

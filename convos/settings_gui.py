@@ -54,8 +54,7 @@ def start(update, context):
             responses = ["I'm not allowing you like you say", "Ask the permission then only",
                          "This is not for you okay?", "Only few of them can do this not all okay?",
                          "See not you so sowry"]
-            context.bot.send_message(chat_id=chat_id,
-                                     text=r.choice(responses),
+            context.bot.send_message(chat_id=chat_id, text=r.choice(responses),
                                      reply_to_message_id=update.message.message_id)
             return -1  # Stop convo since a regular user called /settings
 
@@ -66,28 +65,16 @@ def start(update, context):
     c.executescript(sql_table)  # If table is not made
     conn.commit()
 
-    # c.execute(f"ALTER TABLE CHAT_SETTINGS ADD MEDIA_PROB DECIMAL(2,1);")
-    # c.execute(f"ALTER TABLE CHAT_SETTINGS ADD PROFANE_PROB DECIMAL(2,1);")
-    # c.execute("PRAGMA table_info(CHAT_SETTINGS);")
-    # c.execute(f"ALTER TABLE CHAT_SETTINGS rename TO CHAT_SETTINGS_OLD;")
-    # c.execute("UPDATE CHAT_SETTINGS SET MEDIA_PROB=0.3, PROFANE_PROB=0.2 WHERE MEDIA_PROB IS NULL;")
-    # c.execute("SELECT * FROM CHAT_SETTINGS;")
-    # print(c.fetchall())
-    # conn.commit()
-    # print(result[0])
     c.execute(f"SELECT EXISTS(SELECT * FROM CHAT_SETTINGS WHERE chat_id = {chat_id});")  # Returns 0 if doesn't exist
     result = c.fetchone()
 
     if not result[0]:
-        c.execute(f"INSERT INTO CHAT_SETTINGS VALUES({chat_id},'{name}',False,0.3,0.2);")  # First time use
+        c.execute(f"INSERT INTO CHAT_SETTINGS VALUES({chat_id},'{name}','❌',0.3,0.2);")  # First time use
         conn.commit()
 
     c.execute(f"SELECT MORNING_MSGS FROM CHAT_SETTINGS WHERE chat_id = {chat_id};")
-    temp = c.fetchone()
-    if temp[0] == 0:
-        morn_setting = "❌"
-    else:
-        morn_setting = "✅"
+    result = c.fetchone()
+    morn_setting = result[0]
 
     # Sends the current settings applied-
     if update.callback_query is None:
@@ -125,7 +112,7 @@ def setting_msg(update, swap: bool = False):
         results.append(result[0])  # Append probability
         results.append(f"{int(round(result[0] * 100))}%")  # Append corresponding percent
 
-    media_prob, media_pct, profane_prob, profane_pct = results[0], results[1], results[2], results[3]
+    media_prob, media_pct, profane_prob, profane_pct = results
 
     msg = "See is this the expected behaviour?\n\n" \
           r"1\. _Media reactions:_ " + f"{media_pct}\n" \
@@ -144,13 +131,9 @@ def prob_message(update, kind: str, column: str) -> [None, str]:
 
     c.execute(f"SELECT {column} FROM CHAT_SETTINGS WHERE CHAT_ID={chat_id};")
     result = c.fetchone()
-    print(result[0])
     chance = f"{int(round(result[0] * 100))}%"  # Rounding it as there could be floating point round off errors.
-    print(chance)
 
-    # TODO: Shanify this
-    prob_msg = f"The probability of the bot reacting to {kind} is: {chance}"
-    print(prob_msg)
+    prob_msg = f"See now mathematically speaking, the probability of reacting to {kind} is: {chance}"
     return prob_msg
 
 
@@ -158,10 +141,11 @@ def prob_updater(update, context):  # PROBABILITY
     """Updates probability when buttons are pressed. Also instantly saves those values in the database."""
     global media_prob, profane_prob
 
-    prob_diff = float(update.callback_query.data)
     chat_id = update.effective_chat.id
     call_id = update.callback_query.id
     invalid = False
+
+    prob_diff = float(update.callback_query.data)
 
     # Assign probability to common variable for simplicity-
     if _type == "media":
@@ -216,7 +200,6 @@ def change_prob(update, context):  # UPDATED
 
     data = update.callback_query.data
     chat_id = update.effective_chat.id
-    print(data)
 
     if data == "MEDIA_PROB":
         _type = "media"
@@ -258,21 +241,16 @@ def save(update, context):  # UPDATED
     chat_id = update.effective_chat.id
 
     responses = ["I updated my behaviour", "See I got the clarity now", r"I will now like you do fo\.\.follow this",
-                 "Ok I will do this now it's not that hard"]
+                 "Ok I will do this now it's not that hard", "I am now in the right direction"]
 
-    # TODO: Also shanify this
-    update.callback_query.edit_message_text(
-        text=r.choice(responses) + "\n\nMy new behaviour is:\n" + msg[36:],
-        parse_mode="MarkdownV2")  # Show settings have been updated.
+    confirmations = ["Now I'm like this:", "This is okay with me now like:", "Okay fine I'm okay with this:",
+                     "I have like you say changed now:", "My new behaviour is:"]
 
-    # TODO: Maybe change datatype of morning_msgs to string so we don't have to do this
-    # Convert the ticks and crosses into boolean form for db
-    if morn_setting == "✅":
-        morn_setting = True
-    else:
-        morn_setting = False
+    # Show settings have been updated-
+    update.callback_query.edit_message_text(text=r.choice(responses) + f"\n\n{r.choice(confirmations)}\n" + msg[36:],
+                                            parse_mode="MarkdownV2")
 
-    c.execute(f"UPDATE CHAT_SETTINGS SET MORNING_MSGS={morn_setting} WHERE CHAT_ID={chat_id};")
+    c.execute(f"UPDATE CHAT_SETTINGS SET MORNING_MSGS='{morn_setting}' WHERE CHAT_ID={chat_id};")
     conn.commit()
 
     # Checks if group name has changed, if it did, updates in db-

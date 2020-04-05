@@ -4,21 +4,16 @@ from time import sleep
 
 from telegram import ForceReply
 
+from constants import testbot
+from .namer import nicknamer
+
 PROCESSING = range(1)
-
-
-def nicknamer(update, context):
-    try:
-        name = context.user_data['nickname'][-1]
-    except (KeyError, IndexError):
-        context.user_data['nickname'] = []
-        context.user_data['nickname'].append(update.message.from_user.first_name)
-    finally:
-        return context.user_data['nickname'][-1]
 
 
 def magic8ball(update, context):
     """Asks the user for the question."""
+
+    chat_id = update.effective_chat.id
     name = nicknamer(update, context)
 
     initiate = ["If you have a doubt, just type it here",
@@ -27,10 +22,10 @@ def magic8ball(update, context):
                 "I can predict the future like you say . Just ask me. I'm just trying to find you option",
                 "Fast fast no time ask me!", "See tell me what's the confusion", f"Yes {name}?"]
 
-    context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
+    context.bot.send_chat_action(chat_id=chat_id, action='typing')
     sleep(1)
     # Sends message with a force reply
-    context.bot.send_message(chat_id=update.effective_chat.id,
+    context.bot.send_message(chat_id=chat_id,
                              text=f"{r.choice(initiate)}🔮\nOr, type /cancel so I won't mind that",
                              reply_markup=ForceReply(force_reply=True, selective=True),
                              reply_to_message_id=update.message.message_id)
@@ -43,8 +38,9 @@ def thinking(update, context):
     by editing his message.
     """
     name = nicknamer(update, context)
+    chat_id = update.effective_chat.id
 
-    if update.message.reply_to_message.from_user.username != "shanisirbot":
+    if update.message.reply_to_message.from_user.username != testbot.replace('@', ''):
         actual_msg = update.message.reply_to_message.message_id
 
     else:
@@ -66,7 +62,7 @@ def thinking(update, context):
     answer = r.choice(answers)
     seconds = list(range(1, 5))
 
-    msg_sent = context.bot.send_message(chat_id=update.effective_chat.id, text=f"`{thought}`",  # Will be monospaced
+    msg_sent = context.bot.send_message(chat_id=chat_id, text=f"`{thought}`",  # Will be monospaced
                                         parse_mode='MarkdownV2',  # Check Bot API 4.5 for MarkdownV2 docs
                                         reply_to_message_id=actual_msg)
 
@@ -80,7 +76,7 @@ def thinking(update, context):
             text = f"_{answer + edit_add}_"  # Answer will be in italic
 
         sleep(1)  # So all of this doesn't happen instantly and is visible to user
-        context.bot.edit_message_text(chat_id=update.effective_chat.id, message_id=msg_sent.message_id,
+        context.bot.edit_message_text(chat_id=chat_id, message_id=msg_sent.message_id,
                                       text=f"{text}",  # Edits message sent by bot accordingly
                                       parse_mode='MarkdownV2')
 
