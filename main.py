@@ -137,7 +137,7 @@ def media(update, context):
 
 def del_pin(update, context):
     """Deletes pinned message service status from the bot."""
-    shanisir_bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
+    context.bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
 
 
 def reply(update, context):
@@ -169,7 +169,6 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     msg_text = update.message.text
     chat_id = update.effective_chat.id
 
-    cleaned = []
     JJ_RB = ["like you say", "like you speak"]  # For Adjectives or Adverbs
 
     # Checks if your username or fullname or chat id is present in our records. If not, adds them.
@@ -201,11 +200,9 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
         grp = True
 
     if bot_response is None:
-        temp = None
         search_in_response_text = None
     else:
-        temp = bot_response.text
-        search_in_response_text = get_tags(temp)
+        search_in_response_text = get_tags(bot_response.text)
 
     # If the user's message is a reply to a message
     if update.message.reply_to_message is not None:
