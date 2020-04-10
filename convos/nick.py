@@ -18,8 +18,9 @@ def nick(update, context):
     msg_id = update.message.message_id
 
     if 'nickname' not in context.user_data or context.user_data['nickname'][-1] == name:
-                                 text="What is your uhh.. what you say like... nickname?",
-                                 reply_to_message_id=update.message.message_id, reply_markup=ForceReply(selective=True))
+        context.bot.send_message(chat_id=chat_id,
+        text="What is your uhh.. what you say like... nickname?",
+        reply_to_message_id=msg_id, reply_markup=ForceReply(selective=True))
 
         return SET_NICK
 
