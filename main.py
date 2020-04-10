@@ -137,7 +137,7 @@ def media(update, context):
 
 def del_pin(update, context):
     """Deletes pinned message service status from the bot."""
-    context.bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
+    shanisir_bot.bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
 
 
 def reply(update, context):
