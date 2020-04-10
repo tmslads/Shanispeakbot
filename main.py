@@ -365,12 +365,14 @@ def bday_wish(context):
     gcalendar.main()
     days_remaining, name = gcalendar.get_next_bday()
 
+    happy_birthday = f"Happy birthday {name}! !🎉 I don't know why like, but I know you despise me with the burning passion of a thousand suns. I don't give a flux, like you say. I implore you to let go of hate and embrace love. Spend the rest of your days with love in your heart and faith in your soul. Life's cyclotron may sometimes send you tumbling around, but remember that it is necessary to do so in order to hit the targit. Negative emotions act as charge for the velocity selector of life. Remove them from your being and you shall not stray from the straight path. I wish you the best. May your jockeys be unpressed and your apertures small. Enjoy your 18th. Forget about coronabitch. Godspeed."
+    happy_birthday1 = f"Happy birthday {name}! I wish you the best of luck for life. Remember: You matter. Until you multiply yourself times the speed of light squared. Then you energy, like you say!🎉 What your going to do today like?"
+    happy_birthday2 = f"Happy birthday {name}! !🎉 What your going to do today like?"
+
     # Wishes from Google Calendar-
     if days_remaining == 0:
         msg = context.bot.send_message(chat_id=group_ids['12b'],
-                                       text=f"Happy birthday {name}! May the mass times acceleration be with you!🎉"
-                                            f"What your going to do today like?")
-
+                                 text=happy_birthday)
         shanisir_bot.pin_chat_message(chat_id=group_ids['12b'], message_id=msg.message_id, disable_notification=True)
 
         now = str(date.today())
