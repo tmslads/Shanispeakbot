@@ -141,7 +141,7 @@ def del_pin(update, context):
 
 
 def reply(update, context):
-    if update.message.reply_to_message.from_user.username == shanibot:  # If the reply is from a bot:
+    if update.message.reply_to_message.from_user.username == shanibot.replace('@', ''):  # If the reply is from a bot:
         private(update, context, grp=True, the_id=update.message.message_id)  # send a response like in private chat
 
 
