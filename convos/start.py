@@ -1,5 +1,7 @@
 from telegram import KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove
 
+from .namer import nicknamer
+
 # This is the main menu. Shown when /tell is invoked.
 
 keyboard = [
@@ -9,16 +11,6 @@ keyboard = [
 markup = ReplyKeyboardMarkup(keyboard=keyboard, one_time_keyboard=True, selective=True)
 
 CHOICE = range(1)
-
-
-def nicknamer(update, context):
-    try:
-        name = context.user_data['nickname'][-1]
-    except (KeyError, IndexError):
-        context.user_data['nickname'] = []
-        context.user_data['nickname'].append(update.message.from_user.first_name)
-    finally:
-        return context.user_data['nickname'][-1]
 
 
 def initiate(update, context):  # Entry_point

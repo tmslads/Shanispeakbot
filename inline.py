@@ -10,8 +10,7 @@ links, names = util.clips()
 
 # Adds all clips and names into one list
 for clip in zip(links, names):
-    results.append(InlineQueryResultAudio(id=uuid4(),
-                                          audio_url=clip[0], title=clip[1], performer="Shani Sir"))
+    results.append(InlineQueryResultAudio(id=uuid4(), audio_url=clip[0], title=clip[1], performer="Shani Sir"))
 
 
 def inline_clips(update, context):

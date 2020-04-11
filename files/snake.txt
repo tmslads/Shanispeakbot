@@ -8,12 +8,12 @@
 
 import tkinter
 
-#I initialize you
+# I initialize you
 you = tkinter.Tk()
 you.title("Foolish child")
 you.pack()
 
-#And I can destroy you #as well
-#you.destroy()
+# And I can destroy you #as well
+# you.destroy()
 
-**#Don't make me.**
+**# Don't make me.**
