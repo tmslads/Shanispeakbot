@@ -1,9 +1,9 @@
 import itertools
 import random as r
 
-from telegram import error, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import error, InlineKeyboardButton, InlineKeyboardMarkup, Poll
 
-from online import util
+from online import util, quiz_scraper
 
 with open(r"files/lad_words.txt", "r") as f:
     prohibited = f.read().lower().split('\n')
@@ -103,6 +103,22 @@ class BotCommands:
         del_command(update)
         fact = r.choice(util.facts())
         context.bot.send_message(chat_id=update.effective_chat.id, text=fact)
+
+    @staticmethod
+    def quizizz(update, context):
+
+        while True:
+            try:
+                questions, choices, answers = quiz_scraper.a_quiz()
+                break
+            except TypeError:  # If we get None (due to error) back, retry.
+                pass
+
+        question = questions[0]
+        options = choices[0]
+        answer = answers[0]
+        context.bot.send_poll(chat_id=update.effective_chat.id, question=question, options=options, is_anonymous=False,
+                              type=Poll.QUIZ, correct_option_id=answer)
 
     @staticmethod
     def unknown(update, context):

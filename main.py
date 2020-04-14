@@ -11,30 +11,32 @@ from time import sleep, time as cur_time
 import chatterbot
 import emoji
 from telegram.ext import (CommandHandler, ConversationHandler, InlineQueryHandler, MessageHandler, Filters,
-                          PicklePersistence, Updater, CallbackQueryHandler)
+                          PicklePersistence, Updater, CallbackQueryHandler, PollAnswerHandler)
 from textblob import TextBlob
 
 import chatbot
 import inline
+from quiz import send_quiz, receive_answer
 from commands import BotCommands as bc, prohibited
-from constants import group_ids, shanibot
+from constants import group_ids, testbot
 from convos import (bday, magic, nick, settings_gui, start)
 from convos.namer import nicknamer
 from online import gcalendar
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
-chatbot.shanisirbot.initialize()  # Does any work that needs to be done before the chatbot can process responses.
-get_tags = chatbot.shanisirbot.storage.tagger.get_bigram_pair_string
-
 with open("files/token.txt", 'r') as file:
     shanisir_token, test_token = file.read().split(',')
 
+chatbot.shanisirbot.initialize()  # Does any work that needs to be done before the chatbot can process responses.
+
 pp = PicklePersistence(filename='files/user_data')
-updater = Updater(token=f'{shanisir_token}', use_context=True, persistence=pp)
+updater = Updater(token=f'{test_token}', use_context=True, persistence=pp)
 
 dp = updater.dispatcher
 shanisir_bot = updater.bot
+get_tags = chatbot.shanisirbot.storage.tagger.get_bigram_pair_string
+
 
 last_reacted_at = 0
 bot_response = None
@@ -141,7 +143,7 @@ def del_pin(update, context):
 
 
 def reply(update, context):
-    if update.message.reply_to_message.from_user.username == shanibot:  # If the reply is from a bot:
+    if update.message.reply_to_message.from_user.username == testbot.replace('@', ''):  # If the reply is from a bot:
         private(update, context, grp=True, the_id=update.message.message_id)  # send a response like in private chat
 
 
@@ -185,7 +187,7 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
         context.user_data['full_name'].append(user.full_name)
 
     if "chat_ids" not in context.chat_data:
-        context.chat_data["chat_ids"] = []
+        context.chat_data["chat_ids"] = [chat_id]
 
     elif chat_id not in context.chat_data['chat_ids']:  # Gets chat id of the user in which they have talked to the bot
         context.chat_data['chat_ids'].append(chat_id)
@@ -194,8 +196,8 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     pp.update_user_data(update.effective_user.id, context.user_data)
     pp.update_chat_data(chat_id, context.chat_data)
 
-    if shanibot in msg_text:  # Sends response if bot is @'ed in group
-        msg_text = re.sub(r"(\s*)@shanisirbot(\s*)", ' ', msg_text)  # Remove mention from text so response is better
+    if testbot in msg_text:  # Sends response if bot is @'ed in group
+        msg_text = re.sub(r"(\s*)@Ttessttingbot(\s*)", ' ', msg_text)  # Remove mention from text so response is better
         the_id = update.message.message_id
         grp = True
 
@@ -394,6 +396,10 @@ dp.add_handler(CommandHandler(command='start', callback=bc.start))
 dp.add_handler(CommandHandler(command='swear', callback=bc.swear))
 dp.add_handler(CommandHandler(command='snake', callback=bc.snake))
 dp.add_handler(CommandHandler(command='facts', callback=bc.facts))
+dp.add_handler(CommandHandler(command='quizizz', callback=bc.quizizz))
+dp.add_handler(CommandHandler(command='test', callback=send_quiz))  # TODO: This should be a job
+dp.add_handler(PollAnswerHandler(callback=receive_answer))
+
 
 # /8ball conversation-
 magicball_handler = ConversationHandler(
@@ -414,6 +420,7 @@ magicball_handler = ConversationHandler(
 dp.add_handler(magicball_handler)
 
 # /tell conversation
+# TODO: Add deep-linked parameter to pc for people calling /tell in groups.
 tell_handler = ConversationHandler(
     entry_points=[CommandHandler('tell', start.initiate, filters=Filters.private)],
 
@@ -471,16 +478,16 @@ media_filters = (Filters.document | Filters.photo | Filters.video | Filters.voic
 edit_filter = Filters.update.edited_message
 
 dp.add_handler(MessageHandler(media_filters, media))
-dp.add_handler(MessageHandler(Filters.status_update.pinned_message & Filters.user(username=shanibot), del_pin))
+dp.add_handler(MessageHandler(Filters.status_update.pinned_message & Filters.user(username=testbot), del_pin))
 dp.add_handler(MessageHandler(Filters.reply & Filters.group & ~ edit_filter, reply))
-dp.add_handler(MessageHandler(Filters.regex(shanibot) & Filters.group & ~ edit_filter & ~ Filters.command, private))
+dp.add_handler(MessageHandler(Filters.regex(testbot) & Filters.group & ~ edit_filter & ~ Filters.command, private))
 dp.add_handler(MessageHandler(Filters.group & Filters.text & ~ edit_filter, group))
 dp.add_handler(MessageHandler(Filters.private & Filters.text & ~ edit_filter, private))
 dp.add_handler(MessageHandler(Filters.command, bc.unknown))
 
 updater.job_queue.run_repeating(bday_wish, 86400, first=1)  # Will run every time script is started, and once a day.
 updater.job_queue.run_repeating(morning_goodness, 86400, first=1)
+prettyprintview()
 
 updater.start_polling()
 updater.idle()
-# prettyprintview()

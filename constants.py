@@ -21,6 +21,7 @@ sql_table = """
 _DOWNLOAD = "https://raw.githubusercontent.com"
 _LINK = "https://github.com/tmslads/Shanisirmodule/tree/master/Assets/clips"
 URL = 'http://randomfactgenerator.net/'  # To be scraped for facts()
+QUIZ_URL = "https://www.onlinegk.com/general-knowledge/gk-question-answers/physics"
 
 # Bot usernames-
 shanibot = "@shanisirbot"
