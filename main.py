@@ -16,12 +16,12 @@ from textblob import TextBlob
 
 import chatbot
 import inline
-from quiz import send_quiz, receive_answer
 from commands import BotCommands as bc, prohibited
 from constants import group_ids, testbot
 from convos import (bday, magic, nick, settings_gui, start)
 from convos.namer import nicknamer
 from online import gcalendar
+from quiz import send_quiz, receive_answer
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 
@@ -36,7 +36,6 @@ updater = Updater(token=f'{test_token}', use_context=True, persistence=pp)
 dp = updater.dispatcher
 shanisir_bot = updater.bot
 get_tags = chatbot.shanisirbot.storage.tagger.get_bigram_pair_string
-
 
 last_reacted_at = 0
 bot_response = None
@@ -367,14 +366,25 @@ def bday_wish(context):
     gcalendar.main()
     days_remaining, name = gcalendar.get_next_bday()
 
-    happy_birthday = f"Happy birthday {name}! !🎉 I don't know why like, but I know you despise me with the burning passion of a thousand suns. I don't give a flux, like you say. I implore you to let go of hate and embrace love. Spend the rest of your days with love in your heart and faith in your soul. Life's cyclotron may sometimes send you tumbling around, but remember that it is necessary to do so in order to hit the targit. Negative emotions act as charge for the velocity selector of life. Remove them from your being and you shall not stray from the straight path. I wish you the best. May your jockeys be unpressed and your apertures small. Enjoy your 18th. Forget about coronabitch. Godspeed."
-    happy_birthday1 = f"Happy birthday {name}! I wish you the best of luck for life. Remember: You matter. Until you multiply yourself times the speed of light squared. Then you energy, like you say!🎉 What your going to do today like?"
+    happy_birthday = f"Happy birthday {name}! !🎉 I don't know why like, but I know you despise me with the burning " \
+                     f"passion of a thousand suns. I don't give a flux, like you say. I implore you to let go of " \
+                     f"hate and embrace love. Spend the rest of your days with love in your heart and faith in your " \
+                     f"soul. Life's cyclotron may sometimes send you tumbling around, but remember that it is " \
+                     f"necessary to do so in order to hit the targit. Negative emotions act as charge for the " \
+                     f"velocity selector of life. Remove them from your being and you shall not stray from the " \
+                     f"straight path. I wish you the best. May your jockeys be unpressed and your apertures small. " \
+                     f"Enjoy your 18th. Forget about coronabitch. Godspeed."
+
+    happy_birthday1 = f"Happy birthday {name}! I wish you the best of luck for life. Remember: You matter. Until you " \
+                      f"multiply yourself times the speed of light squared. Then you energy, like you say!🎉 What " \
+                      f"your going to do today like?"
+
     happy_birthday2 = f"Happy birthday {name}! !🎉 What your going to do today like?"
 
     # Wishes from Google Calendar-
     if days_remaining == 0:
         msg = context.bot.send_message(chat_id=group_ids['12b'],
-                                 text=happy_birthday)
+                                       text=happy_birthday)
         shanisir_bot.pin_chat_message(chat_id=group_ids['12b'], message_id=msg.message_id, disable_notification=True)
 
         now = str(date.today())
@@ -402,14 +412,13 @@ dp.add_handler(CommandHandler(command='quizizz', callback=bc.quizizz))
 dp.add_handler(CommandHandler(command='test', callback=send_quiz))  # TODO: This should be a job
 dp.add_handler(PollAnswerHandler(callback=receive_answer))
 
-
 # /8ball conversation-
 magicball_handler = ConversationHandler(
     entry_points=[
         CommandHandler(command="8ball", callback=magic.magic8ball, filters=~Filters.reply),
         MessageHandler(filters=Filters.command(False) & Filters.regex("8ball") & Filters.reply,
                        callback=magic.thinking)
-                  ],
+    ],
 
     states={
         magic.PROCESSING: [MessageHandler(filters=Filters.reply & Filters.text, callback=magic.thinking)]
@@ -449,7 +458,7 @@ tell_handler = ConversationHandler(
                            ],
 
         ConversationHandler.TIMEOUT: [MessageHandler(filters=Filters.all, callback=start.timedout)]
-        },
+    },
     fallbacks=[MessageHandler(Filters.regex("^No, thank you sir$"), callback=bday.reject),
                CommandHandler("cancel", start.leave)
                ],
