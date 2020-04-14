@@ -19,11 +19,16 @@ import inline
 from commands import BotCommands as bc, prohibited
 from constants import group_ids, testbot
 from convos import (bday, magic, nick, settings_gui, start)
-from convos.namer import nicknamer
+from helpers.namer import get_nick, get_chat_name
 from online import gcalendar
 from quiz import send_quiz, receive_answer
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+# asctime - The time in human readable form
+# name - Name of the logger module
+# levelname - logging level for the message ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL')
+# lineno - Line number
+# message - The logged message
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
 with open("files/token.txt", 'r') as file:
     shanisir_token, test_token = file.read().split(',')
@@ -71,10 +76,12 @@ def connection(query: str, update=None, fetchall=False):
     if fetchall:
         result = c.fetchall()
         conn.close()
+        logging.info(f"\nThe query executed on the database was:\n{query}\nand the result was:\n{result}\n\n")
         return result
     else:
         result = c.fetchone()
         conn.close()
+        logging.info(f"\nThe query executed on the database was:\n{query}\nand the result was:\n{result[0]}\n\n")
         return result[0]
 
 
@@ -92,6 +99,7 @@ def media(update, context):
 
     chat_id = update.effective_chat.id
     msg = update.message.message_id
+    name = update.message.from_user.first_name
 
     true = connection(f"SELECT MEDIA_PROB FROM CHAT_SETTINGS WHERE CHAT_ID={chat_id};", update)
     false = 1 - true
@@ -100,7 +108,7 @@ def media(update, context):
         doc = update.message.document.file_name[-3:]
     except AttributeError:  # When there is no document sent
         doc = ''
-    name = nicknamer(update, context)
+    name = get_nick(update, context)
 
     img_reactions = ["😂", "🤣", "😐", f"Not funny {name} okay?", "This is not fine like you say", "*giggles*",
                      f"This is embarrassing to me {name}", "What your doing?! Go for the worksheet"]
@@ -120,30 +128,33 @@ def media(update, context):
         sleep(2)
 
         if update.message.photo:
-            print("Img")
             shanisir_bot.send_message(chat_id=chat_id, text=r.choice(img_reactions), reply_to_message_id=msg)
+            logging.info(f"\nBot sent a reaction to a photo to {name}.\n\n")
 
         elif update.message.voice:
-            print("voiceee")
             shanisir_bot.send_message(chat_id=chat_id, text=r.choice(voice_reactions), reply_to_message_id=msg)
+            logging.info(f"\nBot sent a reaction to a voice message to {name}.\n\n")
 
         elif update.message.video or doc == 'mp4' or doc == 'gif':
-            print("vid")
             shanisir_bot.send_message(chat_id=chat_id, text=r.choice(vid_reactions), reply_to_message_id=msg)
+            logging.info(f"\nBot sent a reaction to a video to {name}.\n\n")
 
         elif doc == 'apk' or doc == 'exe':
-            print("app")
             shanisir_bot.send_message(chat_id=chat_id, text=r.choice(app_reactions), reply_to_message_id=msg)
+            logging.info(f"\nBot sent a reaction to a executable to {name}.\n\n")
 
 
 def del_pin(update, context):
     """Deletes pinned message service status from the bot."""
     shanisir_bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
+    logging.info(f"\nBot deleted a pinned service message from {update.effective_chat.title}.\n\n")
 
 
 def reply(update, context):
     if update.message.reply_to_message.from_user.username == testbot.replace('@', ''):  # If the reply is from a bot:
         if not update.message.text.startswith('!r'):  # Don't reply if this is prepended
+            logging.info(f"\nBot received a reply from {update.effective_user.first_name} in "
+                         f"{update.effective_chat.title}.\n\n")
             private(update, context, grp=True, the_id=update.message.message_id)  # send a response like in private chat
 
 
@@ -156,19 +167,23 @@ def group(update, context):
         false = 1 - true
 
         if r.choices([0, 1], weights=[false, true])[0]:  # Probabilities are 0.8 - False, 0.2 - True by default.
-            name = nicknamer(update, context)
+            name = get_nick(update, context)
 
             out = f"{next(rebukes)} {name}"
             shanisir_bot.send_message(chat_id=chat_id, text=out,
                                       reply_to_message_id=update.message.message_id)  # Sends message
-            print(f"Rebuke: {out}")
+            logging.info(f"\n{update.effective_user.first_name} used profane language in {update.effective_chat.title}."
+                         f"\nThe rebuke by the bot was: '{out}'.\n\n")
 
 
 def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     global bot_response
 
     user = update.message.from_user
-    msg_text = update.message.text
+    full_name = user.full_name
+    username = user.username
+    today = update.message.date
+    org_text = update.message.text
     chat_id = update.effective_chat.id
 
     JJ_RB = ["like you say", "like you speak"]  # For Adjectives or Adverbs
@@ -193,13 +208,16 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
         context.chat_data['chat_ids'].append(chat_id)
 
     # Attempted fix-
-    pp.update_user_data(update.effective_user.id, context.user_data)
+    pp.update_user_data(user.id, context.user_data)
     pp.update_chat_data(chat_id, context.chat_data)
 
-    if testbot in msg_text:  # Sends response if bot is @'ed in group
-        msg_text = re.sub(r"(\s*)@Ttessttingbot(\s*)", ' ', msg_text)  # Remove mention from text so response is better
+    if testbot in org_text:  # Sends response if bot is @'ed in group
+        msg_text = re.sub(r"(\s*)@Ttessttingbot(\s*)", ' ', org_text)  # Remove mention from text so response is better
         the_id = update.message.message_id
         grp = True
+
+    else:
+        msg_text = org_text
 
     if bot_response is None:
         search_in_response_text = None
@@ -271,7 +289,7 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
             lydcount += 1
             temp = index
 
-    name = nicknamer(update, context)
+    name = get_nick(update, context)
 
     if r.choice([0, 1]):
         if r.choice([0, 1]):
@@ -299,11 +317,8 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     shanitext = ' '.join(cleaned).capitalize()
 
     with open("files/interactions.txt", "a") as f1:
-        inp = f"UTC+0 {update.message.date} {isgrp} {reply} {update.message.from_user.full_name}" \
-              f" ({update.message.from_user.username}) SAID: {update.message.text}\n"
+        inp = f"UTC+0 {today} {isgrp} {reply} {full_name} ({username}) SAID: {msg_text}\n"
         out = shanitext
-
-        print(f"{inp}\n{out}")
 
         f1.write(emoji.demojize(inp))
         f1.write(f"BOT REPLY: {emoji.demojize(out)}\n\n")
@@ -311,8 +326,11 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
         shanisir_bot.send_chat_action(chat_id=chat_id, action='typing')  # Sends 'typing...' status for 6 sec
         # Assuming 25 WPM typing speed on a phone
         time_taken = (25 / 60) * len(out.split())
-        sleep(time_taken) if time_taken < 6 else sleep(6)  # Sends status for 6 seconds if message is too long to type
+        sleep(time_taken) if time_taken < 5 else sleep(5)  # Sends status for 5 seconds if message is too long to type
         shanisir_bot.send_message(chat_id=chat_id, text=out, reply_to_message_id=the_id)  # Sends message
+
+        logging.info(f"\n\nThe input by {full_name} to the bot in {get_chat_name(update)} was:\n{msg_text}.")
+        logging.info(f"\nThe output by the bot was:\n{out}\n\n")
 
 
 def morning_goodness(context):
@@ -336,26 +354,28 @@ def morning_goodness(context):
         greetings.seek(position)
 
         greeting = greetings.readline()
-        print(greeting)
+        logging.info(f"\nToday's morning quote is:\n{greeting}\n\n")
         context.bot_data['seek'] = greetings.tell()
 
-    ids = connection("SELECT CHAT_ID FROM CHAT_SETTINGS WHERE MORNING_MSGS='✅';", fetchall=True)
+    ids = connection("SELECT CHAT_ID, CHAT_NAME FROM CHAT_SETTINGS WHERE MORNING_MSGS='✅';", fetchall=True)
 
     # Bug with ptb where performer,title,thumb might be ignored when a url is supplied in 'audio' param in 'send_audio'.
     # Workaround for now is to just open mp3 from desktop-
 
     clip_loc = r"C:/Users/Uncle Sam/Desktop/sthyaVERAT/4 FUN ya Practice/Shanisirmodule/Assets/clips/good mourning.mp3"
 
-    for chat_id in ids:
+    for chat in ids:
         try:
-            msg = shanisir_bot.send_message(chat_id=chat_id[0], text=greeting)
-            shanisir_bot.pin_chat_message(chat_id=chat_id[0], message_id=msg.message_id, disable_notification=True)
-            shanisir_bot.send_chat_action(chat_id=chat_id[0], action='upload_audio')
-            shanisir_bot.send_audio(chat_id=chat_id[0], title="Good morning", performer="Shani sir",
+            msg = shanisir_bot.send_message(chat_id=chat[0], text=greeting)
+            shanisir_bot.send_chat_action(chat_id=chat[0], action='upload_audio')
+            shanisir_bot.send_audio(chat_id=chat[0], title="Good morning", performer="Shani sir",
                                     audio=open(clip_loc, "rb"), thumb=open("files/shanisir.jpeg", 'rb'))
+            shanisir_bot.pin_chat_message(chat_id=chat[0], message_id=msg.message_id, disable_notification=True)
+
+            logging.info(f"\nToday's morning quote was just sent to {chat[1]}.\n\n")
 
         except Exception as e:  # When chat is private, no rights to pin message, or if bot was removed.
-            print(e)
+            logging.exception(f"\nThere was an error for {chat[1]} due to: {e}.\n\n")
 
     context.bot_data['last_sent'] = datetime(right_now.year, right_now.month, right_now.day, 8)  # Set it as 8AM today
     pp.update_bot_data(context.bot_data)
@@ -386,9 +406,9 @@ def bday_wish(context):
 
     # Wishes from Google Calendar-
     if days_remaining == 0:
-        msg = context.bot.send_message(chat_id=_12B,
-                                       text=happy_birthday)
+        msg = context.bot.send_message(chat_id=_12B, text=happy_birthday)
         shanisir_bot.pin_chat_message(chat_id=_12B, message_id=msg.message_id, disable_notification=True)
+        logging.info(f"\nHappy birthday message to {name} was just sent.\n\n")
 
         now = str(date.today())
         today = datetime.strptime(now, "%Y-%m-%d")  # Parses today's date (time object) into datetime object

@@ -1,15 +1,17 @@
+import logging
+
 from telegram import (KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineKeyboardMarkup,
                       InlineKeyboardButton)
 from telegram.utils.helpers import create_deep_linked_url
 
-from .namer import nicknamer
+from helpers.namer import get_nick, get_chat_name
 
 # This is the main menu. Shown when /tell is invoked.
+logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
-keyboard = [
-    [KeyboardButton(text="Birthday"), KeyboardButton(text="Nickname")],
-    [KeyboardButton(text="Nothing")]
-]
+keyboard = [[KeyboardButton(text="Birthday"), KeyboardButton(text="Nickname")],
+            [KeyboardButton(text="Nothing")]]
+
 markup = ReplyKeyboardMarkup(keyboard=keyboard, one_time_keyboard=True, selective=True)
 
 CHOICE = range(1)
@@ -17,28 +19,37 @@ CHOICE = range(1)
 
 def initiate(update, context):  # Entry_point
 
-    chat_id = update.effective_chat.id
-    if update.effective_chat.type != "private":
+    chat = update.effective_chat
+    first_name = update.effective_user.first_name
+
+    if chat.type != "private":
 
         link = create_deep_linked_url(bot_username="Ttessttingbot", payload="tell")
         button = [[InlineKeyboardButton(text="Let's go like you say!", url=link)]]
         tell_markup = InlineKeyboardMarkup(button)
 
-        context.bot.send_message(chat_id=chat_id,
+        context.bot.send_message(chat_id=chat.id,
                                  text="Just come to another chat I want to talk to you like you say",
                                  reply_markup=tell_markup)
+
+        logging.info(f"\n{first_name} just tried using /tell in a {chat.type}."
+                     f"A message telling them to use it private was sent.\n\n")
+
         return -1
 
-    name = nicknamer(update, context)
+    name = get_nick(update, context)
 
-    context.bot.send_message(chat_id=chat_id,
+    context.bot.send_message(chat_id=chat.id,
                              text=f'What do you want to tell me {name}? Type /cancel anytime to switch me off',
                              reply_to_message_id=update.message.message_id, reply_markup=markup)
+
+    logging.info(f"\n{first_name} just used /tell in {get_chat_name(update)}.\n\n")
+
     return CHOICE
 
 
 def leave(update, context):
-    name = nicknamer(update, context)
+    name = get_nick(update, context)
 
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=f'Bye {name}, sit and solve the past papers like you say, I want to put a test okay?',
@@ -53,3 +64,5 @@ def timedout(update, context):
                              text="Ok I am fine being seenzoned",
                              reply_to_message_id=update.message.message_id,
                              reply_markup=ReplyKeyboardRemove(selective=True))
+
+    logging.info(f"\n{update.effective_user.first_name} just timed out while using /tell.\n\n")

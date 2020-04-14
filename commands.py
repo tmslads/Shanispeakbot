@@ -1,15 +1,19 @@
 import itertools
+import logging
 import random as r
 
 from telegram import error, InlineKeyboardButton, InlineKeyboardMarkup, Poll
 
 from online import util, quiz_scraper
+from helpers.namer import get_chat_name
 
 with open(r"files/lad_words.txt", "r") as f:
     prohibited = f.read().lower().split('\n')
 
 with open(r"files/snake.txt", "r") as f:
     snake_roast = f.read()
+
+logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
 swear_advice = ["Don't use such words. Okay, fine?", "Such language fails to hit the tarjit.",
                 "Vocabulary like this really presses my jokey.", "It's embarrassing vocabulary like basically.",
@@ -46,13 +50,22 @@ class BotCommands:
     @staticmethod
     def start(update, context):
 
-        args = context.args[0]  # Gather deep linked payload attached to /start
+        try:
+            args = context.args[0]  # Gather deep linked payload attached to /start
+        except IndexError:
+            args = None
+
+        name = update.effective_user.first_name
 
         if args == 'tell':
             msg = "See if you want to tell your nickname and birthday click this --> /tell"
+            logging.info(f"\n{name} just clicked the button to use /tell in private from {get_chat_name(update)}.\n\n")
+
         else:
             msg = "You can use me anywhere, @ me in the chatbox and type to get an audio clip." \
                   " Or just talk to me here and get help from me directly. Type /help to know more"
+
+            logging.info(f"\n{name} just used /start in {get_chat_name(update)}.\n\n")
 
         context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
 
@@ -84,6 +97,8 @@ class BotCommands:
                                  parse_mode="MarkdownV2", disable_web_page_preview=True, reply_markup=markup
                                  )
 
+        logging.info(f"\n{update.effective_user.first_name} just used /help in {get_chat_name(update)}.\n\n")
+
     @staticmethod
     def secret(update, context):
         context.bot.send_message(chat_id=update.effective_chat.id,
@@ -92,24 +107,29 @@ class BotCommands:
     @staticmethod
     def swear(update, context):
         del_command(update)
+
         while True:
             swears = r.choices(prohibited, k=4)  # Returns a list of 4 elements
             if len(set(swears)) == len(swears):  # i.e. if there is a duplicate element
                 break
+
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text=ladcased(f"'{swears[0]}',\n'{swears[1]}',\n'{swears[2]}',\n'{swears[3]}'\n\n"
                                                f"{next(swear_advice)}"))
+        logging.info(f"\n{update.effective_user.first_name} just used /swear in {get_chat_name(update)}.\n\n")
 
     @staticmethod
     def snake(update, context):
         del_command(update)
         context.bot.send_message(chat_id=update.effective_chat.id, text=snake_roast)
+        logging.info(f"\n{update.effective_user.first_name} just used /snake in {get_chat_name(update)}.\n\n")
 
     @staticmethod
     def facts(update, context):
         del_command(update)
         fact = r.choice(util.facts())
         context.bot.send_message(chat_id=update.effective_chat.id, text=fact)
+        logging.info(f"\n{update.effective_user.first_name} just used /facts in {get_chat_name(update)}.\n\n")
 
     @staticmethod
     def quizizz(update, context):
@@ -119,14 +139,16 @@ class BotCommands:
                 questions, choices, answers = quiz_scraper.a_quiz()
                 break
             except TypeError:  # If we get None (due to error) back, retry.
-                pass
+                logging.warning(f"\nThere was a problem getting the questions, trying again.\n\n")
 
         question = questions[0]
         options = choices[0]
         answer = answers[0]
         context.bot.send_poll(chat_id=update.effective_chat.id, question=question, options=options, is_anonymous=False,
                               type=Poll.QUIZ, correct_option_id=answer)
+        logging.info(f"\n{update.effective_user.first_name} just used /quizizz in {get_chat_name(update)}.\n\n")
 
     @staticmethod
     def unknown(update, context):
         context.bot.send_message(chat_id=update.effective_chat.id, text="I didn't say wrong I don't know.")
+        logging.info(f"\n{update.effective_user.first_name} just used something weird in {get_chat_name(update)}.\n\n")

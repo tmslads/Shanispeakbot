@@ -1,3 +1,4 @@
+import logging
 import random as r
 import sqlite3
 
@@ -5,6 +6,9 @@ from telegram import (InlineKeyboardMarkup, InlineKeyboardButton)
 from telegram.error import BadRequest
 
 from constants import samir, harshil, sql_table
+from helpers.namer import get_nick, get_chat_name
+
+logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
 CURRENT_SETTINGS, UPDATED, PROBABILITY = range(3)
 
@@ -49,6 +53,7 @@ def start(update, context):
     else:
         for admin in admins:
             if user_id in (samir, harshil) or admin.user.id == user_id:  # Check if admin/creators are calling /settings
+                logging.info(f"\n{update.effective_user.first_name} used /settings in {get_chat_name(update)}.\n\n")
                 break
         else:
             responses = ["I'm not allowing you like you say", "Ask the permission then only",
@@ -60,7 +65,7 @@ def start(update, context):
 
     conn = sqlite3.connect('./files/bot_settings.db')
     c = conn.cursor()
-    name = namer(update, context)
+    name = get_nick(update, context)
 
     c.executescript(sql_table)  # If table is not made
     conn.commit()
@@ -82,15 +87,6 @@ def start(update, context):
                                  reply_markup=setting_markup, parse_mode="MarkdownV2")
 
     return UPDATED
-
-
-def namer(update, context) -> str:
-    """Helper function to get name of private/group chat."""
-
-    name = update.effective_chat.title
-    if name is None:
-        name = update.effective_chat.first_name
-    return name
 
 
 def setting_msg(update, swap: bool = False):
@@ -116,8 +112,8 @@ def setting_msg(update, swap: bool = False):
 
     msg = "See is this the expected behaviour?\n\n" \
           r"1\. _Media reactions:_ " + f"{media_pct}\n" \
-          r"2\. _Profanity reactions:_ " + f"{profane_pct}\n" \
-          r"3\. _Morning quotes:_ " + f"{morn_setting}\n"
+                                       r"2\. _Profanity reactions:_ " + f"{profane_pct}\n" \
+                                                                        r"3\. _Morning quotes:_ " + f"{morn_setting}\n"
     return msg
 
 
@@ -250,13 +246,16 @@ def save(update, context):  # UPDATED
     update.callback_query.edit_message_text(text=r.choice(responses) + f"\n\n{r.choice(confirmations)}\n" + msg[36:],
                                             parse_mode="MarkdownV2")
 
+    logging.info(f"\n{update.effective_user.first_name} just updated {get_chat_name(update)}'s settings to:\n"
+                 f"Media={media_prob}, Profanity={profane_prob}, Morning quotes={morn_setting}.\n\n")
+
     c.execute(f"UPDATE CHAT_SETTINGS SET MORNING_MSGS='{morn_setting}' WHERE CHAT_ID={chat_id};")
     conn.commit()
 
     # Checks if group name has changed, if it did, updates in db-
     c.execute(f"SELECT CHAT_NAME FROM CHAT_SETTINGS WHERE CHAT_ID={chat_id};")  # Gets name from db
     result = c.fetchone()
-    name = namer(update, context)  # Gets name of chat
+    name = get_chat_name(update)  # Gets name of chat
 
     if name != result[0]:  # If the name is not the same, update it in db
         c.execute(f"UPDATE CHAT_SETTINGS SET CHAT_NAME='{name}' WHERE CHAT_ID={chat_id};")

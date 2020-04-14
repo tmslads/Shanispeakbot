@@ -1,11 +1,14 @@
 # States-
+import logging
 import random as r
 from time import sleep
 
 from telegram import ForceReply
 
-from constants import shanibot
-from .namer import nicknamer
+from constants import testbot
+from helpers.namer import get_nick, get_chat_name
+
+logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
 PROCESSING = range(1)
 
@@ -14,7 +17,7 @@ def magic8ball(update, context):
     """Asks the user for the question."""
 
     chat_id = update.effective_chat.id
-    name = nicknamer(update, context)
+    name = get_nick(update, context)
 
     initiate = ["If you have a doubt, just type it here",
                 f"{name}, are you confused? Ask me and I'll search for some sow...so..solutions"
@@ -29,6 +32,9 @@ def magic8ball(update, context):
                              text=f"{r.choice(initiate)}🔮\nOr, type /cancel so I won't mind that",
                              reply_markup=ForceReply(force_reply=True, selective=True),
                              reply_to_message_id=update.message.message_id)
+
+    logging.info(f"\n{update.effective_user.first_name} used /8ball in {get_chat_name(update)}.\n\n")
+
     return PROCESSING  # Will go into first (and only) state in convo handler in main.py
 
 
@@ -37,11 +43,15 @@ def thinking(update, context):
     First sends a message indicating his thinking process for 3 seconds, then on the 4th second he gives the answer
     by editing his message.
     """
-    name = nicknamer(update, context)
+    name = get_nick(update, context)
     chat_id = update.effective_chat.id
 
-    if update.message.reply_to_message.from_user.username != shanibot.replace('@', ''):
-        actual_msg = update.message.reply_to_message.message_id
+    if update.message.reply_to_message.from_user.username != testbot.replace('@', ''):
+
+        logging.info(f"\n{update.effective_user.first_name} used /8ball in {get_chat_name(update)}"
+                     f" and on {update.message.reply_to_message.from_user.first_name}'s message.\n\n")
+
+        actual_msg = update.message.reply_to_message.message_id  # Reply to the reply of the received message.
 
     else:
         actual_msg = update.message.message_id

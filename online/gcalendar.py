@@ -1,6 +1,6 @@
 # Connection to 12B class calendar, using Google Calendar API
-
 import datetime
+import logging
 import os.path
 import pickle
 from datetime import date
@@ -10,9 +10,10 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
+logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
+
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
-service = None
 
 
 class CalendarEventManager(object):
@@ -56,7 +57,7 @@ class CalendarEventManager(object):
             raise ValueError("Date must be specified!")
 
         event = service.events().insert(calendarId='primary', body=self.event).execute()
-        print("Inserted")
+        logging.info(f"\n{self.event['summary']} was added.\n\n")
 
     def update_event(self, new_date: datetime.datetime):
         """
@@ -64,9 +65,6 @@ class CalendarEventManager(object):
         class instance.
         """
         # Get event id of the event to be modified
-        print(new_date)
-        print(self.name)
-
         events = service.events().list(calendarId='primary').execute()
 
         for event in events['items']:
@@ -75,11 +73,11 @@ class CalendarEventManager(object):
                 self.event['start']['date'] = f"{formatter(new_date)}"
                 self.event['end']['date'] = f"{formatter(new_date + timedelta(days=1))}"
 
-                print("Updated dates in the event.")
                 updated_event = service.events().update(calendarId='primary', eventId=event['id'],
                                                         body=self.event).execute()
 
-                print(f"Successfully updated {self.name}'s birthday: {updated_event['start']['date']}")
+                logging.info(f"\nSuccessfully updated {self.name}'s birthday: {updated_event['start']['date']}.\n\n")
+
                 break
         else:
             raise ValueError("Event not found")

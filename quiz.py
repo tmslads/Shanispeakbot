@@ -1,3 +1,4 @@
+import logging
 import os
 import pprint
 import random as r
@@ -13,11 +14,13 @@ from telegram import Poll, ParseMode
 from telegram.ext.dispatcher import run_async
 from telegram.utils.helpers import mention_html
 
-from convos.namer import nicknamer
+from helpers.namer import get_nick
 from online import quiz_scraper
 
 quizzes = []
 cwd = os.getcwd()
+
+logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
 
 @run_async  # Have to run it asynchronously as we are using Timer() objects in function.
@@ -42,7 +45,7 @@ def send_quiz(update, context):
         quiz = context.bot.send_poll(chat_id=update.effective_chat.id, question=question, options=choice,
                                      is_anonymous=False, type=Poll.QUIZ, correct_option_id=answer, is_closed=False)
         quizzes.append(quiz)
-
+    logging.info(f"\nThe 5 quizzes were just sent to 12B successfully.\n\n")
     # # TODO: Add message that you have only 24 hours to answer quiz.
     time_limit = Timer(60 * 30, timedout, args=[update, context, quizzes])  # 10 for testing purposes
     time_limit.start()
@@ -76,6 +79,7 @@ def timedout(update, context, array):
 
     context.bot.send_photo(chat_id=chat_id, photo=open('leaderboard.png', 'rb'),
                            caption="This is where you stand like you say")  # Send latest leaderboard
+    logging.info("\nThe leaderboard was just sent on the group.\n\n")
 
     context.bot.send_chat_action(chat_id=chat_id, action='typing')
 
@@ -103,22 +107,20 @@ def receive_answer(update, context):
             correct_answer = quiz.poll.correct_option_id
             chat_id = quiz.chat.id
             break
-    else:
+    else:  # Only happens when /quizizz quiz was answered.
         return
 
     assert correct_answer is not None
-    print(correct_answer)
-    print(chosen_answer)
 
     if 'quizizz' not in context.bot_data:
         context.bot_data['quizizz'] = {}
 
     if user.id not in context.bot_data['quizizz']:
         context.bot_data['quizizz'][user.id] = {'answers_right': 0, 'questions_answered': 0,
-                                                'name': nicknamer(update, context), 'profile_pic': pp(update, context)}
+                                                'name': get_nick(update, context), 'profile_pic': pp(update, context)}
 
     else:  # Update entries if changed
-        context.bot_data['quizizz'][user.id]['name'] = nicknamer(update, context)
+        context.bot_data['quizizz'][user.id]['name'] = get_nick(update, context)
         context.bot_data['quizizz'][user.id]['profile_pic'] = pp(update, context)
 
     guy = context.bot_data['quizizz'][user.id]
@@ -148,7 +150,7 @@ def pp(update, context):
     file_id = first_pic.file_id
 
     file = context.bot.get_file(file_id=file_id)
-    return file.download(custom_path=f"profile_pics/{nicknamer(update, context)}.jpg")  # Returns file path as string
+    return file.download(custom_path=f"profile_pics/{get_nick(update, context)}.jpg")  # Returns file path as string
 
 
 def round_pic():

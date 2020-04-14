@@ -1,3 +1,5 @@
+import logging
+
 from telegram import ForceReply
 from telegram import KeyboardButton
 from telegram import ReplyKeyboardMarkup
@@ -6,6 +8,8 @@ from commands import prohibited
 from .start import markup, CHOICE
 
 SET_NICK, MODIFY_NICK = range(3, 5)
+
+logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
 
 def nick(update, context):
@@ -19,8 +23,8 @@ def nick(update, context):
 
     if 'nickname' not in context.user_data or context.user_data['nickname'][-1] == name:
         context.bot.send_message(chat_id=chat_id,
-        text="What is your uhh.. what you say like... nickname?",
-        reply_to_message_id=msg_id, reply_markup=ForceReply(selective=True))
+                                 text="What is your uhh.. what you say like... nickname?",
+                                 reply_to_message_id=msg_id, reply_markup=ForceReply(selective=True))
 
         return SET_NICK
 
@@ -47,6 +51,9 @@ def del_nick(update, context):  # MODIFY_NICK
                              text=f"I'm forgetting your nic.. {name}",
                              reply_to_message_id=update.message.message_id,
                              reply_markup=markup)
+
+    logging.info(f"\n{name} just deleted their nickname.\n\n")
+
     return CHOICE
 
 
@@ -80,6 +87,8 @@ def add_edit_nick(update, context):  # SET_NICK
 
         context.bot.send_message(chat_id=chat_id, text=f"Hi {nicky} what you're doing like", reply_to_message_id=msg_id,
                                  reply_markup=markup)
+        logging.info(f"\n{update.effective_user.first_name} just changed their nickname to {nicky}.\n\n")
+
         return CHOICE
 
 
