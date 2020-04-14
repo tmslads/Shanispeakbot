@@ -45,9 +45,16 @@ def del_command(update):
 class BotCommands:
     @staticmethod
     def start(update, context):
-        context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text="You can use me anywhere, @ me in the chatbox and type to get an audio clip."
-                                      " Or just talk to me here and get help from me directly. Type /help to know more")
+
+        args = context.args[0]  # Gather deep linked payload attached to /start
+
+        if args == 'tell':
+            msg = "See if you want to tell your nickname and birthday click this --> /tell"
+        else:
+            msg = "You can use me anywhere, @ me in the chatbox and type to get an audio clip." \
+                  " Or just talk to me here and get help from me directly. Type /help to know more"
+
+        context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
 
     @staticmethod
     def helper(update, context):

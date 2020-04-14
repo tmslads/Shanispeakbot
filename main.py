@@ -358,7 +358,7 @@ def morning_goodness(context):
             print(e)
 
     context.bot_data['last_sent'] = datetime(right_now.year, right_now.month, right_now.day, 8)  # Set it as 8AM today
-    pp.update_bot_data(context.bot_data)  # Have to update this manually as ptb 12.5 has new bug
+    pp.update_bot_data(context.bot_data)
 
 
 def bday_wish(context):
@@ -433,10 +433,9 @@ magicball_handler = ConversationHandler(
 )
 dp.add_handler(magicball_handler)
 
-# /tell conversation
-# TODO: Add deep-linked parameter to pc for people calling /tell in groups.
+# /tell conversation-
 tell_handler = ConversationHandler(
-    entry_points=[CommandHandler('tell', start.initiate, filters=Filters.private)],
+    entry_points=[CommandHandler('tell', start.initiate)],
 
     states={
         start.CHOICE: [MessageHandler(filters=Filters.regex("^Birthday$"), callback=bday.bday),
