@@ -143,7 +143,8 @@ def del_pin(update, context):
 
 def reply(update, context):
     if update.message.reply_to_message.from_user.username == testbot.replace('@', ''):  # If the reply is from a bot:
-        private(update, context, grp=True, the_id=update.message.message_id)  # send a response like in private chat
+        if not update.message.text.startswith('!r'):  # Don't reply if this is prepended
+            private(update, context, grp=True, the_id=update.message.message_id)  # send a response like in private chat
 
 
 def group(update, context):
@@ -381,11 +382,13 @@ def bday_wish(context):
 
     happy_birthday2 = f"Happy birthday {name}! !🎉 What your going to do today like?"
 
+    _12B = group_ids['12b']
+
     # Wishes from Google Calendar-
     if days_remaining == 0:
-        msg = context.bot.send_message(chat_id=group_ids['12b'],
+        msg = context.bot.send_message(chat_id=_12B,
                                        text=happy_birthday)
-        shanisir_bot.pin_chat_message(chat_id=group_ids['12b'], message_id=msg.message_id, disable_notification=True)
+        shanisir_bot.pin_chat_message(chat_id=_12B, message_id=msg.message_id, disable_notification=True)
 
         now = str(date.today())
         today = datetime.strptime(now, "%Y-%m-%d")  # Parses today's date (time object) into datetime object
