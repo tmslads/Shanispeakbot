@@ -151,8 +151,9 @@ def del_pin(update, context):
 
 
 def reply(update, context):
+    text = update.message.text
     if update.message.reply_to_message.from_user.username == testbot.replace('@', ''):  # If the reply is from a bot:
-        if not update.message.text.startswith('!r'):  # Don't reply if this is prepended
+        if not (text.startswith('!r') or text.endswith('!r')):  # Don't reply if this is prepended or at the tail.
             logging.info(f"\nBot received a reply from {update.effective_user.first_name} in "
                          f"{update.effective_chat.title}.\n\n")
             private(update, context, grp=True, the_id=update.message.message_id)  # send a response like in private chat
