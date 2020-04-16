@@ -24,7 +24,7 @@ def initiate(update, context):  # Entry_point
 
     if chat.type != "private":
 
-        link = create_deep_linked_url(bot_username="Ttessttingbot", payload="tell")
+        link = create_deep_linked_url(bot_username=context.bot.username, payload="tell")
         button = [[InlineKeyboardButton(text="Let's go like you say!", url=link)]]
         tell_markup = InlineKeyboardMarkup(button)
 

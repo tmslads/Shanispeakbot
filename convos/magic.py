@@ -5,7 +5,6 @@ from time import sleep
 
 from telegram import ForceReply
 
-from constants import testbot
 from helpers.namer import get_nick, get_chat_name
 
 logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
@@ -46,7 +45,7 @@ def thinking(update, context):
     name = get_nick(update, context)
     chat_id = update.effective_chat.id
 
-    if update.message.reply_to_message.from_user.username != testbot.replace('@', ''):
+    if update.message.reply_to_message.from_user.username != context.bot.name.replace('@', ''):
 
         logging.info(f"\n{update.effective_user.first_name} used /8ball in {get_chat_name(update)}"
                      f" and on {update.message.reply_to_message.from_user.first_name}'s message.\n\n")

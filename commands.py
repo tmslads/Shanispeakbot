@@ -39,6 +39,7 @@ def ladcased(normal):
 
 def del_command(update):
     """Delete the command message sent by the user."""
+
     try:
         update.message.delete()
 
@@ -50,22 +51,17 @@ class BotCommands:
     @staticmethod
     def start(update, context):
 
-        try:
-            args = context.args[0]  # Gather deep linked payload attached to /start
-        except IndexError:
-            args = None
-
         name = update.effective_user.first_name
 
-        if args == 'tell':
+        msg = "You can use me anywhere, @ me in the chatbox and type to get an audio clip." \
+              " Or just talk to me here and get help from me directly. Type /help to know more"
+
+        logging.info(f"\n{name} just used /start in {get_chat_name(update)}.\n\n")
+
+        if context.args:
+            args = context.args[0]  # Gather deep linked payload attached to /start
             msg = "See if you want to tell your nickname and birthday click this --> /tell"
             logging.info(f"\n{name} just clicked the button to use /tell in private from {get_chat_name(update)}.\n\n")
-
-        else:
-            msg = "You can use me anywhere, @ me in the chatbox and type to get an audio clip." \
-                  " Or just talk to me here and get help from me directly. Type /help to know more"
-
-            logging.info(f"\n{name} just used /start in {get_chat_name(update)}.\n\n")
 
         context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
 

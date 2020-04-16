@@ -22,13 +22,16 @@ from convos import (bday, magic, nick, settings_gui, start)
 from helpers.namer import get_nick, get_chat_name
 from online import gcalendar
 from quiz import send_quiz, receive_answer
+# TODO: Add type hints everywhere
 
 # asctime - The time in human readable form
 # name - Name of the logger module
 # levelname - logging level for the message ('DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL')
 # lineno - Line number
 # message - The logged message
+
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
+
 
 with open("files/token.txt", 'r') as file:
     shanisir_token, test_token = file.read().split(',')
@@ -146,13 +149,14 @@ def media(update, context):
 
 def del_pin(update, context):
     """Deletes pinned message service status from the bot."""
+
     shanisir_bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
     logging.info(f"\nBot deleted a pinned service message from {update.effective_chat.title}.\n\n")
 
 
 def reply(update, context):
     text = update.message.text
-    if update.message.reply_to_message.from_user.username == testbot.replace('@', ''):  # If the reply is from a bot:
+    if update.message.reply_to_message.from_user.username == context.bot.username:  # If the reply is to a bot:
         if not (text.startswith('!r') or text.endswith('!r')):  # Don't reply if this is prepended or at the tail.
             logging.info(f"\nBot received a reply from {update.effective_user.first_name} in "
                          f"{update.effective_chat.title}.\n\n")
@@ -164,6 +168,7 @@ def group(update, context):
 
     chat_id = update.effective_chat.id
     if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
+
         true = connection(f"SELECT PROFANE_PROB FROM CHAT_SETTINGS WHERE CHAT_ID={chat_id};", update)
         false = 1 - true
 
@@ -182,6 +187,7 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
 
     user = update.message.from_user
     full_name = user.full_name
+    bot_username = context.bot.name  # Bot username with @
     username = user.username
     today = update.message.date
     org_text = update.message.text
@@ -191,19 +197,22 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
 
     # Checks if your username or fullname or chat id is present in our records. If not, adds them.
     if 'username' not in context.user_data:
-        context.user_data['username'] = [user.username]
+        context.user_data['username'] = [username]
 
-    elif user.username != context.user_data['username'][-1]:
-        context.user_data['username'].append(user.username)
+    elif username != context.user_data['username'][-1]:
+        context.user_data['username'].append(username)
+        logging.info(f"\n{full_name} changed their username to: {username}. Updated in \n\n")
 
     if 'full_name' not in context.user_data:
-        context.user_data['full_name'] = [user.full_name]
+        context.user_data['full_name'] = [full_name]
 
-    elif user.full_name != context.user_data['full_name'][-1]:
-        context.user_data['full_name'].append(user.full_name)
+    elif full_name != context.user_data['full_name'][-1]:
+        context.user_data['full_name'].append(full_name)
+        logging.info(f"\n{username} updated their full name to: {full_name}.\n\n")
 
     if "chat_ids" not in context.chat_data:
         context.chat_data["chat_ids"] = [chat_id]
+        logging.info(f"\n{full_name} is talking to the bot for the first time.\n\n")
 
     elif chat_id not in context.chat_data['chat_ids']:  # Gets chat id of the user in which they have talked to the bot
         context.chat_data['chat_ids'].append(chat_id)
@@ -212,8 +221,8 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
     pp.update_user_data(user.id, context.user_data)
     pp.update_chat_data(chat_id, context.chat_data)
 
-    if testbot in org_text:  # Sends response if bot is @'ed in group
-        msg_text = re.sub(r"(\s*)@Ttessttingbot(\s*)", ' ', org_text)  # Remove mention from text so response is better
+    if bot_username in org_text:  # Sends response if bot is @'ed in group
+        msg_text = re.sub(rf"(\s*){bot_username}(\s*)", ' ', org_text)  # Remove mention from text so response is better
         the_id = update.message.message_id
         grp = True
 
@@ -366,20 +375,28 @@ def morning_goodness(context):
     clip_loc = r"C:/Users/Uncle Sam/Desktop/sthyaVERAT/4 FUN ya Practice/Shanisirmodule/Assets/clips/good mourning.mp3"
 
     for chat in ids:
-        try:
-            msg = shanisir_bot.send_message(chat_id=chat[0], text=greeting)
-            shanisir_bot.send_chat_action(chat_id=chat[0], action='upload_audio')
-            shanisir_bot.send_audio(chat_id=chat[0], title="Good morning", performer="Shani sir",
-                                    audio=open(clip_loc, "rb"), thumb=open("files/shanisir.jpeg", 'rb'))
-            shanisir_bot.pin_chat_message(chat_id=chat[0], message_id=msg.message_id, disable_notification=True)
 
-            logging.info(f"\nToday's morning quote was just sent to {chat[1]}.\n\n")
+        chat_id = chat[0]
+        chat_name = chat[1]
+
+        try:
+            msg = shanisir_bot.send_message(chat_id=chat_id, text=greeting)
+            logging.info(f"\nToday's morning quote was just sent to {chat_name}.\n\n")
+
+            shanisir_bot.send_chat_action(chat_id=chat_id, action='upload_audio')
+
+            shanisir_bot.send_audio(chat_id=chat_id, title="Good morning", performer="Shani sir",
+                                    audio=open(clip_loc, "rb"), thumb=open("files/shanisir.jpeg", 'rb'))
+            logging.info(f"\nToday's morning audio was just sent to {chat_name}.\n\n")
+
+            shanisir_bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id, disable_notification=True)
 
         except Exception as e:  # When chat is private, no rights to pin message, or if bot was removed.
-            logging.exception(f"\nThere was an error for {chat[1]} due to: {e}.\n\n")
+            logging.exception(f"\nThere was an error for {chat_name} due to: {e}.\n\n")
 
     context.bot_data['last_sent'] = datetime(right_now.year, right_now.month, right_now.day, 8)  # Set it as 8AM today
     pp.update_bot_data(context.bot_data)
+    logging.info(f"\nThe last_sent object was successfully updated to 8AM today.\n\n")
 
 
 def bday_wish(context):
