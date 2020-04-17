@@ -124,10 +124,9 @@ def receive_answer(update, context):
 
     if user.id not in context.bot_data['quizizz']:
         # Note: `answers_wrong` below is only for one quiz. For the next quiz, they are reset.
-        context.bot_data['quizizz'][user.id] = {'answers_right': 0, 'questions_answered': 0, 'answers_wrong': 0,
-                                                'name': get_nick(update, context), 'profile_pic': pp(update, context)}
+        context.bot_data['quizizz'][user.id] = {'answers_right': 0, 'questions_answered': 0, 'answers_wrong': 0}
 
-    # Update entries if changed
+    # Update/add entries if changed-
     guy = context.bot_data['quizizz'][user.id]
 
     guy['name'] = get_nick(update, context)

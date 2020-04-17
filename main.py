@@ -324,7 +324,8 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
         if word in emoji.UNICODE_EMOJI:  # Checks if emoji is present in message
             cleaned.append(r.choice(list(emoji.UNICODE_EMOJI)))  # Adds a random emoji
 
-    shanitext = ' '.join(cleaned).capitalize()
+    shanitext = ' '.join(cleaned)
+    shanitext = shanitext[0].upper() + shanitext[1:]
 
     with open("files/interactions.txt", "a") as f1:
         inp = f"UTC+0 {today} {isgrp} {reply} {full_name} ({username}) SAID: {msg_text}\n"
@@ -532,7 +533,7 @@ dp.add_handler(MessageHandler(media_filters, media))
 dp.add_handler(MessageHandler(Filters.status_update.pinned_message & Filters.user(username=testbot), del_pin))
 dp.add_handler(MessageHandler(Filters.reply & Filters.group & ~ edit_filter, reply))
 dp.add_handler(MessageHandler(Filters.regex(testbot) & Filters.group & ~ edit_filter & ~ Filters.command, private))
-dp.add_handler(MessageHandler(Filters.group & Filters.text & ~ edit_filter, group))
+dp.add_handler(MessageHandler(Filters.group & Filters.text & ~ edit_filter, group))  # TODO: Maybe remove line above
 dp.add_handler(MessageHandler(Filters.private & Filters.text & ~ edit_filter, private))
 dp.add_handler(MessageHandler(Filters.command, bc.unknown))
 
