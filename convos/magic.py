@@ -3,16 +3,17 @@ import logging
 import random as r
 from time import sleep
 
-from telegram import ForceReply
+from telegram import ForceReply, Update
+from telegram.ext import CallbackContext
 
 from helpers.namer import get_nick, get_chat_name
 
 logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
-PROCESSING = range(1)
+PROCESSING = 0
 
 
-def magic8ball(update, context):
+def magic8ball(update: Update, context: CallbackContext) -> int:
     """Asks the user for the question."""
 
     chat_id = update.effective_chat.id
@@ -37,7 +38,7 @@ def magic8ball(update, context):
     return PROCESSING  # Will go into first (and only) state in convo handler in main.py
 
 
-def thinking(update, context):
+def thinking(update: Update, context: CallbackContext) -> int:
     """
     First sends a message indicating his thinking process for 3 seconds, then on the 4th second he gives the answer
     by editing his message.
@@ -72,7 +73,7 @@ def thinking(update, context):
     seconds = list(range(1, 5))
 
     msg_sent = context.bot.send_message(chat_id=chat_id, text=f"`{thought}`",  # Will be monospaced
-                                        parse_mode='MarkdownV2',  # Check Bot API 4.5 for MarkdownV2 docs
+                                        parse_mode='MarkdownV2',
                                         reply_to_message_id=actual_msg)
 
     # Editing message rapidly-
@@ -92,7 +93,7 @@ def thinking(update, context):
     return -1  # End of conversation
 
 
-def cancel(update, context):
+def cancel(update: Update, context: CallbackContext) -> int:
     """Called when user presses /cancel"""
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text="I just wanted to be in the right direction nothing else I mean okay?",

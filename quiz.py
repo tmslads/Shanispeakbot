@@ -9,7 +9,8 @@ from matplotlib import patheffects
 from matplotlib import pyplot as plt
 from matplotlib.cbook import get_sample_data
 from matplotlib.offsetbox import (OffsetImage, AnnotationBbox)
-from telegram import Poll, ParseMode
+from telegram import Poll, ParseMode, Update
+from telegram.ext import CallbackContext
 from telegram.utils.helpers import mention_html
 
 from helpers.namer import get_nick, get_chat_name
@@ -22,7 +23,7 @@ cwd = os.getcwd()
 logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
 
-def send_quiz(update, context):
+def send_quiz(update: Update, context: CallbackContext) -> None:
     """Sends 5 quizzes to target chat (12B for now). Also sets a timer for 24 hours for quiz expiry (using jobs)."""
 
     global quizzes
@@ -52,7 +53,7 @@ def send_quiz(update, context):
     context.job_queue.run_once(callback=timedout, when=10, context=[update, quizzes])  # 10s for testing purposes
 
 
-def timedout(context):
+def timedout(context: CallbackContext) -> None:
     """Closes quiz when the time limit is over. Also scolds people if they got 3 or more answers wrong in the quiz."""
 
     to_scold = []
@@ -103,7 +104,12 @@ def timedout(context):
         context.bot.send_message(chat_id=chat_id, text=scold_names + r.choice(scolds), parse_mode=ParseMode.HTML)
 
 
-def receive_answer(update, context):
+def receive_answer(update: Update, context: CallbackContext) -> None:
+    """
+    Saves quiz related user data. Run everytime a user answers a quiz. This data is used later in generating the
+    leaderboard.
+    """
+
     user = update.poll_answer.user
     chosen_answer = update.poll_answer.option_ids
 
@@ -141,7 +147,7 @@ def receive_answer(update, context):
     pprint.PrettyPrinter(indent=2).pprint(context.bot_data)  # TODO: Remove this before pr merge
 
 
-def pp(update, context):
+def pp(update: Update, context: CallbackContext) -> str:
     """Helper function to get a user's profile pic. This will be then used in the bar graph."""
 
     user = update.poll_answer.user
@@ -157,7 +163,9 @@ def pp(update, context):
     return file.download(custom_path=f"profile_pics/{get_nick(update, context)}.jpg")  # Returns file path as string
 
 
-def round_pic():
+def round_pic() -> None:
+    """Helper function to crop all the images in `profile_pics` into circular ones since it looks better."""
+
     # Open the input image as numpy array, convert to RGB
     for name in os.listdir(f"{cwd}/profile_pics"):
 
@@ -188,7 +196,7 @@ def round_pic():
         print("DOne")
 
 
-def add_image(name: str, x: float or int, y: int, offset: float = 1.6, zoom: float = 0.23):
+def add_image(name: str, x: float or int, y: int, offset: float = 1.6, zoom: float = 0.23) -> AnnotationBbox:
     """
     Adds the given image to the bar graph, with the given specifications.
 
@@ -209,7 +217,11 @@ def add_image(name: str, x: float or int, y: int, offset: float = 1.6, zoom: flo
     return AnnotationBbox(image_box, (x + offset, y), frameon=False, annotation_clip=False)
 
 
-def leaderboard():
+def leaderboard() -> None:
+    """
+    Makes a horizontal bar graph using data from the quiz. The list is sorted in ascending order. Thus, the person
+    with the highest marks is displayed at the top. The leaderboard is then saved in the current working directory.
+    """
     # round_pic()  # Make sure all pics are round before starting
 
     # names, vals = [], []

@@ -1,7 +1,8 @@
 import logging
 
 from telegram import (KeyboardButton, ReplyKeyboardMarkup, ReplyKeyboardRemove, InlineKeyboardMarkup,
-                      InlineKeyboardButton)
+                      InlineKeyboardButton, Update)
+from telegram.ext import CallbackContext
 from telegram.utils.helpers import create_deep_linked_url
 
 from helpers.namer import get_nick, get_chat_name
@@ -14,10 +15,10 @@ keyboard = [[KeyboardButton(text="Birthday"), KeyboardButton(text="Nickname")],
 
 markup = ReplyKeyboardMarkup(keyboard=keyboard, one_time_keyboard=True, selective=True)
 
-CHOICE = range(1)
+CHOICE = 0
 
 
-def initiate(update, context):  # Entry_point
+def initiate(update: Update, context: CallbackContext) -> int:  # Entry_point
 
     chat = update.effective_chat
     first_name = update.effective_user.first_name
@@ -48,7 +49,7 @@ def initiate(update, context):  # Entry_point
     return CHOICE
 
 
-def leave(update, context):
+def leave(update: Update, context: CallbackContext) -> int:
     name = get_nick(update, context)
 
     context.bot.send_message(chat_id=update.effective_chat.id,
@@ -59,7 +60,7 @@ def leave(update, context):
     return -1
 
 
-def timedout(update, context):
+def timedout(update: Update, context: CallbackContext) -> None:
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text="Ok I am fine being seenzoned",
                              reply_to_message_id=update.message.message_id,

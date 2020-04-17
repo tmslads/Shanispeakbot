@@ -1,7 +1,9 @@
 # Functions to obtain nickname or chatname-
+from telegram import Update
+from telegram.ext import CallbackContext
 
 
-def get_nick(update, context) -> str:
+def get_nick(update: Update, context: CallbackContext) -> str:
     """Uses current nickname set by user."""
 
     try:
@@ -12,7 +14,7 @@ def get_nick(update, context) -> str:
         return context.user_data['nickname'][-1]
 
 
-def get_chat_name(update) -> str:
+def get_chat_name(update: Update) -> str:
     """Helper function to get name of private/group chat."""
 
     name = update.effective_chat.title

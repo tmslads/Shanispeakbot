@@ -1,7 +1,8 @@
 from difflib import get_close_matches
 from uuid import uuid4
 
-from telegram import InlineQueryResultAudio
+from telegram import InlineQueryResultAudio, Update
+from telegram.ext import CallbackContext
 
 from online import util
 
@@ -13,7 +14,7 @@ for clip in zip(links, names):
     results.append(InlineQueryResultAudio(id=uuid4(), audio_url=clip[0], title=clip[1], performer="Shani Sir"))
 
 
-def inline_clips(update, context):
+def inline_clips(update: Update, context: CallbackContext) -> None:
     query = update.inline_query.query
     if not query:
         context.bot.answer_inline_query(update.inline_query.id, results[:50])  # Show first 49 clips if nothing is typed

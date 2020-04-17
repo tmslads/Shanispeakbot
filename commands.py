@@ -2,7 +2,8 @@ import itertools
 import logging
 import random as r
 
-from telegram import error, InlineKeyboardButton, InlineKeyboardMarkup, Poll
+from telegram import error, InlineKeyboardButton, InlineKeyboardMarkup, Poll, Update
+from telegram.ext import CallbackContext
 
 from online import util, quiz_scraper
 from helpers.namer import get_chat_name
@@ -27,7 +28,7 @@ r.shuffle(swear_advice)
 swear_advice = itertools.cycle(swear_advice)
 
 
-def ladcased(normal):
+def ladcased(normal: str) -> str:
     """Convert a string to 'ladcase' (Alternating uppercase and lowercase)"""
 
     ladified = ''
@@ -37,7 +38,7 @@ def ladcased(normal):
     return ladified
 
 
-def del_command(update):
+def del_command(update: Update) -> None:
     """Delete the command message sent by the user."""
 
     try:
@@ -49,7 +50,7 @@ def del_command(update):
 
 class BotCommands:
     @staticmethod
-    def start(update, context):
+    def start(update: Update, context: CallbackContext) -> None:
 
         name = update.effective_user.first_name
 
@@ -66,7 +67,7 @@ class BotCommands:
         context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
 
     @staticmethod
-    def helper(update, context):
+    def helper(update: Update, context: CallbackContext) -> None:
 
         buttons = [[InlineKeyboardButton(text="Try out inline mode", switch_inline_query_current_chat="")],
                    [InlineKeyboardButton(text="Use inline mode in another chat", switch_inline_query="")]]
@@ -96,12 +97,12 @@ class BotCommands:
         logging.info(f"\n{update.effective_user.first_name} just used /help in {get_chat_name(update)}.\n\n")
 
     @staticmethod
-    def secret(update, context):
+    def secret(update: Update, context: CallbackContext) -> None:
         context.bot.send_message(chat_id=update.effective_chat.id,
                                  text="stop finding secret commands :P")  # Secret command for later use
 
     @staticmethod
-    def swear(update, context):
+    def swear(update: Update, context: CallbackContext) -> None:
         del_command(update)
 
         while True:
@@ -115,20 +116,20 @@ class BotCommands:
         logging.info(f"\n{update.effective_user.first_name} just used /swear in {get_chat_name(update)}.\n\n")
 
     @staticmethod
-    def snake(update, context):
+    def snake(update: Update, context: CallbackContext) -> None:
         del_command(update)
         context.bot.send_message(chat_id=update.effective_chat.id, text=snake_roast)
         logging.info(f"\n{update.effective_user.first_name} just used /snake in {get_chat_name(update)}.\n\n")
 
     @staticmethod
-    def facts(update, context):
+    def facts(update: Update, context: CallbackContext) -> None:
         del_command(update)
         fact = r.choice(util.facts())
         context.bot.send_message(chat_id=update.effective_chat.id, text=fact)
         logging.info(f"\n{update.effective_user.first_name} just used /facts in {get_chat_name(update)}.\n\n")
 
     @staticmethod
-    def quizizz(update, context):
+    def quizizz(update: Update, context: CallbackContext) -> None:
 
         while True:
             try:
@@ -145,6 +146,6 @@ class BotCommands:
         logging.info(f"\n{update.effective_user.first_name} just used /quizizz in {get_chat_name(update)}.\n\n")
 
     @staticmethod
-    def unknown(update, context):
+    def unknown(update: Update, context: CallbackContext) -> None:
         context.bot.send_message(chat_id=update.effective_chat.id, text="I didn't say wrong I don't know.")
         logging.info(f"\n{update.effective_user.first_name} just used something weird in {get_chat_name(update)}.\n\n")

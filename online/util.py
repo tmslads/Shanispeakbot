@@ -2,6 +2,7 @@ import re
 
 import requests
 from bs4 import BeautifulSoup
+from typing import Tuple
 
 from constants import _LINK, _DOWNLOAD, URL
 
@@ -13,7 +14,7 @@ scraped = BeautifulSoup(getting.content, 'html.parser')
 results = scraped.find_all(href=re.compile('/tmslads/Shanisirmodule/blob/master/Assets/clips/'))
 
 
-def clips():
+def clips() -> Tuple[list, list]:
     for index, result in enumerate(results):
         url = f"{_DOWNLOAD}{result['href'].replace('blob/', '')}"
         name = result['title'][:-4]
@@ -22,7 +23,7 @@ def clips():
     return dl_links, names
 
 
-def facts():
+def facts() -> list:
     """Return list of three facts"""
     page = requests.get(URL)
     soup = BeautifulSoup(page.content, 'html.parser')

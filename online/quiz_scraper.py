@@ -1,5 +1,6 @@
 import random as r
 import re
+from typing import Tuple, List, Union
 
 import requests
 from bs4 import BeautifulSoup
@@ -7,7 +8,7 @@ from bs4 import BeautifulSoup
 from constants import QUIZ_URL
 
 
-def a_quiz():
+def a_quiz() -> Union[Tuple[list, List[List[str]], List[int]], None]:
     page = r.randint(1, 76)
     print(page)
     quiz_url = f"{QUIZ_URL}/{page}"

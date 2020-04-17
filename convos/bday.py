@@ -2,9 +2,10 @@
 import datetime
 import logging
 
-from telegram import ForceReply
+from telegram import ForceReply, Update
 from telegram import KeyboardButton
 from telegram import ReplyKeyboardMarkup
+from telegram.ext import CallbackContext
 
 from helpers.namer import get_nick
 from online.gcalendar import formatter
@@ -15,7 +16,7 @@ INPUT, MODIFY = range(1, 3)
 logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
 
-def bday(update, context):  # CHOICE
+def bday(update: Update, context: CallbackContext) -> int:  # CHOICE
     """Asks user for their birthday if it is not known, else gives options on what to do with them."""
 
     chat_id = update.effective_chat.id
@@ -49,7 +50,7 @@ def bday(update, context):  # CHOICE
         return MODIFY
 
 
-def bday_add_or_update(update, context):  # INPUT
+def bday_add_or_update(update: Update, context: CallbackContext) -> int:  # INPUT
     """Changes or adds your birthday into our records."""
 
     bday_date = update.message.text
@@ -74,7 +75,7 @@ def bday_add_or_update(update, context):  # INPUT
         return CHOICE
 
 
-def bday_mod(update, context):  # MODIFY
+def bday_mod(update: Update, context: CallbackContext) -> int:  # MODIFY
     """Asks user for input so we can update their birthday"""
 
     name = get_nick(update, context)
@@ -88,7 +89,7 @@ def bday_mod(update, context):  # MODIFY
     return INPUT
 
 
-def bday_del(update, context):  # MODIFY
+def bday_del(update: Update, context: CallbackContext) -> int:  # MODIFY
     """Deletes birthday from our records. Then goes back to main menu."""
 
     name = get_nick(update, context)
@@ -102,7 +103,7 @@ def bday_del(update, context):  # MODIFY
     return CHOICE
 
 
-def age_cal(date: datetime.datetime):
+def age_cal(date: datetime.datetime) -> int:
     """Returns your age based on your birth date."""
 
     today = datetime.datetime.utcnow()
@@ -110,7 +111,7 @@ def age_cal(date: datetime.datetime):
     return age.days // 365
 
 
-def reject(update, context):  # fallback
+def reject(update: Update, context: CallbackContext) -> int:  # fallback
     """When user cancels current operation. Goes back to main menu."""
 
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"Ok, what you want to do like?",
@@ -119,7 +120,7 @@ def reject(update, context):  # fallback
     return CHOICE
 
 
-def wrong(update, context):  # INPUT
+def wrong(update: Update, context: CallbackContext) -> int:  # INPUT
     """Asks user to enter his birthdate correctly."""
 
     context.bot.send_message(chat_id=update.effective_chat.id,

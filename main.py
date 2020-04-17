@@ -7,11 +7,13 @@ import re
 import sqlite3
 from datetime import datetime, date
 from time import sleep, time as cur_time
+from typing import Union
 
 import chatterbot
 import emoji
+from telegram import Update
 from telegram.ext import (CommandHandler, ConversationHandler, InlineQueryHandler, MessageHandler, Filters,
-                          PicklePersistence, Updater, CallbackQueryHandler, PollAnswerHandler)
+                          PicklePersistence, Updater, CallbackQueryHandler, PollAnswerHandler, CallbackContext)
 from textblob import TextBlob
 
 import chatbot
@@ -55,7 +57,7 @@ r.shuffle(rebukes)
 rebukes = itertools.cycle(rebukes)
 
 
-def connection(query: str, update=None, fetchall=False):
+def connection(query: str, update: Update = None, fetchall: bool = False) -> Union[list, int, float, str]:
     """Connect to database and execute given query."""
 
     conn = sqlite3.connect('./files/bot_settings.db')
@@ -67,9 +69,7 @@ def connection(query: str, update=None, fetchall=False):
         result = c.fetchone()
 
         if not result[0]:  # If /settings was never called
-            name = update.effective_chat.title
-            if name is None:  # Will be None when it is a private chat
-                name = update.effective_chat.first_name
+            name = get_chat_name(update)
 
             c.execute(f"INSERT INTO CHAT_SETTINGS VALUES({chat_id},'{name}','❌',0.3,0.2);")  # First time use
             conn.commit()
@@ -88,7 +88,7 @@ def connection(query: str, update=None, fetchall=False):
         return result[0]
 
 
-def media(update, context):
+def media(update: Update, context: CallbackContext) -> None:
     """Sends a reaction to media messages (pictures, videos, documents, voice notes)"""
 
     global last_reacted_at
@@ -147,14 +147,14 @@ def media(update, context):
             logging.info(f"\nBot sent a reaction to a executable to {name}.\n\n")
 
 
-def del_pin(update, context):
+def del_pin(update: Update, context: CallbackContext) -> None:
     """Deletes pinned message service status from the bot."""
 
     shanisir_bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
     logging.info(f"\nBot deleted a pinned service message from {update.effective_chat.title}.\n\n")
 
 
-def reply(update, context):
+def reply(update: Update, context: CallbackContext) -> None:
     text = update.message.text
     if update.message.reply_to_message.from_user.username == context.bot.username:  # If the reply is to a bot:
         if not (text.startswith('!r') or text.endswith('!r')):  # Don't reply if this is prepended or at the tail.
@@ -163,7 +163,7 @@ def reply(update, context):
             private(update, context, grp=True, the_id=update.message.message_id)  # send a response like in private chat
 
 
-def group(update, context):
+def group(update: Update, context: CallbackContext) -> None:
     """Checks for profanity in messages and responds to that."""
 
     chat_id = update.effective_chat.id
@@ -178,11 +178,11 @@ def group(update, context):
             out = f"{next(rebukes)} {name}"
             shanisir_bot.send_message(chat_id=chat_id, text=out,
                                       reply_to_message_id=update.message.message_id)  # Sends message
-            logging.info(f"\n{update.effective_user.first_name} used profane language in {update.effective_chat.title}."
+            logging.info(f"\n{update.effective_user.first_name} used profane language in {get_chat_name(update)}."
                          f"\nThe rebuke by the bot was: '{out}'.\n\n")
 
 
-def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
+def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)") -> None:
     global bot_response
 
     user = update.message.from_user
@@ -344,7 +344,7 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)"):
         logging.info(f"\nThe output by the bot was:\n{out}\n\n")
 
 
-def morning_goodness(context):
+def morning_goodness(context: CallbackContext) -> None:
     """Send a "good morning" quote to the groups, along with a clip"""
 
     right_now = datetime.now()  # returns: Datetime obj
@@ -400,8 +400,8 @@ def morning_goodness(context):
     logging.info(f"\nThe last_sent object was successfully updated to 8AM today.\n\n")
 
 
-def bday_wish(context):
-    """Wishes you on your birthday."""
+def bday_wish(context: CallbackContext) -> None:
+    """Gets the next birthday from Google Calendar and wishes you if today is your birthday."""
 
     gcalendar.main()
     days_remaining, name = gcalendar.get_next_bday()
@@ -438,7 +438,7 @@ def bday_wish(context):
     # TODO: Wishes from /tell birthday input-
 
 
-def prettyprintview():
+def prettyprintview() -> None:
     with open('files/user_data', 'rb') as f:
         pprint.PrettyPrinter(indent=2).pprint(pickle.load(f))
 

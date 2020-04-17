@@ -5,6 +5,7 @@ import os.path
 import pickle
 from datetime import date
 from datetime import timedelta
+from typing import Tuple, Union
 
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
@@ -17,16 +18,16 @@ SCOPES = ['https://www.googleapis.com/auth/calendar']
 
 
 class CalendarEventManager(object):
-    def __init__(self, name: str, date: datetime.date = None) -> None:
+    def __init__(self, name: str, _date: datetime.date = None) -> None:
         """
 
         :param name: Name of the person's whose birthday it is
-        :param date: Date of that person's birthday
+        :param _date: Date of that person's birthday
 
         """
 
         self.name = name
-        self.date = date
+        self.date = _date
 
         # self.formatted = formatter(self.date)
         self.event = {
@@ -83,7 +84,7 @@ class CalendarEventManager(object):
             raise ValueError("Event not found")
 
 
-def formatter(date: datetime.date, days: int = 0, format_style=""):
+def formatter(today: datetime.date, days: int = 0, format_style: str = "") -> Union[str, None]:
     """
     Formats the date and returns it in the form used in the Google Calendar API. Adds 'days' no. of days to the date
     if 'days' parameter is specified.
@@ -91,22 +92,22 @@ def formatter(date: datetime.date, days: int = 0, format_style=""):
     Args:
         :param format_style: If specified, type 'DD/MM' to format it in that way.
         :param days: Number of days to add to the date.
-        :param date: A datetime object
+        :param today: A datetime object
 
     """
 
-    if isinstance(date, datetime.datetime):
+    if isinstance(today, datetime.datetime):
         if days != 0:
-            date += timedelta(days=days)
+            today += timedelta(days=days)
 
         if format_style == "DD/MM":
-            return date.strftime("%d/%m")
+            return today.strftime("%d/%m")
 
-        return date.strftime("%Y-%m-%d")
+        return today.strftime("%Y-%m-%d")
     return
 
 
-def get_next_bday():
+def get_next_bday() -> Tuple[int, str]:
     """
     Fetches a birthday from google calendar (12B only) and returns the number of days till the next birthday of a
     person along with their name.
@@ -139,7 +140,7 @@ def get_next_bday():
     return next_bday  # Returns lowest (i.e. next bday) in the calendar
 
 
-def main():
+def main() -> None:
     """
     Sets up the Google Calendar API for easy use.
     """

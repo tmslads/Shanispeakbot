@@ -1,8 +1,9 @@
 import logging
 
-from telegram import ForceReply
+from telegram import ForceReply, Update
 from telegram import KeyboardButton
 from telegram import ReplyKeyboardMarkup
+from telegram.ext import CallbackContext
 
 from commands import prohibited
 from .start import markup, CHOICE
@@ -12,7 +13,7 @@ SET_NICK, MODIFY_NICK = range(3, 5)
 logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
 
-def nick(update, context):
+def nick(update: Update, context: CallbackContext) -> int:
     """
     Checks if nickname is set or not, if set, then gives options on what to do with them. Else will ask to set
     a nickname.
@@ -41,7 +42,7 @@ def nick(update, context):
         return MODIFY_NICK
 
 
-def del_nick(update, context):  # MODIFY_NICK
+def del_nick(update: Update, context: CallbackContext) -> int:  # MODIFY_NICK
     """Deletes nickname (i.e.) sets it to your first name."""
 
     name = update.message.from_user.first_name
@@ -57,7 +58,7 @@ def del_nick(update, context):  # MODIFY_NICK
     return CHOICE
 
 
-def edit_nick(update, context):  # MODIFY_NICK
+def edit_nick(update: Update, context: CallbackContext) -> int:  # MODIFY_NICK
     """Asks for new nickname."""
 
     context.bot.send_message(chat_id=update.effective_chat.id,
@@ -66,7 +67,7 @@ def edit_nick(update, context):  # MODIFY_NICK
     return SET_NICK
 
 
-def add_edit_nick(update, context):  # SET_NICK
+def add_edit_nick(update: Update, context: CallbackContext) -> int:  # SET_NICK
     """Adds or updates your nickname. Then goes back to main menu."""
 
     chat_id = update.effective_chat.id
@@ -92,7 +93,7 @@ def add_edit_nick(update, context):  # SET_NICK
         return CHOICE
 
 
-def back(update, context):  # MODIFY_NICK
+def back(update: Update, context: CallbackContext) -> int:  # MODIFY_NICK
     """Goes back to main menu."""
 
     context.bot.send_message(chat_id=update.effective_chat.id,
