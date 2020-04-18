@@ -348,14 +348,15 @@ def morning_goodness(context: CallbackContext) -> None:
     """Send a "good morning" quote to the groups, along with a clip"""
 
     right_now = datetime.now()  # returns: Datetime obj
+    afternoon = datetime(right_now.year, right_now.month, right_now.day, 11)  # 11am today
 
     if 'last_sent' not in context.bot_data:
         context.bot_data['last_sent'] = right_now
 
     diff = right_now - context.bot_data['last_sent']
 
-    # Send only if it has been over a day since last good morning message-
-    if diff.days < 1:
+    # Send only if it has been over a day and is before 11am next morning since last good morning message-
+    if diff.days < 1 and right_now >= afternoon:
         return
 
     with open("files/good_mourning.txt", "r") as greetings:
