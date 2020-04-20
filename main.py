@@ -345,7 +345,10 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)") -> None:
 
 
 def morning_goodness(context: CallbackContext) -> None:
-    """Send a "good morning" quote to the groups, along with a clip"""
+    """
+    Send a "good morning" quote to the groups, along with a clip. This will only work if it has already been a
+    day since last good morning quote and is before 11am the next day.
+    """
 
     right_now = datetime.now()  # returns: Datetime obj
     afternoon = datetime(right_now.year, right_now.month, right_now.day, 11)  # 11am today
@@ -455,6 +458,7 @@ dp.add_handler(CommandHandler(command='quizizz', callback=bc.quizizz))
 dp.add_handler(CommandHandler(command='test', callback=send_quiz))  # TODO: This should be a job
 dp.add_handler(PollAnswerHandler(callback=receive_answer))
 
+
 # /8ball conversation-
 magicball_handler = ConversationHandler(
     entry_points=[
@@ -540,7 +544,8 @@ dp.add_handler(MessageHandler(Filters.command, bc.unknown))
 
 updater.job_queue.run_repeating(bday_wish, 86400, first=1)  # Will run every time script is started, and once a day.
 updater.job_queue.run_repeating(morning_goodness, 86400, first=1)
+updater.job_queue.run_repeating(inline.get_clips, 60, first=1)  # Have to re-fetch clips since links expire
 prettyprintview()
 
-updater.start_polling()
+updater.start_polling(clean=True)
 updater.idle()

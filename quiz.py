@@ -79,9 +79,8 @@ def timedout(context: CallbackContext) -> None:
         context.bot.stop_poll(chat_id=chat_id, message_id=quiz.message_id)
 
     context.bot.send_chat_action(chat_id=chat_id, action='upload_photo')
-    
-    # TODO: Don't forget to uncomment this lol-
-    # leaderboard(context)  # Make the leaderboard
+
+    leaderboard(context)  # Make the leaderboard
 
     context.bot.send_photo(chat_id=chat_id, photo=open('leaderboard.png', 'rb'),
                            caption="This is where you stand like you say")  # Send latest leaderboard
@@ -117,7 +116,6 @@ def receive_answer(update: Update, context: CallbackContext) -> None:
     for quiz in quizzes:
         if quiz.poll.id == update.poll_answer.poll_id:
             correct_answer = quiz.poll.correct_option_id
-            chat_id = quiz.chat.id
             break
     else:  # Only happens when /quizizz quiz was answered.
         return
@@ -164,12 +162,15 @@ def pp(update: Update, context: CallbackContext) -> str:
 
 
 def round_pic() -> None:
-    """Helper function to crop all the images in `profile_pics` into circular ones since it looks better."""
+    """
+    Helper function to crop all the images in `profile_pics` into circular ones since it looks better.
+    Receives files in .jpg format and saves it in .png format.
+    """
 
     # Open the input image as numpy array, convert to RGB
     for name in os.listdir(f"{cwd}/profile_pics"):
 
-        if name in ("nobody.png", "trophy.png"):
+        if name in ("nobody.png", "trophy.png"):  # We don't want to touch these, they're already round
             continue
 
         img = Image.open(f"profile_pics/{name}").convert("RGB")
@@ -196,7 +197,7 @@ def round_pic() -> None:
         print("DOne")
 
 
-def add_image(name: str, x: float or int, y: int, offset: float = 1.6, zoom: float = 0.23) -> AnnotationBbox:
+def add_image(name: str, x: float or int, y: int, offset: float, zoom: float = 0.20) -> AnnotationBbox:
     """
     Adds the given image to the bar graph, with the given specifications.
 
@@ -217,21 +218,21 @@ def add_image(name: str, x: float or int, y: int, offset: float = 1.6, zoom: flo
     return AnnotationBbox(image_box, (x + offset, y), frameon=False, annotation_clip=False)
 
 
-def leaderboard() -> None:
+def leaderboard(context) -> None:
     """
     Makes a horizontal bar graph using data from the quiz. The list is sorted in ascending order. Thus, the person
     with the highest marks is displayed at the top. The leaderboard is then saved in the current working directory.
     """
-    # round_pic()  # Make sure all pics are round before starting
+    round_pic()  # Make sure all pics are round before starting
 
-    # names, vals = [], []
-    #
-    # for stuff in context.bot_data['quizizz'].values():
-    #     names.append(stuff['name'])
-    #     vals.append(stuff['answers_right'])
+    names, vals = [], []
 
-    names = ["Harshil", "Samir", "Sahil", "Samrin", "Ashwin", "Jaden"]
-    vals = [23, 2, 2, 1, 0, 2]
+    for stuff in context.bot_data['quizizz'].values():
+        names.append(stuff['name'])
+        vals.append(stuff['answers_right'])
+
+    # names = ["Harshil", "Samir", "Sahil", "Samrin", "Ashwin", "Jaden"]
+    # vals = [5, 4, 3, 3, 2, 1]
 
     mean = sum(vals) / len(vals)  # Gets average for color sorting later
     vals, names = zip(*sorted(zip(vals, names)))  # Sorts both lists correspondingly in ascending order. Returns tuples
@@ -256,8 +257,9 @@ def leaderboard() -> None:
             size = 16
             weight = 'bold'
             alpha = 1  # alpha controls transparency
+            trophy_scale = 0.16 * max(vals)  # Value obtained by experimenting
             effects = [patheffects.SimpleLineShadow(shadow_color='black', alpha=0.95), patheffects.Normal()]
-            ab = add_image("trophy", marks, index, offset=2.8, zoom=0.034)
+            ab = add_image("trophy", marks, index, offset=trophy_scale, zoom=0.034)
             ax.add_artist(ab)  # Draws annotation
 
         else:
@@ -268,7 +270,7 @@ def leaderboard() -> None:
 
         if marks > mean:
             color = '#00FA3F'   # Set bar color to green if guy got above avg marks
-        elif marks <= mean - 10:
+        elif marks <= mean - 5:
             color = '#FA1D07'  # Set bar color to red if guy got really bad marks
         else:
             color = '#F8ED0F'  # Set bar color to yellow if guy got below avg marks
@@ -276,14 +278,19 @@ def leaderboard() -> None:
         barlist[index].set_color(color)  # Sets bar color
 
         if marks != 0:  # Don't draw arrow and marks if he got a big fat ZERO.
-            plt.arrow(marks + 0.7, index, -0.001, 0, head_width=0.25, color='#02D4F5')
-            plt.text(marks - 0.6, index, str(marks), color="#000000", verticalalignment='center',
+            text_scale = 0.026 * max(vals)  # Another experimental value
+            plt.text(marks - text_scale, index, str(marks), color="#000000", verticalalignment='center',
                      fontdict={'weight': weight, 'size': size, 'fontfamily': 'DejaVu Sans'}, ha='center', alpha=alpha,
                      path_effects=effects)  # Puts marks on the bars near the end
 
-        # Add profile pic next to arrows-  (Disabled for now)
-        # ab = add_image(name, marks, index)
-        # ax.add_artist(ab)
+        arrow_scale = max(vals) * 0.016
+        ax.annotate("", xy=(marks+arrow_scale, index), xytext=(marks+0.001+arrow_scale, index),
+                    xycoords='data', arrowprops={'color': '#02D4F5'},
+                    annotation_clip=False)
+        # Add profile pic next to arrows-
+        image_scale = max(vals) * 0.08375  # Yet another experimental value
+        ab = add_image(name, marks, index, offset=image_scale)
+        ax.add_artist(ab)
 
     # Set x ticks which are only integers, and make it aesthetically pleasing.
     plt.xticks([tick for tick in ax.get_xticks() if tick % 1 == 0], fontweight='demi', fontfamily='DejaVu Sans')
@@ -319,12 +326,12 @@ def leaderboard() -> None:
     plt.savefig("leaderboard.png", facecolor="#20124d")  # Save figure with same 'purple' fig color
 
     for name in os.listdir(f"{cwd}/profile_pics"):
-        if name not in ("nobody.png", "trophy.png"):
+        if name not in ("nobody.png", "trophy.png"):  # These should always be there
             os.remove(f"{cwd}/profile_pics/{name}")
 
     # return
     plt.show()
 
 
-leaderboard()
+# leaderboard()
 # round_pic()

@@ -1,5 +1,6 @@
 *.pyc
 token.txt
+creds/github_token.txt
 sentence_tokenizer.pickle
 db.sqlite3-shm
 db.sqlite3-wal

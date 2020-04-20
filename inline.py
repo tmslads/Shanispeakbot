@@ -7,17 +7,26 @@ from telegram.ext import CallbackContext
 from online import util
 
 results = []
-links, names = util.clips()
+names = []
 
-# Adds all clips and names into one list
-for clip in zip(links, names):
-    results.append(InlineQueryResultAudio(id=uuid4(), audio_url=clip[0], title=clip[1], performer="Shani Sir"))
+
+def get_clips(context: CallbackContext) -> None:
+    global results, names
+
+    results.clear()
+    names.clear()
+    links, names = util.clips()
+
+    # Adds all clips and names into one list
+    for link, name in zip(links, names):
+        results.append(InlineQueryResultAudio(id=uuid4(), audio_url=link, title=name, performer="Shani Sir"))
 
 
 def inline_clips(update: Update, context: CallbackContext) -> None:
     query = update.inline_query.query
     if not query:
-        context.bot.answer_inline_query(update.inline_query.id, results[:50])  # Show first 49 clips if nothing is typed
+        # Show first 49 clips if nothing is typed-
+        context.bot.answer_inline_query(update.inline_query.id, results[:50], cache_time=60)
     else:
         matches = get_close_matches(query, names, n=15, cutoff=0.3)  # Searches for close matches
         index = 0

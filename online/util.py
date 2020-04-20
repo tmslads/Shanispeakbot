@@ -1,33 +1,39 @@
 import re
 
 import requests
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 from typing import Tuple
 
-from constants import _LINK, _DOWNLOAD, URL
+from constants import LINK, FACT_URL
 
-dl_links = []
-names = []
+with open('creds/github_token.txt', 'r') as f:
+    token = f.read()
 
-getting = requests.get(_LINK)
-scraped = BeautifulSoup(getting.content, 'html.parser')
-results = scraped.find_all(href=re.compile('/tmslads/Shanisirmodule/blob/master/Assets/clips/'))
+header = {'Authorization': f'token {token}', 'token_type': 'bearer'}
 
 
 def clips() -> Tuple[list, list]:
-    for index, result in enumerate(results):
-        url = f"{_DOWNLOAD}{result['href'].replace('blob/', '')}"
-        name = result['title'][:-4]
-        dl_links.append(url)
-        names.append(name)
+    """Extracts the download links and names from the Shanisirmodule using the Github API."""
+
+    dl_links = []
+    names = []
+    getting = requests.get(LINK, headers=header).json()
+
+    for result in getting:
+        url = result['download_url']
+        name = result['name'][:-4]
+        if url is not None:
+            dl_links.append(url)
+            names.append(name)
+
     return dl_links, names
 
 
 def facts() -> list:
     """Return list of three facts"""
-    page = requests.get(URL)
-    soup = BeautifulSoup(page.content, 'html.parser')
-    result = soup.find_all(id='z')  # Finds HTML elements with ID 'z'
-    facts_list = [result[0].getText()[:-6], result[1].getText()[:-6],
-                  result[2].getText()[:-6]]
+
+    page = requests.get(FACT_URL)
+    results = BeautifulSoup(page.content, 'html.parser', parse_only=SoupStrainer(id='z'))  # Get only z tags
+    facts_list = [str(results.contents[index].contents[0]) for index in range(len(results))]
+
     return facts_list
