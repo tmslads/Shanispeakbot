@@ -24,7 +24,6 @@ from convos import (bday, magic, nick, settings_gui, start)
 from helpers.namer import get_nick, get_chat_name
 from online import gcalendar
 from quiz import send_quiz, receive_answer
-# TODO: Add type hints everywhere
 
 # asctime - The time in human readable form
 # name - Name of the logger module
@@ -50,8 +49,9 @@ get_tags = chatbot.shanisirbot.storage.tagger.get_bigram_pair_string
 last_reacted_at = 0
 bot_response = None
 
-rebukes = ["this is not the expected behaviour", "i don't want you to talk like that",
-           "this language is embarrassingassing to me like basically", "this is not a fruitful conversation"]
+rebukes = ["This is not the expected behaviour", "I don't want you to talk like that",
+           "Expand your vocabulary now", "Bad language is not allowed okay", "See this is not my policy",
+           "This language is embarrassingassing to me like basically", "This is not a fruitful conversation"]
 
 r.shuffle(rebukes)
 rebukes = itertools.cycle(rebukes)
@@ -78,14 +78,13 @@ def connection(query: str, update: Update = None, fetchall: bool = False) -> Uni
 
     if fetchall:
         result = c.fetchall()
-        conn.close()
-        logging.info(f"\nThe query executed on the database was:\n{query}\nand the result was:\n{result}\n\n")
-        return result
     else:
         result = c.fetchone()
-        conn.close()
-        logging.info(f"\nThe query executed on the database was:\n{query}\nand the result was:\n{result[0]}\n\n")
-        return result[0]
+        result = result[0]
+
+    conn.close()
+
+    return result
 
 
 def media(update: Update, context: CallbackContext) -> None:
@@ -102,52 +101,78 @@ def media(update: Update, context: CallbackContext) -> None:
 
     chat_id = update.effective_chat.id
     msg = update.message.message_id
-    name = update.message.from_user.first_name
+    name = get_nick(update, context)
+    query = f"SELECT MEDIA_PROB FROM CHAT_SETTINGS WHERE CHAT_ID={chat_id};"
 
-    true = connection(f"SELECT MEDIA_PROB FROM CHAT_SETTINGS WHERE CHAT_ID={chat_id};", update)
+    true = connection(query, update)
+    logging.info(f"\nThe query executed on the database was:\n{query}\nand the result was:\n{true=}\n\n")
+
     false = 1 - true
 
+    prob = r.choices([0, 1], weights=[false, true])[0]  # Probabilities are 0.7 - False, 0.3 - True by default
+
+    if not prob:
+        return
+
+    if hasattr(update.message.audio, 'performer'):
+        if update.message.audio.performer == 'Shani Sir':  # Don't send reaction to its own inline clips.
+            return
+
     try:
-        doc = update.message.document.file_name[-3:]
-    except AttributeError:  # When there is no document sent
+        doc = update.message.document.file_name.split('.')[-1]
+    except Exception as e:  # When there is no document sent (most likely AttributeError)
+        logging.warning(f"\nFile extension was not assigned. The warning is: \n{e}\n\n")
         doc = ''
-    name = get_nick(update, context)
 
     img_reactions = ["😂", "🤣", "😐", f"Not funny {name} okay?", "This is not fine like you say", "*giggles*",
-                     f"This is embarrassing to me {name}", "What your doing?! Go for the worksheet"]
+                     f"This is embarrassing to me {name}", "What your doing?! Go for the worksheet",
+                     "I don't like this now", "This is beneficial to me like", f"I don't understand this {name}",
+                     f"See {name}, I want you to delete this"]
 
     vid_reactions = ["😂", "🤣", "😐", f"I've never seen anything like this {name}", "What is this",
-                     "Now I feel very bad like", f"Are you fine {name}?"]
+                     f"Tell me the physics behind it {name}", "This is like you say boring",
+                     "Now I feel very bad like", f"Are you fine {name}?", f"See {name}, I want you to delete this"]
 
     voice_reactions = ["What is this", f"I can't hear you {name}", f"Are you fine {name}?",
                        "Now your on the track like", "Your voice is funny like you say",
-                       f"See I can't tolerate this {name}", "What your saying??"]
+                       f"See I can't tolerate this {name}", "What your saying??",
+                       f"See {name}, I want you to delete this"]
 
     app_reactions = ["Is this a virus", "I'm just suggesting like, don't open this", "We just don't mind that okay?"]
 
-    prob = r.choices([0, 1], weights=[false, true])[0]  # Probabilities are 0.7 - False, 0.3 - True by default
-    if prob:
-        shanisir_bot.send_chat_action(chat_id=chat_id, action='typing')
-        sleep(2)
+    doc_reactions = [f"Did you read this {name}", "I'm not in agreement like", "I don't like this okay",
+                     "This is very good like you say", "Now your on the track like", "Nice for reading okay",
+                     "This is fake news delete this like", "This is like you say cut and paste from somewhere"]
 
-        if update.message.photo:
-            shanisir_bot.send_message(chat_id=chat_id, text=r.choice(img_reactions), reply_to_message_id=msg)
-            logging.info(f"\nBot sent a reaction to a photo to {name}.\n\n")
+    shanisir_bot.send_chat_action(chat_id=chat_id, action='typing')
+    sleep(2)
 
-        elif update.message.voice:
-            shanisir_bot.send_message(chat_id=chat_id, text=r.choice(voice_reactions), reply_to_message_id=msg)
-            logging.info(f"\nBot sent a reaction to a voice message to {name}.\n\n")
+    if update.message.photo or doc in ('jpg', 'jpeg', 'png'):
+        shanisir_bot.send_message(chat_id=chat_id, text=r.choice(img_reactions), reply_to_message_id=msg)
+        logging.info(f"\nBot sent a reaction to a photo to {name}.\n\n")
 
-        elif update.message.video or doc == 'mp4' or doc == 'gif':
-            shanisir_bot.send_message(chat_id=chat_id, text=r.choice(vid_reactions), reply_to_message_id=msg)
-            logging.info(f"\nBot sent a reaction to a video to {name}.\n\n")
+    elif update.message.voice or update.message.audio:
+        shanisir_bot.send_message(chat_id=chat_id, text=r.choice(voice_reactions), reply_to_message_id=msg)
+        logging.info(f"\nBot sent a reaction to a voice message to {name}.\n\n")
 
-        elif doc == 'apk' or doc == 'exe':
-            shanisir_bot.send_message(chat_id=chat_id, text=r.choice(app_reactions), reply_to_message_id=msg)
-            logging.info(f"\nBot sent a reaction to a executable to {name}.\n\n")
+    elif update.message.video or doc in ('mp4', 'gif'):
+        shanisir_bot.send_message(chat_id=chat_id, text=r.choice(vid_reactions), reply_to_message_id=msg)
+        logging.info(f"\nBot sent a reaction to a video to {name}.\n\n")
+
+    elif doc in ('apk', 'exe'):
+        shanisir_bot.send_message(chat_id=chat_id, text=r.choice(app_reactions), reply_to_message_id=msg)
+        logging.info(f"\nBot sent a reaction to a executable to {name}.\n\n")
+
+    elif doc in ('pdf', 'doc', 'docx', 'txt'):
+        shanisir_bot.send_message(chat_id=chat_id, text=r.choice(doc_reactions), reply_to_message_id=msg)
+        logging.info(f"\nBot sent a reaction to a text document to {name}.\n\n")
+
+    else:
+        logging.warning("\nThis shouldn't be happening, bot needs to respond to at least one of the media."
+                        f"The file extension was {doc=}.\n\n")
 
 
-def del_pin(update: Update, context: CallbackContext) -> None:
+def del_pin(update: Update, _) -> None:
     """Deletes pinned message service status from the bot."""
 
     shanisir_bot.delete_message(chat_id=update.effective_chat.id, message_id=update.message.message_id)
@@ -157,19 +182,27 @@ def del_pin(update: Update, context: CallbackContext) -> None:
 def reply(update: Update, context: CallbackContext) -> None:
     text = update.message.text
     if update.message.reply_to_message.from_user.username == context.bot.username:  # If the reply is to a bot:
-        if not (text.startswith('!r') or text.endswith('!r')):  # Don't reply if this is prepended or at the tail.
+        if not (text.startswith('!r') or text.endswith('!r')):  # Don't reply if this is prepended or appended.
             logging.info(f"\nBot received a reply from {update.effective_user.first_name} in "
                          f"{update.effective_chat.title}.\n\n")
             private(update, context, grp=True, the_id=update.message.message_id)  # send a response like in private chat
+
+    elif context.bot.name in text:
+        private(update, context, grp=True, the_id=update.message.message_id)
 
 
 def group(update: Update, context: CallbackContext) -> None:
     """Checks for profanity in messages and responds to that."""
 
     chat_id = update.effective_chat.id
-    if any(bad_word in update.message.text.lower().split() for bad_word in prohibited):
+    text = update.message.text
 
-        true = connection(f"SELECT PROFANE_PROB FROM CHAT_SETTINGS WHERE CHAT_ID={chat_id};", update)
+    if any(bad_word in text.lower().split() for bad_word in prohibited):
+
+        query = f"SELECT PROFANE_PROB FROM CHAT_SETTINGS WHERE CHAT_ID={chat_id};"
+        true = connection(query, update)
+        logging.info(f"\nThe query executed on the database was:\n{query}\nand the result was:\n{true=}\n\n")
+
         false = 1 - true
 
         if r.choices([0, 1], weights=[false, true])[0]:  # Probabilities are 0.8 - False, 0.2 - True by default.
@@ -181,8 +214,11 @@ def group(update: Update, context: CallbackContext) -> None:
             logging.info(f"\n{update.effective_user.first_name} used profane language in {get_chat_name(update)}."
                          f"\nThe rebuke by the bot was: '{out}'.\n\n")
 
+    elif context.bot.name in text:
+        private(update, context, grp=True, the_id=update.message.message_id)
 
-def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)") -> None:
+
+def private(update, context, grp=False, the_id=None) -> None:
     global bot_response
 
     user = update.message.from_user
@@ -217,7 +253,6 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)") -> None:
     elif chat_id not in context.chat_data['chat_ids']:  # Gets chat id of the user in which they have talked to the bot
         context.chat_data['chat_ids'].append(chat_id)
 
-    # Attempted fix-
     pp.update_user_data(user.id, context.user_data)
     pp.update_chat_data(chat_id, context.chat_data)
 
@@ -234,32 +269,33 @@ def private(update, context, grp=False, the_id=None, isgrp="(PRIVATE)") -> None:
     else:
         search_in_response_text = get_tags(bot_response.text)
 
+    user_msg = chatterbot.conversation.Statement(text=msg_text, search_text=get_tags(msg_text),
+                                                 in_response_to=bot_response,
+                                                 search_in_response_to=search_in_response_text)
+
     # If the user's message is a reply to a message
     if update.message.reply_to_message is not None:
         reply_text = update.message.reply_to_message.text
-
-        bot_response = chatterbot.conversation.Statement(text=reply_text, search_text=get_tags(reply_text))
-        user_msg = chatterbot.conversation.Statement(text=msg_text,
-                                                     search_text=get_tags(msg_text),
-                                                     in_response_to=bot_response,
-                                                     search_in_response_to=get_tags(reply_text))
-    else:
-        user_msg = chatterbot.conversation.Statement(text=msg_text,
-                                                     search_text=get_tags(msg_text),
-                                                     in_response_to=bot_response,
-                                                     search_in_response_to=search_in_response_text)
+        if reply_text is not None:
+            bot_response = chatterbot.conversation.Statement(text=reply_text, search_text=get_tags(reply_text))
+            user_msg = chatterbot.conversation.Statement(text=msg_text,
+                                                         search_text=get_tags(msg_text),
+                                                         in_response_to=bot_response,
+                                                         search_in_response_to=get_tags(reply_text))
 
     reply = f"(REPLY TO [{user_msg.in_response_to}])"
 
     if grp:
         isgrp = f"(GROUP: {update.effective_chat.title})"
     else:  # Learn user's latest message (user_msg) as response to bot's last message (bot_response)
+        isgrp = "(PRIVATE)"
         chatbot.shanisirbot.learn_response(user_msg, bot_response)
 
     bot_response = chatbot.shanisirbot.get_response(user_msg.text)
-    try:
+
+    if hasattr(bot_response, 'text'):
         bot_msg = bot_response.text
-    except AttributeError:
+    else:
         bot_msg = 'Hello'
 
     punctuation = r"""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
@@ -372,7 +408,9 @@ def morning_goodness(context: CallbackContext) -> None:
         logging.info(f"\nToday's morning quote is:\n{greeting}\n\n")
         context.bot_data['seek'] = greetings.tell()
 
-    ids = connection("SELECT CHAT_ID, CHAT_NAME FROM CHAT_SETTINGS WHERE MORNING_MSGS='✅';", fetchall=True)
+    query = "SELECT CHAT_ID, CHAT_NAME FROM CHAT_SETTINGS WHERE MORNING_MSGS='✅';"
+    ids = connection(query, fetchall=True)
+    logging.info(f"\nThe query executed on the database was:\n{query}\nand the result was:\n{ids=}\n\n")
 
     # Bug with ptb where performer,title,thumb might be ignored when a url is supplied in 'audio' param in 'send_audio'.
     # Workaround for now is to just open mp3 from desktop-
@@ -442,7 +480,7 @@ def bday_wish(context: CallbackContext) -> None:
     # TODO: Wishes from /tell birthday input-
 
 
-def prettyprintview() -> None:
+def data_view() -> None:
     with open('files/user_data', 'rb') as f:
         pprint.PrettyPrinter(indent=2).pprint(pickle.load(f))
 
@@ -455,7 +493,6 @@ dp.add_handler(CommandHandler(command='swear', callback=bc.swear))
 dp.add_handler(CommandHandler(command='snake', callback=bc.snake))
 dp.add_handler(CommandHandler(command='facts', callback=bc.facts))
 dp.add_handler(CommandHandler(command='quizizz', callback=bc.quizizz))
-dp.add_handler(CommandHandler(command='test', callback=send_quiz))  # TODO: This should be a job
 dp.add_handler(PollAnswerHandler(callback=receive_answer))
 
 
@@ -531,21 +568,22 @@ settings_gui_handler = ConversationHandler(
 )
 dp.add_handler(settings_gui_handler)
 
-media_filters = (Filters.document | Filters.photo | Filters.video | Filters.voice)
+media_filters = (Filters.document | Filters.photo | Filters.video | Filters.voice | Filters.audio)
 edit_filter = Filters.update.edited_message
 
 dp.add_handler(MessageHandler(media_filters, media))
 dp.add_handler(MessageHandler(Filters.status_update.pinned_message & Filters.user(username=testbot), del_pin))
 dp.add_handler(MessageHandler(Filters.reply & Filters.group & ~ edit_filter, reply))
-dp.add_handler(MessageHandler(Filters.regex(testbot) & Filters.group & ~ edit_filter & ~ Filters.command, private))
-dp.add_handler(MessageHandler(Filters.group & Filters.text & ~ edit_filter, group))  # TODO: Maybe remove line above
+dp.add_handler(MessageHandler(Filters.group & Filters.text & ~ edit_filter, group))
 dp.add_handler(MessageHandler(Filters.private & Filters.text & ~ edit_filter, private))
 dp.add_handler(MessageHandler(Filters.command, bc.unknown))
 
 updater.job_queue.run_repeating(bday_wish, 86400, first=1)  # Will run every time script is started, and once a day.
 updater.job_queue.run_repeating(morning_goodness, 86400, first=1)
 updater.job_queue.run_repeating(inline.get_clips, 60, first=1)  # Have to re-fetch clips since links expire
-prettyprintview()
+updater.job_queue.run_repeating(send_quiz, 604800, first=1)  # Send quiz to 12B weekly
+
+data_view()
 
 updater.start_polling(clean=True)
 updater.idle()

@@ -2,6 +2,7 @@ import logging
 import os
 import pprint
 import random as r
+from datetime import datetime
 
 import numpy as np
 from PIL import Image, ImageDraw
@@ -15,7 +16,6 @@ from telegram.utils.helpers import mention_html
 
 from helpers.namer import get_nick, get_chat_name
 from online import quiz_scraper
-from constants import harshil
 
 quizzes = []
 cwd = os.getcwd()
@@ -28,10 +28,23 @@ def send_quiz(update: Update, context: CallbackContext) -> None:
 
     global quizzes
 
-    # TODO: Remove my reset-
-    context.bot_data['quizizz'][harshil]['answers_right'] = 0
-    context.bot_data['quizizz'][harshil]['questions_answered'] = 0
-    context.bot_data['quizizz'][harshil]['answers_wrong'] = 0
+    right_now = datetime.now()  # returns: Datetime obj
+    if 'last_quiz' not in context.bot_data:
+        context.bot_data['last_quiz'] = right_now
+
+    diff = right_now - context.bot_data['last_quiz']
+    print(diff)
+    if diff.days < 7:
+        print("Not enough days!")
+        return
+
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text="See I'm keeping one quizizz now okay. You have one day to finish."
+                                  "For boards ok. I want everyone to do it that's it.")
+    # # TODO: Remove my reset-
+    # context.bot_data['quizizz'][harshil]['answers_right'] = 0
+    # context.bot_data['quizizz'][harshil]['questions_answered'] = 0
+    # context.bot_data['quizizz'][harshil]['answers_wrong'] = 0
 
     # Get our questions, choices and answers from the web-
     while True:
@@ -49,8 +62,9 @@ def send_quiz(update: Update, context: CallbackContext) -> None:
         quizzes.append(quiz)
     logging.info(f"\nThe 5 quizzes were just sent to {get_chat_name(update)} successfully.\n\n")
 
-    # TODO: Add message that you have only 24 hours to answer quiz.
+    # TODO: Change this back to 24 hours.
     context.job_queue.run_once(callback=timedout, when=10, context=[update, quizzes])  # 10s for testing purposes
+    context.bot_data['last_quiz'] = right_now
 
 
 def timedout(context: CallbackContext) -> None:
@@ -255,21 +269,20 @@ def leaderboard(context) -> None:
 
         if index == len(barlist) - 1:  # Make text bolder, add trophy for the guy who is #1
             size = 16
-            weight = 'bold'
             alpha = 1  # alpha controls transparency
             trophy_scale = 0.16 * max(vals)  # Value obtained by experimenting
             effects = [patheffects.SimpleLineShadow(shadow_color='black', alpha=0.95), patheffects.Normal()]
+
             ab = add_image("trophy", marks, index, offset=trophy_scale, zoom=0.034)
             ax.add_artist(ab)  # Draws annotation
 
         else:
             size = 13
-            weight = 'bold'
             alpha = 0.7
             effects = None
 
         if marks > mean:
-            color = '#00FA3F'   # Set bar color to green if guy got above avg marks
+            color = '#00FA3F'  # Set bar color to green if guy got above avg marks
         elif marks <= mean - 5:
             color = '#FA1D07'  # Set bar color to red if guy got really bad marks
         else:
@@ -279,14 +292,14 @@ def leaderboard(context) -> None:
 
         if marks != 0:  # Don't draw arrow and marks if he got a big fat ZERO.
             text_scale = 0.026 * max(vals)  # Another experimental value
-            plt.text(marks - text_scale, index, str(marks), color="#000000", verticalalignment='center',
-                     fontdict={'weight': weight, 'size': size, 'fontfamily': 'DejaVu Sans'}, ha='center', alpha=alpha,
+            plt.text(marks - text_scale, index, str(marks), color="#000000", va='center', ha='center', alpha=alpha,
+                     fontdict={'weight': 'bold', 'size': size, 'fontfamily': 'DejaVu Sans'},
                      path_effects=effects)  # Puts marks on the bars near the end
 
         arrow_scale = max(vals) * 0.016
-        ax.annotate("", xy=(marks+arrow_scale, index), xytext=(marks+0.001+arrow_scale, index),
-                    xycoords='data', arrowprops={'color': '#02D4F5'},
-                    annotation_clip=False)
+        ax.annotate("", xy=(marks + arrow_scale, index), xytext=(marks + 0.001 + arrow_scale, index), xycoords='data',
+                    arrowprops={'color': '#02D4F5'}, annotation_clip=False)
+
         # Add profile pic next to arrows-
         image_scale = max(vals) * 0.08375  # Yet another experimental value
         ab = add_image(name, marks, index, offset=image_scale)
@@ -315,10 +328,9 @@ def leaderboard(context) -> None:
     ax.tick_params(axis='y', colors='#dcd5f4', grid_alpha=0.0)
 
     # Set title and add properties to make it a beaut
-    plt.title(label="LEADERBOARD", fontdict={'fontname': 'Gill Sans MT', 'size': 23, 'weight': 'bold',
-                                             'color': '#f3c977'}, loc='left', pad=20,
-              path_effects=[patheffects.Stroke(linewidth=0.1, foreground="#F4C05B"),
-                            patheffects.Normal()])
+    plt.title(label="LEADERBOARD",
+              fontdict={'fontname': 'Gill Sans MT', 'size': 23, 'weight': 'bold', 'color': '#f3c977'}, loc='left',
+              pad=20, path_effects=[patheffects.Stroke(linewidth=0.1, foreground="#F4C05B"), patheffects.Normal()])
 
     # Add only x axis label and then adjust it to look good.
     plt.xlabel(xlabel="Correct answers", fontdict={'size': 14, 'color': '#d6d0ec', 'weight': 'semibold'}, labelpad=18)
@@ -331,7 +343,6 @@ def leaderboard(context) -> None:
 
     # return
     plt.show()
-
 
 # leaderboard()
 # round_pic()

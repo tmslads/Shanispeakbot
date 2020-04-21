@@ -33,7 +33,7 @@ def initiate(update: Update, context: CallbackContext) -> int:  # Entry_point
                                  text="Just come to another chat I want to talk to you like you say",
                                  reply_markup=tell_markup)
 
-        logging.info(f"\n{first_name} just tried using /tell in a {chat.type}."
+        logging.info(f"\n{first_name} just tried using /tell in a {chat.type}. "
                      f"A message telling them to use it private was sent.\n\n")
 
         return -1

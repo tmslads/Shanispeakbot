@@ -62,7 +62,7 @@ def edit_nick(update: Update, context: CallbackContext) -> int:  # MODIFY_NICK
     """Asks for new nickname."""
 
     context.bot.send_message(chat_id=update.effective_chat.id,
-                             text="Tell me youre new nickname like you say",
+                             text="Tell me your new nickname like you say",
                              reply_to_message_id=update.message.message_id, reply_markup=ForceReply(selective=True))
     return SET_NICK
 

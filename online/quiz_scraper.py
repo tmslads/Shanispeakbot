@@ -7,6 +7,8 @@ from bs4 import BeautifulSoup
 
 from constants import QUIZ_URL
 
+# TODO: Improve the entire thing-
+
 
 def a_quiz() -> Union[Tuple[list, List[List[str]], List[int]], None]:
     page = r.randint(1, 76)
