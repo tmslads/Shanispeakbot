@@ -1,6 +1,5 @@
 # Connection to 12B class calendar, using Google Calendar API
 import datetime
-import logging
 import os.path
 import pickle
 from datetime import date
@@ -11,7 +10,8 @@ from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
-logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
+from helpers.logger import logger
+
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -58,7 +58,7 @@ class CalendarEventManager(object):
             raise ValueError("Date must be specified!")
 
         event = service.events().insert(calendarId='primary', body=self.event).execute()
-        logging.info(f"\n{self.event['summary']} was added.\n\n")
+        logger(message=f"{self.event['summary']} was added.")
 
     def update_event(self, new_date: datetime.datetime):
         """
@@ -77,7 +77,7 @@ class CalendarEventManager(object):
                 updated_event = service.events().update(calendarId='primary', eventId=event['id'],
                                                         body=self.event).execute()
 
-                logging.info(f"\nSuccessfully updated {self.name}'s birthday: {updated_event['start']['date']}.\n\n")
+                logger(f"Successfully updated {self.name}'s birthday: {updated_event['start']['date']}.")
 
                 break
         else:
@@ -167,9 +167,6 @@ def main() -> None:
             pickle.dump(creds, token)
 
     service = build('calendar', 'v3', credentials=creds)
-
-    # Call the Calendar API
-    now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
 
 
 if __name__ == '__main__':

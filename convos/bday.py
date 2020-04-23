@@ -1,19 +1,17 @@
 # birthday function conversation-
 import datetime
-import logging
 
 from telegram import ForceReply, Update
 from telegram import KeyboardButton
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import CallbackContext
 
+from helpers.logger import logger
 from helpers.namer import get_nick
 from online.gcalendar import formatter
 from .start import markup, CHOICE
 
 INPUT, MODIFY = range(1, 3)
-
-logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
 
 def bday(update: Update, context: CallbackContext) -> int:  # CHOICE
@@ -26,27 +24,22 @@ def bday(update: Update, context: CallbackContext) -> int:  # CHOICE
     if 'birthday' not in context.user_data:
         context.bot.send_message(chat_id=chat_id,
                                  text="I don't know your birthday like you say. When? \nEnter your DOB as: YYYY-MM-DD",
-                                 reply_to_message_id=msg_id,
-                                 reply_markup=ForceReply(selective=True)
-                                 )
+                                 reply_to_message_id=msg_id, reply_markup=ForceReply(selective=True))
         return INPUT
 
     else:
         # Gives options for users by asking them what to do with their birthdays.
-        bday_keyboard = [
-            [KeyboardButton(text="Update my birthday sir"), KeyboardButton(text="Forget my birthday sir")],
-            [KeyboardButton(text="No, thank you sir")]]
+        bday_keyboard = [[KeyboardButton(text="Update my birthday sir"), KeyboardButton(text="Forget my birthday sir")],
+                         [KeyboardButton(text="No, thank you sir")]]
 
         bday_markup = ReplyKeyboardMarkup(keyboard=bday_keyboard, one_time_keyboard=True, selective=True)
 
         b_date = context.user_data['birthday']
-        context.bot.send_message(chat_id=chat_id,
-                                 text=f"Your birthday is on"
-                                      f" {formatter(b_date, format_style='DD/MM')} and"
-                                      f" you are {age_cal(b_date)} years old. Would you like to update or remove it?",
-                                 reply_to_message_id=msg_id,
-                                 reply_markup=bday_markup
-                                 )
+        context.bot.send_message(chat_id=chat_id, text=f"Your birthday is on"
+                                                       f" {formatter(b_date, format_style='DD/MM')} and"
+                                                       f" you are {age_cal(b_date)} "
+                                                       f"years old. Would you like to update or remove it?",
+                                 reply_to_message_id=msg_id, reply_markup=bday_markup)
         return MODIFY
 
 
@@ -59,7 +52,7 @@ def bday_add_or_update(update: Update, context: CallbackContext) -> int:  # INPU
         dt_obj = datetime.datetime.strptime(bday_date, "%Y-%m-%d")
 
     except Exception as e:  # If user didn't enter birthday in the right format
-        logging.exception(f"\nThe traceback is: {e}\n\n")
+        logger(message=f"The traceback is: {e}", warning=True)
         wrong(update, context)  # Asks for a valid input
 
     else:
@@ -67,10 +60,9 @@ def bday_add_or_update(update: Update, context: CallbackContext) -> int:  # INPU
         context.user_data['birthday'] = dt_obj
 
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=f"Ok {name}, I'll remember your birthday like you say.",
-                                 reply_markup=markup)
+                                 text=f"Ok {name}, I'll remember your birthday like you say.", reply_markup=markup)
 
-        logging.info(f"\n{update.effective_user.first_name} just changed their birthday to {bday_date}.\n\n")
+        logger(message=f"{update.effective_user.first_name} just changed their birthday to {bday_date}.")
 
         return CHOICE
 
@@ -84,8 +76,7 @@ def bday_mod(update: Update, context: CallbackContext) -> int:  # MODIFY
                                                                     f" wrong you can come and tell me the correct"
                                                                     f" one okay?"
                                                                     f"\nEnter your DOB as: YYYY-MM-DD",
-                             reply_to_message_id=update.message.message_id,
-                             reply_markup=ForceReply(selective=True))
+                             reply_to_message_id=update.message.message_id, reply_markup=ForceReply(selective=True))
     return INPUT
 
 
@@ -97,7 +88,7 @@ def bday_del(update: Update, context: CallbackContext) -> int:  # MODIFY
     context.bot.send_message(chat_id=update.effective_chat.id, text=f"Ok {name}, I forgot your birthday",
                              reply_to_message_id=update.message.message_id, reply_markup=markup)
 
-    logging.info(f"\n{update.effective_user.first_name} just deleted their birthday.\n\n")
+    logger(message=f"{update.effective_user.first_name} just deleted their birthday.")
 
     del context.user_data['birthday']
     return CHOICE
@@ -125,6 +116,5 @@ def wrong(update: Update, context: CallbackContext) -> int:  # INPUT
 
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=f"This is not correct. Aim to hit the tarjit.\nEnter your DOB as: YYYY-MM-DD",
-                             reply_markup=ForceReply(selective=True),
-                             reply_to_message_id=update.message.message_id)
+                             reply_markup=ForceReply(selective=True), reply_to_message_id=update.message.message_id)
     return INPUT

@@ -1,4 +1,3 @@
-import logging
 import os
 import pprint
 import random as r
@@ -14,13 +13,12 @@ from telegram import Poll, ParseMode, Update
 from telegram.ext import CallbackContext
 from telegram.utils.helpers import mention_html
 
+from helpers.logger import logger
 from helpers.namer import get_nick, get_chat_name
 from online import quiz_scraper
 
 quizzes = []
 cwd = os.getcwd()
-
-logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
 
 def send_quiz(update: Update, context: CallbackContext) -> None:
@@ -60,7 +58,8 @@ def send_quiz(update: Update, context: CallbackContext) -> None:
         quiz = context.bot.send_poll(chat_id=update.effective_chat.id, question=question, options=choice,
                                      is_anonymous=False, type=Poll.QUIZ, correct_option_id=answer, is_closed=False)
         quizzes.append(quiz)
-    logging.info(f"\nThe 5 quizzes were just sent to {get_chat_name(update)} successfully.\n\n")
+
+    logger(message=f"The 5 quizzes were just sent to {get_chat_name(update)} successfully.")
 
     # TODO: Change this back to 24 hours.
     context.job_queue.run_once(callback=timedout, when=10, context=[update, quizzes])  # 10s for testing purposes
@@ -98,7 +97,8 @@ def timedout(context: CallbackContext) -> None:
 
     context.bot.send_photo(chat_id=chat_id, photo=open('leaderboard.png', 'rb'),
                            caption="This is where you stand like you say")  # Send latest leaderboard
-    logging.info("\nThe leaderboard was just sent on the group.\n\n")
+
+    logger(message=f"The leaderboard was just sent on the group.")
 
     context.bot.send_chat_action(chat_id=chat_id, action='typing')
 

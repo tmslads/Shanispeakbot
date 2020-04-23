@@ -7,6 +7,7 @@ from bs4 import BeautifulSoup
 
 from constants import QUIZ_URL
 
+
 # TODO: Improve the entire thing-
 
 
@@ -73,12 +74,3 @@ def a_quiz() -> Union[Tuple[list, List[List[str]], List[int]], None]:
         print(f'The right answer is: {question_choices[right_answer - 1]}\n\n')
 
     return all_questions, all_choices, all_answers
-
-#
-# questions, choices, answers = a_quiz()
-# print(f"{questions}\n{choices}\n{answers}")
-
-# question = questions[0]
-# options = choices[0]
-# answer = answers[0]
-# print(question, options, answer)

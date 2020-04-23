@@ -10,7 +10,7 @@ results = []
 names = []
 
 
-def get_clips(context: CallbackContext) -> None:
+def get_clips(_: CallbackContext) -> None:
     global results, names
 
     results.clear()

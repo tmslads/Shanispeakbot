@@ -9,6 +9,9 @@ shanisirbot = chatterbot.ChatBot('The Shani Sir Bot',
                                  preprocessors=['chatterbot.preprocessors.clean_whitespace'],
                                  read_only=False)  # Set to True to disable further learning from conversations the bot
 
+shanisirbot.initialize()  # Does any work that needs to be done before the chatbot can process responses.
+get_tags = shanisirbot.storage.tagger.get_bigram_pair_string
+
 
 def train_with(corpus: str) -> None:
     """

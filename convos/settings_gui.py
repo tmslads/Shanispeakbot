@@ -1,4 +1,3 @@
-import logging
 import random as r
 import sqlite3
 from typing import Union
@@ -8,9 +7,8 @@ from telegram.error import BadRequest
 from telegram.ext import CallbackContext
 
 from constants import samir, harshil, sql_table
+from helpers.logger import logger
 from helpers.namer import get_nick, get_chat_name
-
-logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
 CURRENT_SETTINGS, UPDATED, PROBABILITY = range(3)
 
@@ -55,7 +53,6 @@ def start(update: Update, context: CallbackContext) -> int:
     else:
         for admin in admins:
             if user_id in (samir, harshil) or admin.user.id == user_id:  # Check if admin/creators are calling /settings
-                logging.info(f"\n{update.effective_user.first_name} used /settings in {get_chat_name(update)}.\n\n")
                 break
         else:
             responses = ["I'm not allowing you like you say", "Ask the permission then only",
@@ -64,6 +61,8 @@ def start(update: Update, context: CallbackContext) -> int:
             context.bot.send_message(chat_id=chat_id, text=r.choice(responses),
                                      reply_to_message_id=update.message.message_id)
             return -1  # Stop convo since a regular user called /settings
+
+    logger(message=f"/settings", command=True, update=update)
 
     conn = sqlite3.connect('./files/bot_settings.db')
     c = conn.cursor()
@@ -114,8 +113,8 @@ def setting_msg(update, swap: bool = False) -> str:
 
     msg = "See is this the expected behaviour?\n\n" \
           r"1\. _Media reactions:_ " + f"{media_pct}\n" \
-          r"2\. _Profanity reactions:_ " + f"{profane_pct}\n" \
-          r"3\. _Morning quotes:_ " + f"{morn_setting}\n"
+                                       r"2\. _Profanity reactions:_ " + f"{profane_pct}\n" \
+                                                                        r"3\. _Morning quotes:_ " + f"{morn_setting}\n"
     return msg
 
 
@@ -188,7 +187,7 @@ def prob_updater(update: Update, context: CallbackContext) -> int:  # PROBABILIT
     return PROBABILITY
 
 
-def change_prob(update: Update, context: CallbackContext) -> int:  # UPDATED
+def change_prob(update: Update, _: CallbackContext) -> int:  # UPDATED
     """
     This is run when the user clicks button to change the probability. It is common for both profanity and media
     reactions.
@@ -197,7 +196,6 @@ def change_prob(update: Update, context: CallbackContext) -> int:  # UPDATED
     global _type, media_prob, profane_prob
 
     data = update.callback_query.data
-    chat_id = update.effective_chat.id
 
     if data == "MEDIA_PROB":
         _type = "media"
@@ -210,7 +208,7 @@ def change_prob(update: Update, context: CallbackContext) -> int:  # UPDATED
     return PROBABILITY
 
 
-def morn_swap(update: Update, context: CallbackContext) -> int:   # UPDATED
+def morn_swap(update: Update, context: CallbackContext) -> int:  # UPDATED
     """Used to swap states of morning quotes."""
 
     global morn_setting
@@ -222,7 +220,7 @@ def morn_swap(update: Update, context: CallbackContext) -> int:   # UPDATED
     return UPDATED
 
 
-def go_back(update: Update, context: CallbackContext) -> int:  # PROBABILITY
+def go_back(update: Update, _: CallbackContext) -> int:  # PROBABILITY
     """Goes back to main menu."""
 
     update.callback_query.edit_message_text(text=setting_msg(update), reply_markup=setting_markup,
@@ -231,7 +229,7 @@ def go_back(update: Update, context: CallbackContext) -> int:  # PROBABILITY
     return UPDATED
 
 
-def save(update: Update, context: CallbackContext) -> int:  # UPDATED
+def save(update: Update, _: CallbackContext) -> int:  # UPDATED
     """Called when user clicks save. Saves all applied settings into database."""
 
     global morn_setting
@@ -248,8 +246,8 @@ def save(update: Update, context: CallbackContext) -> int:  # UPDATED
     update.callback_query.edit_message_text(text=r.choice(responses) + f"\n\n{r.choice(confirmations)}\n" + msg[36:],
                                             parse_mode="MarkdownV2")
 
-    logging.info(f"\n{update.effective_user.first_name} just updated {get_chat_name(update)}'s settings to:\n"
-                 f"Media={media_prob}, Profanity={profane_prob}, Morning quotes={morn_setting}.\n\n")
+    logger(message=f"{update.effective_user.first_name} just updated {get_chat_name(update)}'s settings to:\n"
+                   f"Media={media_prob}, Profanity={profane_prob}, Morning quotes={morn_setting}.")
 
     c.execute(f"UPDATE CHAT_SETTINGS SET MORNING_MSGS='{morn_setting}' WHERE CHAT_ID={chat_id};")
     conn.commit()

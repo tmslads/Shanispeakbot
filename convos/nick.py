@@ -1,16 +1,13 @@
-import logging
-
 from telegram import ForceReply, Update
 from telegram import KeyboardButton
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import CallbackContext
 
 from commands import prohibited
+from helpers.logger import logger
 from .start import markup, CHOICE
 
 SET_NICK, MODIFY_NICK = range(3, 5)
-
-logging.basicConfig(format='%(asctime)s - %(module)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
 
 def nick(update: Update, context: CallbackContext) -> int:
@@ -18,26 +15,24 @@ def nick(update: Update, context: CallbackContext) -> int:
     Checks if nickname is set or not, if set, then gives options on what to do with them. Else will ask to set
     a nickname.
     """
+
     name = update.message.from_user.first_name
     chat_id = update.effective_chat.id
     msg_id = update.message.message_id
 
     if 'nickname' not in context.user_data or context.user_data['nickname'][-1] == name:
-        context.bot.send_message(chat_id=chat_id,
-                                 text="What is your uhh.. what you say like... nickname?",
+        context.bot.send_message(chat_id=chat_id, text="What is your uhh.. what you say like... nickname?",
                                  reply_to_message_id=msg_id, reply_markup=ForceReply(selective=True))
 
         return SET_NICK
 
     else:
-        nick_kb = [[KeyboardButton("Change nickname"), KeyboardButton("Remove nickname")],
-                   [KeyboardButton("Back")]]
+        nick_kb = [[KeyboardButton("Change nickname"), KeyboardButton("Remove nickname")], [KeyboardButton("Back")]]
 
         nick_markup = ReplyKeyboardMarkup(nick_kb, one_time_keyboard=True, selective=True)
         nick_name = context.user_data["nickname"][-1]
-        context.bot.send_message(chat_id=chat_id,
-                                 text=f"Hi {nick_name}, what you want to do like?", reply_markup=nick_markup,
-                                 reply_to_message_id=msg_id)
+        context.bot.send_message(chat_id=chat_id, text=f"Hi {nick_name}, what you want to do like?",
+                                 reply_markup=nick_markup, reply_to_message_id=msg_id)
 
         return MODIFY_NICK
 
@@ -48,12 +43,10 @@ def del_nick(update: Update, context: CallbackContext) -> int:  # MODIFY_NICK
     name = update.message.from_user.first_name
 
     context.user_data['nickname'].append(name)
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=f"I'm forgetting your nic.. {name}",
-                             reply_to_message_id=update.message.message_id,
-                             reply_markup=markup)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f"I'm forgetting your nic.. {name}",
+                             reply_to_message_id=update.message.message_id, reply_markup=markup)
 
-    logging.info(f"\n{name} just deleted their nickname.\n\n")
+    logger(message=f"{name} just deleted their nickname.")
 
     return CHOICE
 
@@ -61,8 +54,7 @@ def del_nick(update: Update, context: CallbackContext) -> int:  # MODIFY_NICK
 def edit_nick(update: Update, context: CallbackContext) -> int:  # MODIFY_NICK
     """Asks for new nickname."""
 
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text="Tell me your new nickname like you say",
+    context.bot.send_message(chat_id=update.effective_chat.id, text="Tell me your new nickname like you say",
                              reply_to_message_id=update.message.message_id, reply_markup=ForceReply(selective=True))
     return SET_NICK
 
@@ -88,7 +80,8 @@ def add_edit_nick(update: Update, context: CallbackContext) -> int:  # SET_NICK
 
         context.bot.send_message(chat_id=chat_id, text=f"Hi {nicky} what you're doing like", reply_to_message_id=msg_id,
                                  reply_markup=markup)
-        logging.info(f"\n{update.effective_user.first_name} just changed their nickname to {nicky}.\n\n")
+
+        logger(message=f"{update.effective_user.first_name} just changed their nickname to {nicky}.")
 
         return CHOICE
 
@@ -96,8 +89,6 @@ def add_edit_nick(update: Update, context: CallbackContext) -> int:  # SET_NICK
 def back(update: Update, context: CallbackContext) -> int:  # MODIFY_NICK
     """Goes back to main menu."""
 
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text=f"What you want?",
-                             reply_to_message_id=update.message.message_id,
-                             reply_markup=markup)
+    context.bot.send_message(chat_id=update.effective_chat.id, text=f"What you want?",
+                             reply_to_message_id=update.message.message_id, reply_markup=markup)
     return CHOICE
