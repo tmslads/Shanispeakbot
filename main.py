@@ -8,7 +8,7 @@ from telegram.ext import (CommandHandler, ConversationHandler, InlineQueryHandle
 import inline
 from bot_funcs import media_reactor, morning_wisher, bday_wisher, conversation, delete_pin
 from commands import BotCommands as bc
-from constants import testbot
+from constants import shanibot
 from convos import bday, magic, nick, settings_gui, start
 from quiz import send_quiz, receive_answer
 
@@ -44,9 +44,12 @@ magicball_handler = ConversationHandler(
                   MessageHandler(filters=Filters.command(False) & Filters.regex("8ball") & Filters.reply,
                                  callback=magic.thinking)],
 
-    states={magic.PROCESSING: [MessageHandler(filters=Filters.reply & Filters.text, callback=magic.thinking)]},
+    states={
+        magic.PROCESSING: [MessageHandler(filters=Filters.reply & Filters.text, callback=magic.thinking)],
 
-    fallbacks=[CommandHandler(command='cancel', callback=magic.cancel)], conversation_timeout=20)
+        ConversationHandler.TIMEOUT: [MessageHandler(filters=Filters.all, callback=magic.timedout)]},
+
+    fallbacks=[CommandHandler(command='cancel', callback=magic.cancel)], conversation_timeout=35)
 dp.add_handler(magicball_handler)
 
 # /tell conversation-
@@ -76,7 +79,7 @@ tell_handler = ConversationHandler(
     fallbacks=[MessageHandler(Filters.regex("^No, thank you sir$"), callback=bday.reject),
                CommandHandler("cancel", start.leave)],
 
-    name="/tell convo", persistent=True, allow_reentry=True, conversation_timeout=20)
+    name="/tell convo", persistent=True, allow_reentry=True, conversation_timeout=35)
 dp.add_handler(tell_handler)
 
 settings_gui_handler = ConversationHandler(
@@ -96,9 +99,10 @@ dp.add_handler(settings_gui_handler)
 
 media_filters = (Filters.document | Filters.photo | Filters.video | Filters.voice | Filters.audio)
 edit_filter = Filters.update.edited_message
+pin_filter = Filters.status_update.pinned_message
 
 dp.add_handler(MessageHandler(media_filters, media_reactor.media))
-dp.add_handler(MessageHandler(Filters.status_update.pinned_message & Filters.user(username=testbot), delete_pin.de_pin))
+dp.add_handler(MessageHandler(pin_filter & Filters.user(username=shanibot), delete_pin.de_pin))
 dp.add_handler(MessageHandler(Filters.reply & Filters.group & ~ edit_filter, conversation.reply))
 dp.add_handler(MessageHandler(Filters.group & Filters.text & ~ edit_filter, conversation.group))
 dp.add_handler(MessageHandler(Filters.private & Filters.text & ~ edit_filter, conversation.shanifier))
@@ -109,7 +113,7 @@ updater.job_queue.run_repeating(morning_wisher.morning_goodness, 86400, first=1)
 updater.job_queue.run_repeating(inline.get_clips, 60, first=1)  # Have to re-fetch clips since links expire
 updater.job_queue.run_repeating(send_quiz, 604800, first=1)  # Send quiz to 12B weekly
 
-data_view()
+# data_view()
 
-updater.start_polling(clean=True)
+updater.start_polling()
 updater.idle()

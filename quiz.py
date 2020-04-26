@@ -35,17 +35,15 @@ def send_quiz(context: CallbackContext) -> None:
     diff = right_now - context.bot_data['last_quiz']
     print(diff)
     if diff.days < 5:
-        print("Not enough days!")
+        print("Not enough days for next quiz!")
         return
-
-    # context.bot_data['quizizz'] = {}
 
     starts = ["See I'm keeping one quizizz now okay. You have one day to finish. For boards ok. I want everyone to do "
               "it that's it.", "I have kept one quizizz now. I expect something okay.",
               "Because of the bad like you say situation I have kept this online quizizz now. Do fast okay.",
               "I'm sending these 5 questions now like. I want it to be done by tomorrow okay? Fast fast"]
 
-    context.bot.send_message(chat_id=group_ids['testing'], text=r.choice(starts))
+    context.bot.send_message(chat_id=group_ids['12b'], text=r.choice(starts))
 
     # Get our questions, choices and answers from the web-
     while True:
@@ -58,15 +56,15 @@ def send_quiz(context: CallbackContext) -> None:
     # Support sending quiz to 12B only for now-
     # TODO: Change this back to 12B
     for question, choice, answer in zip(questions, choices, answers):
-        quiz = context.bot.send_poll(chat_id=group_ids['testing'], question=question, options=choice,
-                                     is_anonymous=False, type=Poll.QUIZ, correct_option_id=answer, is_closed=False)
+        quiz = context.bot.send_poll(chat_id=group_ids['12b'], question=question, options=choice, is_anonymous=False,
+                                     type=Poll.QUIZ, correct_option_id=answer, is_closed=False)
         quizzes.append(quiz)
 
     logger(message=f"The 5 quizzes were just sent to 12B successfully.")
 
-    # TODO: Change this back to 24 hours.
-    context.job_queue.run_once(callback=timedout, when=60 * 60 * 10, context=[quizzes])  # 10s for testing purposes
-    context.bot_data['last_quiz'] = right_now
+    context.job_queue.run_once(callback=timedout, when=60 * 60 * 10, context=[quizzes])
+    context.bot_data['last_quiz'] = right_now  # Save new time for last quiz
+    context.dispatcher.persistence.flush()
 
 
 def timedout(context: CallbackContext) -> None:
@@ -90,13 +88,13 @@ def timedout(context: CallbackContext) -> None:
     array = context.job.context[0]
 
     for index, quiz in enumerate(array):  # Stop all quizzes
-        context.bot.stop_poll(chat_id=group_ids['testing'], message_id=quiz.message_id)
+        context.bot.stop_poll(chat_id=group_ids['12b'], message_id=quiz.message_id)
 
-    context.bot.send_chat_action(chat_id=group_ids['testing'], action='upload_photo')
+    context.bot.send_chat_action(chat_id=group_ids['12b'], action='upload_photo')
     pp(context)
     leaderboard(context)  # Make the leaderboard
 
-    context.bot.send_photo(chat_id=group_ids['testing'], photo=open('leaderboard.png', 'rb'),
+    context.bot.send_photo(chat_id=group_ids['12b'], photo=open('leaderboard.png', 'rb'),
                            caption="This is where you stand like you say")  # Send latest leaderboard
 
     logger(message=f"The leaderboard was just sent on the group.")
@@ -113,10 +111,12 @@ def timedout(context: CallbackContext) -> None:
         scold_names += mention + " "  # Add a whitespace after every name
 
     if to_scold:  # Send only if there is someone to scold!
-        context.bot.send_chat_action(chat_id=group_ids['testing'], action='typing')
+        context.bot.send_chat_action(chat_id=group_ids['12b'], action='typing')
         sleep(2)
-        context.bot.send_message(chat_id=group_ids['testing'], text=scold_names + r.choice(scolds),
+        context.bot.send_message(chat_id=group_ids['12b'], text=scold_names + r.choice(scolds),
                                  parse_mode=ParseMode.HTML)
+
+    context.dispatcher.persistence.flush()
 
 
 def receive_answer(update: Update, context: CallbackContext) -> None:
@@ -175,6 +175,8 @@ def pp(context: CallbackContext) -> None:
         file = context.bot.get_file(file_id=file_id)
         file.download(custom_path=value['profile_pic'])  # Dl's as jpg
 
+    context.dispatcher.persistence.flush()
+
 
 def round_pic() -> None:
     """
@@ -209,7 +211,6 @@ def round_pic() -> None:
         # Save with alpha
         Image.fromarray(npImage).save(f"profile_pics/{png_name}")  # Only saves in .png
         os.remove(jpg_name_path)  # Remove jpg file
-        print("DOne")
 
 
 def add_image(name: str, x: float or int, y: int, offset: float, zoom: float = 0.20) -> AnnotationBbox:

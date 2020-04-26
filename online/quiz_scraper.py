@@ -1,19 +1,20 @@
 import random as r
 import re
-from typing import Tuple, List, Union
+from typing import List, Union
 
 import requests
 from bs4 import BeautifulSoup
 
 from constants import QUIZ_URL
+from helpers.logger import logger
 
 
 # TODO: Improve the entire thing-
 
 
-def a_quiz() -> Union[Tuple[list, List[List[str]], List[int]], None]:
+def a_quiz() -> Union[(list, List[List[str]], List[int]), None]:
     page = r.randint(1, 76)
-    print(page)
+    logger(message=f"Quiz obtained from {page=}.", debug=True)
     quiz_url = f"{QUIZ_URL}/{page}"
     content = requests.get(quiz_url).content
 
@@ -33,7 +34,6 @@ def a_quiz() -> Union[Tuple[list, List[List[str]], List[int]], None]:
         if len(question) > 255:  # If we've reached max question character limit for ptb
             return
 
-        print(question)
         all_questions.append(question)
 
         options = result.find_all('br')  # Get options as a list
@@ -48,8 +48,6 @@ def a_quiz() -> Union[Tuple[list, List[List[str]], List[int]], None]:
                 text = option.text.strip()
                 spliced = re.sub('([0-4][)])*', '', text).split()
                 question_choices.extend(spliced)
-                for one in spliced:  # temporary
-                    print(one)
                 break
 
             to_str = str(choice).strip()
@@ -59,7 +57,6 @@ def a_quiz() -> Union[Tuple[list, List[List[str]], List[int]], None]:
                 return
 
             question_choices.append(stripped)
-            print(stripped)
 
         question_choices.pop()  # Remove last empty string
 
@@ -71,6 +68,5 @@ def a_quiz() -> Union[Tuple[list, List[List[str]], List[int]], None]:
         answer = result.find('span', class_='ans')  # Returns answer number
         right_answer = int(answer.text.strip().replace('ANS: ', ''))
         all_answers.append(right_answer - 1)
-        print(f'The right answer is: {question_choices[right_answer - 1]}\n\n')
 
     return all_questions, all_choices, all_answers

@@ -16,6 +16,7 @@ CHOICE = 0
 
 
 def initiate(update: Update, context: CallbackContext) -> int:  # Entry_point
+    """This function is called when user uses /tell. It branches into 3- 'birthday', 'nickname' and 'nothing'."""
 
     chat = update.effective_chat
     first_name = update.effective_user.first_name
@@ -45,6 +46,8 @@ def initiate(update: Update, context: CallbackContext) -> int:  # Entry_point
 
 
 def leave(update: Update, context: CallbackContext) -> int:
+    """This is called when user clicks 'Nothing'. Exits from the /tell conversation."""
+
     name = get_nick(update, context)
 
     context.bot.send_message(chat_id=update.effective_chat.id,
@@ -56,6 +59,8 @@ def leave(update: Update, context: CallbackContext) -> int:
 
 
 def timedout(update: Update, context: CallbackContext) -> None:
+    """This is called when a user has timed out while using /tell (after 35 seconds)."""
+
     context.bot.send_message(chat_id=update.effective_chat.id, text="Ok I am fine being seenzoned",
                              reply_to_message_id=update.message.message_id,
                              reply_markup=ReplyKeyboardRemove(selective=True))

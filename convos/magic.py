@@ -2,7 +2,7 @@
 import random as r
 from time import sleep
 
-from telegram import ForceReply, Update
+from telegram import ForceReply, Update, ReplyKeyboardRemove
 from telegram.ext import CallbackContext
 
 from helpers.logger import logger
@@ -93,6 +93,21 @@ def cancel(update: Update, context: CallbackContext) -> int:
 
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text="I just wanted to be in the right direction nothing else I mean okay?",
-                             reply_to_message_id=update.message.message_id)
+                             reply_to_message_id=update.message.message_id,
+                             reply_markup=ReplyKeyboardRemove(selective=True))
+
+    logger(message=f"{update.effective_user.first_name} just cancelled /8ball.")
 
     return -1
+
+
+def timedout(update: Update, context: CallbackContext) -> None:
+    """Called when the user does not respond to /8ball after 35 seconds."""
+
+    context.bot.send_message(chat_id=update.effective_chat.id,
+                             text=f"Ok, {get_nick(update, context)} don't tell me your problem. I have other things "
+                                  f"to do like",
+                             reply_to_message_id=update.message.message_id,
+                             reply_markup=ReplyKeyboardRemove(selective=True))
+
+    logger(message=f"{update.effective_user.first_name} just timed out using /8ball.")

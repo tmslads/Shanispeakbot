@@ -13,12 +13,14 @@ from .namer import get_chat_name
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
 
-def logger(message: str, update: Update = None, command: bool = False, warning: bool = False,
+def logger(message: str, update: Update = None, command: bool = False, warning: bool = False, debug: bool = False,
            exception: bool = False) -> None:
     if warning:
         logging.warning(f"\n{message}\n\n")
     elif exception:
         logging.exception(f"\n{message}\n\n")
+    elif debug:
+        logging.debug(f"\n{message}\n\n")
     else:
         if command and update is not None:
             logging.info(f"\n{update.effective_user.first_name} just used {message} in {get_chat_name(update)}.\n\n")

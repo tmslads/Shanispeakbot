@@ -13,11 +13,11 @@ def media(update: Update, context: CallbackContext) -> None:
     """Sends a reaction to media messages (pictures, videos, documents, voice notes)"""
 
     global last_reacted_at
-    #
-    # now = cur_time()
-    #
-    # if now - last_reacted_at < 60:  # If a reaction was sent less than a minute ago
-    #     return  # Don't send a reaction
+
+    now = cur_time()
+
+    if now - last_reacted_at < 60:  # If a reaction was sent less than a minute ago
+        return  # Don't send a reaction
 
     last_reacted_at = cur_time()
 
@@ -34,7 +34,6 @@ def media(update: Update, context: CallbackContext) -> None:
     prob = r.choices([0, 1], weights=[false, true])[0]  # Probabilities are 0.7 - False, 0.3 - True by default
 
     if not prob:
-        print('Didnt work')
         return
 
     if hasattr(update.message.audio, 'performer'):
@@ -43,7 +42,6 @@ def media(update: Update, context: CallbackContext) -> None:
 
     try:
         doc = update.message.document.file_name.split('.')[-1]
-        print(f"{doc=}")
     except Exception as e:  # When there is no document sent (most likely AttributeError)
         logger(message=f"File extension was not assigned. The warning is: \n{e}", warning=True)
         doc = ''
