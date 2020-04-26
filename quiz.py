@@ -1,8 +1,9 @@
 import os
-import pprint
 import random as r
 from datetime import datetime
+from time import sleep
 
+import matplotlib
 import numpy as np
 from PIL import Image, ImageDraw
 from matplotlib import patheffects
@@ -13,15 +14,16 @@ from telegram import Poll, ParseMode, Update
 from telegram.ext import CallbackContext
 from telegram.utils.helpers import mention_html
 
+from constants import group_ids
 from helpers.logger import logger
-from helpers.namer import get_nick, get_chat_name
+from helpers.namer import get_nick
 from online import quiz_scraper
 
 quizzes = []
 cwd = os.getcwd()
 
 
-def send_quiz(update: Update, context: CallbackContext) -> None:
+def send_quiz(context: CallbackContext) -> None:
     """Sends 5 quizzes to target chat (12B for now). Also sets a timer for 24 hours for quiz expiry (using jobs)."""
 
     global quizzes
@@ -32,17 +34,18 @@ def send_quiz(update: Update, context: CallbackContext) -> None:
 
     diff = right_now - context.bot_data['last_quiz']
     print(diff)
-    if diff.days < 7:
+    if diff.days < 5:
         print("Not enough days!")
         return
 
-    context.bot.send_message(chat_id=update.effective_chat.id,
-                             text="See I'm keeping one quizizz now okay. You have one day to finish."
-                                  "For boards ok. I want everyone to do it that's it.")
-    # # TODO: Remove my reset-
-    # context.bot_data['quizizz'][harshil]['answers_right'] = 0
-    # context.bot_data['quizizz'][harshil]['questions_answered'] = 0
-    # context.bot_data['quizizz'][harshil]['answers_wrong'] = 0
+    # context.bot_data['quizizz'] = {}
+
+    starts = ["See I'm keeping one quizizz now okay. You have one day to finish. For boards ok. I want everyone to do "
+              "it that's it.", "I have kept one quizizz now. I expect something okay.",
+              "Because of the bad like you say situation I have kept this online quizizz now. Do fast okay.",
+              "I'm sending these 5 questions now like. I want it to be done by tomorrow okay? Fast fast"]
+
+    context.bot.send_message(chat_id=group_ids['testing'], text=r.choice(starts))
 
     # Get our questions, choices and answers from the web-
     while True:
@@ -55,14 +58,14 @@ def send_quiz(update: Update, context: CallbackContext) -> None:
     # Support sending quiz to 12B only for now-
     # TODO: Change this back to 12B
     for question, choice, answer in zip(questions, choices, answers):
-        quiz = context.bot.send_poll(chat_id=update.effective_chat.id, question=question, options=choice,
+        quiz = context.bot.send_poll(chat_id=group_ids['testing'], question=question, options=choice,
                                      is_anonymous=False, type=Poll.QUIZ, correct_option_id=answer, is_closed=False)
         quizzes.append(quiz)
 
-    logger(message=f"The 5 quizzes were just sent to {get_chat_name(update)} successfully.")
+    logger(message=f"The 5 quizzes were just sent to 12B successfully.")
 
     # TODO: Change this back to 24 hours.
-    context.job_queue.run_once(callback=timedout, when=10, context=[update, quizzes])  # 10s for testing purposes
+    context.job_queue.run_once(callback=timedout, when=60 * 60 * 10, context=[quizzes])  # 10s for testing purposes
     context.bot_data['last_quiz'] = right_now
 
 
@@ -83,24 +86,20 @@ def timedout(context: CallbackContext) -> None:
 
     scold_names = ""
 
-    # Assign additional arguments passed from job to variables
-    update = context.job.context[0]
-    array = context.job.context[1]
-    chat_id = update.effective_chat.id
+    # Assign additional argument passed from job to variables
+    array = context.job.context[0]
 
     for index, quiz in enumerate(array):  # Stop all quizzes
-        context.bot.stop_poll(chat_id=chat_id, message_id=quiz.message_id)
+        context.bot.stop_poll(chat_id=group_ids['testing'], message_id=quiz.message_id)
 
-    context.bot.send_chat_action(chat_id=chat_id, action='upload_photo')
-
+    context.bot.send_chat_action(chat_id=group_ids['testing'], action='upload_photo')
+    pp(context)
     leaderboard(context)  # Make the leaderboard
 
-    context.bot.send_photo(chat_id=chat_id, photo=open('leaderboard.png', 'rb'),
+    context.bot.send_photo(chat_id=group_ids['testing'], photo=open('leaderboard.png', 'rb'),
                            caption="This is where you stand like you say")  # Send latest leaderboard
 
     logger(message=f"The leaderboard was just sent on the group.")
-
-    context.bot.send_chat_action(chat_id=chat_id, action='typing')
 
     # Get user mentions of people who got 3 or more answers wrong and scold them-
     for user_id, value in context.bot_data['quizizz'].items():
@@ -114,12 +113,15 @@ def timedout(context: CallbackContext) -> None:
         scold_names += mention + " "  # Add a whitespace after every name
 
     if to_scold:  # Send only if there is someone to scold!
-        context.bot.send_message(chat_id=chat_id, text=scold_names + r.choice(scolds), parse_mode=ParseMode.HTML)
+        context.bot.send_chat_action(chat_id=group_ids['testing'], action='typing')
+        sleep(2)
+        context.bot.send_message(chat_id=group_ids['testing'], text=scold_names + r.choice(scolds),
+                                 parse_mode=ParseMode.HTML)
 
 
 def receive_answer(update: Update, context: CallbackContext) -> None:
     """
-    Saves quiz related user data. Run everytime a user answers a quiz. This data is used later in generating the
+    Saves quiz related user data. Runs everytime a user answers a quiz. This data is used later in generating the
     leaderboard.
     """
 
@@ -148,7 +150,7 @@ def receive_answer(update: Update, context: CallbackContext) -> None:
     guy = context.bot_data['quizizz'][user.id]
 
     guy['name'] = get_nick(update, context)
-    guy['profile_pic'] = pp(update, context)
+    guy['profile_pic'] = f"profile_pics/{get_nick(update, context)}.jpg"
     guy['questions_answered'] += 1
 
     if correct_answer != chosen_answer[0]:  # If guy got it wrong
@@ -156,23 +158,22 @@ def receive_answer(update: Update, context: CallbackContext) -> None:
     else:
         guy['answers_right'] += 1
 
-    pprint.PrettyPrinter(indent=2).pprint(context.bot_data)  # TODO: Remove this before pr merge
+    context.dispatcher.persistence.flush()
 
 
-def pp(update: Update, context: CallbackContext) -> str:
+def pp(context: CallbackContext) -> None:
     """Helper function to get a user's profile pic. This will be then used in the bar graph."""
 
-    user = update.poll_answer.user
-    pic = context.bot.get_user_profile_photos(user_id=user.id, offset=0, limit=1)
+    for user_id, value in context.bot_data['quizizz'].items():
+        pic = context.bot.get_user_profile_photos(user_id=user_id, offset=0, limit=1)
+        if not pic:  # If user doesn't have a pp
+            value['profile_pic'] = "profile_pics/nobody.jpg"
 
-    if not pic:  # If user doesn't have a pp
-        return "profile_pics/nobody.jpg"
+        first_pic = pic.photos[0][0]
+        file_id = first_pic.file_id
 
-    first_pic = pic.photos[0][0]
-    file_id = first_pic.file_id
-
-    file = context.bot.get_file(file_id=file_id)
-    return file.download(custom_path=f"profile_pics/{get_nick(update, context)}.jpg")  # Returns file path as string
+        file = context.bot.get_file(file_id=file_id)
+        file.download(custom_path=value['profile_pic'])  # Dl's as jpg
 
 
 def round_pic() -> None:
@@ -245,12 +246,12 @@ def leaderboard(context) -> None:
         names.append(stuff['name'])
         vals.append(stuff['answers_right'])
 
-    # names = ["Harshil", "Samir", "Sahil", "Samrin", "Ashwin", "Jaden"]
-    # vals = [5, 4, 3, 3, 2, 1]
+    if not names:
+        return
 
     mean = sum(vals) / len(vals)  # Gets average for color sorting later
     vals, names = zip(*sorted(zip(vals, names)))  # Sorts both lists correspondingly in ascending order. Returns tuples
-
+    matplotlib.use('Agg')
     canvas, ax = plt.subplots(1, 1, figsize=(10, 8))  # That fig size is perfect for 1920x1080 (Don't change this!)
     plt.grid()  # Shows grid lines
 
@@ -328,7 +329,7 @@ def leaderboard(context) -> None:
     ax.tick_params(axis='y', colors='#dcd5f4', grid_alpha=0.0)
 
     # Set title and add properties to make it a beaut
-    plt.title(label="LEADERBOARD",
+    plt.title(label="LADDERBOARD",
               fontdict={'fontname': 'Gill Sans MT', 'size': 23, 'weight': 'bold', 'color': '#f3c977'}, loc='left',
               pad=20, path_effects=[patheffects.Stroke(linewidth=0.1, foreground="#F4C05B"), patheffects.Normal()])
 
@@ -340,9 +341,3 @@ def leaderboard(context) -> None:
     for name in os.listdir(f"{cwd}/profile_pics"):
         if name not in ("nobody.png", "trophy.png"):  # These should always be there
             os.remove(f"{cwd}/profile_pics/{name}")
-
-    # return
-    plt.show()
-
-# leaderboard()
-# round_pic()
