@@ -11,7 +11,7 @@ sql_table = """
             CREATE TABLE IF NOT EXISTS CHAT_SETTINGS(
                 CHAT_ID INTEGER PRIMARY KEY,
                 CHAT_NAME TEXT,
-                MORNING_MSGS BOOLEAN,
+                MORNING_MSGS TEXT,
                 MEDIA_PROB DECIMAL(2,1),
                 PROFANE_PROB DECIMAL(2,1)
             );
