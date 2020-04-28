@@ -42,11 +42,7 @@ def morning_goodness(context: CallbackContext) -> None:
 
     clip_loc = r"C:/Users/Uncle Sam/Desktop/sthyaVERAT/4 FUN ya Practice/Shanisirmodule/Assets/clips/good mourning.mp3"
 
-    for chat in ids:
-
-        chat_id = chat[0]
-        chat_name = chat[1]
-
+    for chat_id, chat_name in ids:
         try:
             msg = context.bot.send_message(chat_id=chat_id, text=greeting)
             logger(message=f"Today's morning quote was just sent to {chat_name}.")
