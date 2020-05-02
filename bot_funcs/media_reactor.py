@@ -1,10 +1,12 @@
+import random as r
+from time import sleep, time as cur_time
+
 from telegram import Update
 from telegram.ext import CallbackContext
-from time import sleep, time as cur_time
-from helpers.namer import get_nick
+
 from helpers.db_connector import connection
-import random as r
 from helpers.logger import logger
+from helpers.namer import get_nick
 
 last_reacted_at = 0
 
