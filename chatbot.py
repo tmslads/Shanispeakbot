@@ -5,12 +5,15 @@ from chatterbot import response_selection
 shanisirbot = chatterbot.ChatBot('The Shani Sir Bot',
                                  storage_adapter='chatterbot.storage.SQLStorageAdapter',
                                  logic_adapters=['chatterbot.logic.BestMatch'],
-                                 response_selection_method=response_selection.get_first_response,  # or get_random_response or get_most_frequent_response
+                                 response_selection_method=response_selection.get_first_response,
                                  preprocessors=['chatterbot.preprocessors.clean_whitespace'],
-                                 read_only=False)  # Set to True to disable further learning from conversations the bot has
+                                 read_only=False)  # Set to True to disable further learning from conversations the bot
+
+shanisirbot.initialize()  # Does any work that needs to be done before the chatbot can process responses.
+get_tags = shanisirbot.storage.tagger.get_bigram_pair_string
 
 
-def train_with(corpus):
+def train_with(corpus: str) -> None:
     """
     Trains the bot using the specified corpus
     eng ---> chatterbot.corpus.english (standard English corpus from chatterbot_corpora)
@@ -22,7 +25,7 @@ def train_with(corpus):
     import time
 
     if corpus == 'ubu':  # WARNING: TAKES A REALLY LONG TIME
-        start = time.time()  # (TOOK 114000 SECONDS = 31 HOURS TO EXTRACT AND TRAIN FOR UNCLE SAM, NOT INCLUDING DOWNLOAD TIME)
+        start = time.time()  # (TOOK 114000 SECONDS = 31 HOURS TO EXTRACT & TRAIN FOR UNCLE SAM, NOT INCLUDING DL TIME)
         corpus_trainer = UbuntuCorpusTrainer(shanisirbot)
         corpus_trainer.train()
     else:
