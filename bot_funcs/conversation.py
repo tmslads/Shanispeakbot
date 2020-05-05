@@ -19,7 +19,7 @@ rebukes = ["This is not the expected behaviour", "I don't want you to talk like 
            "Bad language is not allowed okay", "See this is not my policy", "This is not a fruitful conversation",
            "This language is embarrassingassing to me like basically"]
 
-responses1 = ["I am so sowry", "i don't want to talk like that", "it is embarrassing to me like basically",
+responses1 = ["I am so sowry", "I don't want to talk like that", "it is embarrassing to me like basically",
               "it's not to trouble you like you say", "go for the worksheet", "it's not that hard"]
 
 responses2 = ["it will be fruitful", "you will benefit", "that is the expected behaviour",
