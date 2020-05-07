@@ -34,7 +34,7 @@ def send_quiz(context: CallbackContext) -> None:
 
     diff = right_now - context.bot_data['last_quiz']
     print(diff)
-    if diff.days < 5:
+    if diff.days < 7:
         print("Not enough days for next quiz!")
         return
 
