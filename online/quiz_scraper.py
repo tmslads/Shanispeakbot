@@ -1,6 +1,6 @@
 import random as r
 import re
-from typing import List, Union
+from typing import List, Union, Tuple
 
 import requests
 from bs4 import BeautifulSoup
@@ -12,7 +12,7 @@ from helpers.logger import logger
 # TODO: Improve the entire thing-
 
 
-def a_quiz() -> Union[(list, List[List[str]], List[int]), None]:
+def a_quiz() -> Union[Tuple[List[str], List[List[str]], List[int]], None]:
     page = r.randint(1, 76)
     logger(message=f"Quiz obtained from {page=}.", debug=True)
     quiz_url = f"{QUIZ_URL}/{page}"

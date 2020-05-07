@@ -18,7 +18,7 @@ with open("files/token.txt", 'r') as file:
     shanisir_token, test_token = file.read().split(',')
 
 pp = PicklePersistence(filename='files/user_data')
-updater = Updater(token=f'{test_token}', use_context=True, persistence=pp)
+updater = Updater(token=f'{shanisir_token}', use_context=True, persistence=pp)
 
 dp = updater.dispatcher
 
