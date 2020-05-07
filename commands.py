@@ -43,7 +43,7 @@ def ladcased(normal: str) -> str:
 
 
 def del_command(update: Update) -> None:
-    """Delete the command message sent by the user."""
+    """Deletes the command message sent by the user."""
 
     try:
         update.message.delete()
@@ -107,7 +107,7 @@ class BotCommands:
 
     @staticmethod
     def swear(update: Update, context: CallbackContext) -> None:
-        """Sends a couple of swear words to the user along with a message saying not to use them."""
+        """Sends 4 swear words to the user along with a message saying not to use them."""
 
         del_command(update)
 
@@ -146,7 +146,7 @@ class BotCommands:
 
         while True:
             try:
-                questions, choices, answers = quiz_scraper.a_quiz()
+                questions, choices, answers = quiz_scraper.quiz_maker()
                 break
             except TypeError:  # If we get None (due to error) back, retry.
                 logger(message="There was a problem getting the questions, trying again.", warning=True)

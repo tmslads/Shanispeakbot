@@ -12,7 +12,10 @@ from helpers.logger import logger
 # TODO: Improve the entire thing-
 
 
-def a_quiz() -> Union[Tuple[List[str], List[List[str]], List[int]], None]:
+def quiz_maker() -> Union[Tuple[List[str], List[List[str]], List[int]], None]:
+    """Scrapes 5 quizzes and returns 3 lists, one which contains only questions, another one contains choices for
+    each of the questions, and the last one contains answers which are indexes (points to correct option)."""
+
     page = r.randint(1, 76)
     logger(message=f"Quiz obtained from {page=}.", debug=True)
     quiz_url = f"{QUIZ_URL}/{page}"
@@ -21,7 +24,7 @@ def a_quiz() -> Union[Tuple[List[str], List[List[str]], List[int]], None]:
     soup = BeautifulSoup(content, 'html.parser')
     results = soup.find_all(class_=r.choice(['even', 'odd']))
     all_questions = []
-    all_choices = []  # Type: List[List[str(choice)]]
+    all_choices = []  # Type: List[List[str(choices)]]
     all_answers = []
 
     for result in results:

@@ -33,7 +33,7 @@ def send_quiz(context: CallbackContext) -> None:
         context.bot_data['last_quiz'] = right_now
 
     diff = right_now - context.bot_data['last_quiz']
-    print(diff)
+    logger(message=f"Last quiz was sent {diff.days} days ago.")
     if diff.days < 7:
         print("Not enough days for next quiz!")
         return
@@ -48,7 +48,7 @@ def send_quiz(context: CallbackContext) -> None:
     # Get our questions, choices and answers from the web-
     while True:
         try:
-            questions, choices, answers = quiz_scraper.a_quiz()
+            questions, choices, answers = quiz_scraper.quiz_maker()
             break
         except TypeError:  # If we get None (due to error), retry.
             pass
@@ -147,16 +147,16 @@ def receive_answer(update: Update, context: CallbackContext) -> None:
         context.bot_data['quizizz'][user.id] = {'answers_right': 0, 'questions_answered': 0, 'answers_wrong': 0}
 
     # Update/add entries if changed-
-    guy = context.bot_data['quizizz'][user.id]
+    lad = context.bot_data['quizizz'][user.id]
 
-    guy['name'] = get_nick(update, context)
-    guy['profile_pic'] = f"profile_pics/{get_nick(update, context)}.jpg"
-    guy['questions_answered'] += 1
+    lad['name'] = get_nick(update, context)
+    lad['profile_pic'] = f"profile_pics/{get_nick(update, context)}.jpg"
+    lad['questions_answered'] += 1
 
     if correct_answer != chosen_answer[0]:  # If guy got it wrong
-        guy['answers_wrong'] += 1
+        lad['answers_wrong'] += 1
     else:
-        guy['answers_right'] += 1
+        lad['answers_right'] += 1
 
     context.dispatcher.persistence.flush()
 
@@ -213,7 +213,7 @@ def round_pic() -> None:
         os.remove(jpg_name_path)  # Remove jpg file
 
 
-def add_image(name: str, x: float or int, y: int, offset: float, zoom: float = 0.20) -> AnnotationBbox:
+def add_image(name: str, x: float or int, y: float or int, offset: float, zoom: float = 0.20) -> AnnotationBbox:
     """
     Adds the given image to the bar graph, with the given specifications.
 

@@ -7,7 +7,7 @@ shanisirbot = chatterbot.ChatBot('The Shani Sir Bot',
                                  logic_adapters=['chatterbot.logic.BestMatch'],
                                  response_selection_method=response_selection.get_first_response,
                                  preprocessors=['chatterbot.preprocessors.clean_whitespace'],
-                                 read_only=False)  # Set to True to disable further learning from conversations the bot
+                                 read_only=False)  # Set to True to disable further learning from conversations
 
 shanisirbot.initialize()  # Does any work that needs to be done before the chatbot can process responses.
 get_tags = shanisirbot.storage.tagger.get_bigram_pair_string

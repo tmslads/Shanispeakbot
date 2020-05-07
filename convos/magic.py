@@ -48,7 +48,7 @@ def thinking(update: Update, context: CallbackContext) -> int:
         logger(message=f"{update.effective_user.first_name} used /8ball in {get_chat_name(update)}"
                        f" and on {update.message.reply_to_message.from_user.first_name}'s message.")
 
-        actual_msg = update.message.reply_to_message.message_id  # Reply to the reply of the received message.
+        actual_msg = update.message.reply_to_message.message_id  # Gets id of the replied message.
 
     else:
         actual_msg = update.message.message_id

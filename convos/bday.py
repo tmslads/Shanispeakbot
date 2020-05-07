@@ -44,7 +44,7 @@ def bday(update: Update, context: CallbackContext) -> int:  # CHOICE
 
 
 def bday_add_or_update(update: Update, context: CallbackContext) -> int:  # INPUT
-    """Changes or adds your birthday into our records."""
+    """Changes or adds the user's birthday into our records."""
 
     bday_date = update.message.text
 
