@@ -95,7 +95,7 @@ def timedout(context: CallbackContext) -> None:
     pp(context)
     leaderboard(context)  # Make the leaderboard
 
-    context.bot.send_photo(chat_id=group_ids['grade12'], photo=open('../leaderboard.png', 'rb'),
+    context.bot.send_photo(chat_id=group_ids['grade12'], photo=open('leaderboard.png', 'rb'),
                            caption="This is where you stand like you say")  # Send latest leaderboard
 
     logger(message=f"The leaderboard was just sent on the group.")

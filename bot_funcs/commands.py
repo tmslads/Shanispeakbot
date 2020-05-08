@@ -8,10 +8,10 @@ from helpers.logger import logger
 from helpers.namer import get_chat_name
 from online import util, quiz_scraper
 
-with open(r"../files/lad_words.txt", "r") as f:
+with open(r"files/lad_words.txt", "r") as f:
     prohibited = f.read().lower().split('\n')
 
-with open(r"../files/snake.txt", "r") as f:
+with open(r"files/snake.txt", "r") as f:
     snake_roast = f.read()
 
 swear_advice = ["Don't use such words. Okay, fine?", "Such language fails to hit the tarjit.",
