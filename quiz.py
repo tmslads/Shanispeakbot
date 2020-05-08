@@ -24,7 +24,9 @@ cwd = os.getcwd()
 
 
 def send_quiz(context: CallbackContext) -> None:
-    """Sends 5 quizzes to target chat (12B for now). Also sets a timer for 24 hours for quiz expiry (using jobs)."""
+    """
+    Sends 5 quizzes to target chat (tms group for now). Also sets a timer for 24 hours for quiz expiry (using jobs).
+    """
 
     global quizzes
 
@@ -43,7 +45,7 @@ def send_quiz(context: CallbackContext) -> None:
               "Because of the bad like you say situation I have kept this online quizizz now. Do fast okay.",
               "I'm sending these 5 questions now like. I want it to be done by tomorrow okay? Fast fast"]
 
-    context.bot.send_message(chat_id=group_ids['12b'], text=r.choice(starts))
+    context.bot.send_message(chat_id=group_ids['grade12'], text=r.choice(starts))
 
     # Get our questions, choices and answers from the web-
     while True:
@@ -53,13 +55,13 @@ def send_quiz(context: CallbackContext) -> None:
         except TypeError:  # If we get None (due to error), retry.
             pass
 
-    # Support sending quiz to 12B only for now-
+    # Support sending quiz to tms group only for now-
     for question, choice, answer in zip(questions, choices, answers):
-        quiz = context.bot.send_poll(chat_id=group_ids['12b'], question=question, options=choice, is_anonymous=False,
-                                     type=Poll.QUIZ, correct_option_id=answer, is_closed=False)
+        quiz = context.bot.send_poll(chat_id=group_ids['grade12'], question=question, options=choice,
+                                     is_anonymous=False, type=Poll.QUIZ, correct_option_id=answer, is_closed=False)
         quizzes.append(quiz)
 
-    logger(message=f"The 5 quizzes were just sent to 12B successfully.")
+    logger(message=f"The 5 quizzes were just sent to tms group successfully.")
 
     context.job_queue.run_once(callback=timedout, when=60 * 60 * 10, context=[quizzes])
     context.bot_data['last_quiz'] = right_now  # Save new time for last quiz
@@ -87,13 +89,13 @@ def timedout(context: CallbackContext) -> None:
     array = context.job.context[0]
 
     for index, quiz in enumerate(array):  # Stop all quizzes
-        context.bot.stop_poll(chat_id=group_ids['12b'], message_id=quiz.message_id)
+        context.bot.stop_poll(chat_id=group_ids['grade12'], message_id=quiz.message_id)
 
-    context.bot.send_chat_action(chat_id=group_ids['12b'], action='upload_photo')
+    context.bot.send_chat_action(chat_id=group_ids['grade12'], action='upload_photo')
     pp(context)
     leaderboard(context)  # Make the leaderboard
 
-    context.bot.send_photo(chat_id=group_ids['12b'], photo=open('leaderboard.png', 'rb'),
+    context.bot.send_photo(chat_id=group_ids['grade12'], photo=open('leaderboard.png', 'rb'),
                            caption="This is where you stand like you say")  # Send latest leaderboard
 
     logger(message=f"The leaderboard was just sent on the group.")
@@ -110,9 +112,9 @@ def timedout(context: CallbackContext) -> None:
         scold_names += mention + " "  # Add a whitespace after every name
 
     if to_scold:  # Send only if there is someone to scold!
-        context.bot.send_chat_action(chat_id=group_ids['12b'], action='typing')
+        context.bot.send_chat_action(chat_id=group_ids['grade12'], action='typing')
         sleep(2)
-        context.bot.send_message(chat_id=group_ids['12b'], text=scold_names + r.choice(scolds),
+        context.bot.send_message(chat_id=group_ids['grade12'], text=scold_names + r.choice(scolds),
                                  parse_mode=ParseMode.HTML)
 
     context.dispatcher.persistence.flush()
