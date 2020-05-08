@@ -113,7 +113,7 @@ updater.job_queue.run_repeating(morning_wisher.morning_goodness, 86400, first=1)
 updater.job_queue.run_repeating(inline.get_clips, 60, first=1)  # Have to re-fetch clips since links expire
 updater.job_queue.run_repeating(send_quiz, 604800, first=1)  # Send quiz to 12B weekly
 
-# data_view()
+data_view()
 
 updater.start_polling()
 updater.idle()

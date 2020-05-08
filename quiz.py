@@ -54,7 +54,6 @@ def send_quiz(context: CallbackContext) -> None:
             pass
 
     # Support sending quiz to 12B only for now-
-    # TODO: Change this back to 12B
     for question, choice, answer in zip(questions, choices, answers):
         quiz = context.bot.send_poll(chat_id=group_ids['12b'], question=question, options=choice, is_anonymous=False,
                                      type=Poll.QUIZ, correct_option_id=answer, is_closed=False)
@@ -166,13 +165,15 @@ def pp(context: CallbackContext) -> None:
 
     for user_id, value in context.bot_data['quizizz'].items():
         pic = context.bot.get_user_profile_photos(user_id=user_id, offset=0, limit=1)
-        if not pic:  # If user doesn't have a pp
+
+        if not pic.photos:  # If user doesn't have a pp
             value['profile_pic'] = "profile_pics/nobody.jpg"
+            continue
 
         first_pic = pic.photos[0][0]
         file_id = first_pic.file_id
 
-        file = context.bot.get_file(file_id=file_id)
+        file = context.bot.get_file(file_id=file_id, timeout=15)
         file.download(custom_path=value['profile_pic'])  # Dl's as jpg
 
     context.dispatcher.persistence.flush()
@@ -225,7 +226,12 @@ def add_image(name: str, x: float or int, y: float or int, offset: float, zoom: 
         zoom - Controls how big the image is.
     """
     # Open image as numpy array-
-    with get_sample_data(f"{cwd}/profile_pics/{name}.png") as file:
+    try:
+        pic_file = get_sample_data(f"{cwd}/profile_pics/{name}.png")
+    except FileNotFoundError:  # When user has no profile pic, or changed their dp privacy settings
+        pic_file = get_sample_data(f"{cwd}/profile_pics/nobody.png")
+
+    with pic_file as file:
         arr_img = plt.imread(file, format='jpg')
 
     image_box = OffsetImage(arr_img, zoom=zoom)  # zoom changes the size of the image
