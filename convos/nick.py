@@ -3,7 +3,7 @@ from telegram import KeyboardButton
 from telegram import ReplyKeyboardMarkup
 from telegram.ext import CallbackContext
 
-from commands import prohibited
+from bot_funcs.commands import prohibited
 from helpers.logger import logger
 from .start import markup, CHOICE
 

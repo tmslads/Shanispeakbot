@@ -7,10 +7,10 @@ from telegram.ext import (CommandHandler, ConversationHandler, InlineQueryHandle
 
 import inline
 from bot_funcs import media_reactor, morning_wisher, bday_wisher, conversation, delete_pin
-from commands import BotCommands as bc
+from bot_funcs.commands import BotCommands as bc
 from constants import shanibot
 from convos import bday, magic, nick, settings_gui, start
-from quiz import send_quiz, receive_answer
+from bot_funcs.quiz import send_quiz, receive_answer
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 

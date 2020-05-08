@@ -8,7 +8,7 @@ from telegram.ext import CallbackContext
 from textblob import TextBlob
 
 from chatbot import get_tags, shanisirbot
-from commands import prohibited
+from bot_funcs.commands import prohibited
 from helpers.db_connector import connection
 from helpers.logger import logger
 from helpers.namer import get_nick, get_chat_name
