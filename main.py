@@ -49,7 +49,7 @@ magicball_handler = ConversationHandler(
 
         ConversationHandler.TIMEOUT: [MessageHandler(filters=Filters.all, callback=magic.timedout)]},
 
-    fallbacks=[CommandHandler(command='cancel', callback=magic.cancel)], conversation_timeout=35)
+    fallbacks=[CommandHandler(command='cancel', callback=magic.cancel)], conversation_timeout=40)
 dp.add_handler(magicball_handler)
 
 # /tell conversation-
@@ -79,7 +79,7 @@ tell_handler = ConversationHandler(
     fallbacks=[MessageHandler(Filters.regex("^No, thank you sir$"), callback=bday.reject),
                CommandHandler("cancel", start.leave)],
 
-    name="/tell convo", persistent=True, allow_reentry=True, conversation_timeout=35)
+    name="/tell convo", persistent=True, allow_reentry=True, conversation_timeout=40)
 dp.add_handler(tell_handler)
 
 settings_gui_handler = ConversationHandler(

@@ -9,19 +9,20 @@ from helpers.logger import logger
 def morning_goodness(context: CallbackContext) -> None:
     """
     Send a "good morning" quote to the groups, along with a clip. This will only work if it has already been a
-    day since last good morning quote and is before 11am the next day.
+    day since last good morning quote and is between 8 and 11am the next day.
     """
 
     right_now = datetime.now()  # returns: Datetime obj
     afternoon = datetime(right_now.year, right_now.month, right_now.day, 11)  # 11am today
+    eight_am = datetime(right_now.year, right_now.month, right_now.day, 8)
 
     if 'last_sent' not in context.bot_data:
         context.bot_data['last_sent'] = right_now
 
     diff = right_now - context.bot_data['last_sent']
 
-    # Send only if it has been over a day and is before 11am next morning since last good morning message-
-    if diff.days < 1 or right_now >= afternoon:
+    # Send only if it has been over a day and is between 8 and 11am next morning since last good morning message-
+    if diff.days < 1 or right_now >= afternoon or right_now <= eight_am:
         return
 
     with open("files/good_mourning.txt", "r") as greetings:

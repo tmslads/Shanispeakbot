@@ -25,7 +25,8 @@ def magic8ball(update: Update, context: CallbackContext) -> int:
     context.bot.send_chat_action(chat_id=chat_id, action='typing')
     sleep(1)
     # Sends message with a force reply
-    context.bot.send_message(chat_id=chat_id, text=f"{r.choice(initiate)}🔮\nOr, type /cancel so I won't mind that",
+    context.bot.send_message(chat_id=chat_id, text=f"{r.choice(initiate)}🔮\nOr, type /cancel so I won't mind that\n"
+                                                   f"(Reply to this message for this to work!)",
                              reply_markup=ForceReply(force_reply=True, selective=True),
                              reply_to_message_id=update.message.message_id)
 
@@ -48,7 +49,7 @@ def thinking(update: Update, context: CallbackContext) -> int:
         logger(message=f"{update.effective_user.first_name} used /8ball in {get_chat_name(update)}"
                        f" and on {update.message.reply_to_message.from_user.first_name}'s message.")
 
-        actual_msg = update.message.reply_to_message.message_id  # Gets id of the replied message.
+        actual_msg = update.message.reply_to_message.message_id  # Gets the message id of the replied message.
 
     else:
         actual_msg = update.message.message_id

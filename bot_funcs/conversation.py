@@ -29,7 +29,19 @@ responses2 = ["it will be fruitful", "you will benefit", "that is the expected b
 JJ_RB = ["like you say", "like you speak"]  # For Adjectives or Adverbs
 
 
-def shanifier(update: Update, context: CallbackContext, is_group: bool = False, the_id=None) -> None:
+def shanifier(update: Update, context: CallbackContext, is_group: bool = False, the_id: int = None) -> None:
+    """
+    This function shanifies text using NLP (Natural Language Processing) and sends the resulting text to the
+    respective chat. It also writes the input and output to a file. Only private chat responses are 'learned' by the
+    bot for future use.
+
+    Args:
+        update (:obj:`Update`): Update object provided by Telegram.
+        context (:obj:'CallbackContext`): CallbackContext passed in by Python Telegram Bot.
+        is_group (:obj:`bool`, optional): Set to True, if received message is from a group. Default is `False`.
+        the_id (:obj:`int`, int): The message_id of the message to reply to in a chat.
+    """
+
     user = update.message.from_user
     full_name = user.full_name
     bot_username = context.bot.name  # Bot username with @
@@ -46,7 +58,7 @@ def shanifier(update: Update, context: CallbackContext, is_group: bool = False, 
 
     add_update_records(update, context)
 
-    context.bot.send_chat_action(chat_id=chat_id, action='typing')  # Sends 'typing...' status for 6 sec
+    context.bot.send_chat_action(chat_id=chat_id, action='typing')  # Sends 'typing...' status for 5 sec
 
     if bot_username in org_text:  # Sends response if bot is @'ed in group
         msg_text = re.sub(rf"(\s*){bot_username}(\s*)", ' ', org_text)  # Remove mention from text so response is better
@@ -57,17 +69,18 @@ def shanifier(update: Update, context: CallbackContext, is_group: bool = False, 
     reply_to, bot_msg, user_msg = get_response(update, text=msg_text)
 
     if not is_group:
-        shanisirbot.learn_response(user_msg, bot_response)
-        chat_type = "(PRIVATE)"
+        shanisirbot.learn_response(user_msg, bot_response)  # Learn response if it is not in a group
+        chat_type = "(PRIVATE)"  # This is assigned only for interactions.txt
 
     else:
         chat_type = f"(GROUP: {update.effective_chat.title})"
 
     punctuation = r"""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
-    bot_msg = ''.join(c for c in bot_msg if c not in punctuation)
-    blob = TextBlob(bot_msg)
+    bot_msg = ''.join(c for c in bot_msg if c not in punctuation)  # Strips punctuation from text
+    blob = TextBlob(bot_msg)  # Make a blob object
     cleaned = blob.words  # Returns list with no punctuation marks
 
+    # Begin shanifying text-
     if len(cleaned) < 20:
         lydlim = 1  # to limit the number of times we add
         JJ_RBlim = 1  # lyd and JJ_RB
@@ -96,14 +109,13 @@ def shanifier(update: Update, context: CallbackContext, is_group: bool = False, 
 
     if r.choice([0, 1]):
         if r.choice([0, 1]):
-            cleaned.append(r.choice(responses1))
-        else:
-            cleaned.append(r.choice(responses2))
+            cleaned.append(r.choice(responses1 + responses2))
         cleaned.insert(0, name)
-    else:
+
+    elif r.choice([0, 1]):
         cleaned.append(name)
 
-    if len(cleaned) < 5:  # Will run if input is too short
+    if len(cleaned) < 4 and r.choice([False, True]):  # Might run if input is too short
         cleaned.append(r.choice(["*draws perfect circle*", "*scratches nose*"]))
 
     if re.search('when|time', ' '.join(cleaned), flags=re.IGNORECASE):
@@ -114,12 +126,12 @@ def shanifier(update: Update, context: CallbackContext, is_group: bool = False, 
             cleaned.append(r.choice(list(emoji.UNICODE_EMOJI)))  # Adds a random emoji
 
     shanitext = ' '.join(cleaned)
-    shanitext = shanitext[0].upper() + shanitext[1:]
+    shanitext = shanitext[0].upper() + shanitext[1:]  # Make only first letter capital
 
     inp = f"UTC+0 {today} {chat_type} {reply_to} {full_name} ({user.username}) SAID: {msg_text}\n"
     out = shanitext
 
-    context.bot.send_message(chat_id=chat_id, text=out, reply_to_message_id=the_id)  # Sends message
+    context.bot.send_message(chat_id=chat_id, text=out, reply_to_message_id=the_id)  # Sends message to respective chat
     logger(message=f"\nThe input by {full_name} to the bot in {get_chat_name(update)} was:\n{msg_text}"
                    f"\n\n\nThe output by the bot was:\n{out}")
 
@@ -129,8 +141,13 @@ def shanifier(update: Update, context: CallbackContext, is_group: bool = False, 
 
 
 def reply(update: Update, context: CallbackContext) -> None:
+    """
+    This function checks if the user is replying to a message of this bot in a group, if it is, it sends a reply
+    to that person. Same behaviour applies for this bot mentions in replies (reply to anyone, not just this bot).
+    """
+
     text = update.message.text
-    if update.message.reply_to_message.from_user.username == context.bot.username:  # If the reply is to a bot:
+    if update.message.reply_to_message.from_user.username == context.bot.username:  # If the reply is to this bot:
         if not (text.startswith('!r') or text.endswith('!r')):  # Don't reply if this is prepended or appended.
             logger(message=f"Bot received a reply from {update.effective_user.first_name} in "
                            f"{update.effective_chat.title}.")
@@ -141,7 +158,10 @@ def reply(update: Update, context: CallbackContext) -> None:
 
 
 def group(update: Update, context: CallbackContext) -> None:
-    """Checks for profanity in messages and responds to that."""
+    """
+    Checks for profanity in messages and responds to that. Also checks if the bot was mentioned in the chat,
+    if it was, replies to that message.
+    """
 
     chat_id = update.effective_chat.id
     text = update.message.text
@@ -163,14 +183,28 @@ def group(update: Update, context: CallbackContext) -> None:
             logger(message=f"{update.effective_user.first_name} used profane language in {get_chat_name(update)}."
                            f"\nThe rebuke by the bot was: '{out}'.")
 
-    elif context.bot.name in text:
+    elif context.bot.name in text:  # If username was mentioned in group chat, reply to it.
         shanifier(update, context, is_group=True, the_id=update.message.message_id)
 
 
 def get_response(update: Update, text: str) -> (str, str, str):
+    """
+    This function fetches an appropriate response (hopefully) using the chatterbot module. Responses are fetched from a
+    database based on the text provided.
+
+    Args:
+        update (:obj:`Update`): Update object provided by Telegram.
+        text (:obj:`str`): The text message to get a response from. Eg: 'Hi', 'How was your day?', etc.
+
+    Returns:
+        reply_to (:obj:`str`): The message to which the response is a reply to. Used only for interactions.txt
+        bot_msg (:obj:`str`): The response of the bot to the message sent by the user.
+        user_msg (:obj:`str`): Message sent by the user to the bot.
+    """
+
     global bot_response
 
-    if bot_response is None:
+    if bot_response is None:  # Will be None when bot is first started
         search_in_response_text = None
     else:
         search_in_response_text = get_tags(bot_response.text)
@@ -200,6 +234,11 @@ def get_response(update: Update, text: str) -> (str, str, str):
 
 
 def add_update_records(update: Update, context: CallbackContext) -> None:
+    """
+    This function adds or updates the user's information (username, full name, user id) to the chat_data and
+    user_data objects.
+    """
+
     chat_id = update.effective_chat.id
     user = update.message.from_user
     full_name = user.full_name
@@ -227,5 +266,4 @@ def add_update_records(update: Update, context: CallbackContext) -> None:
     elif chat_id not in context.chat_data['chat_ids']:  # Gets chat id of the user in which they have talked to the bot
         context.chat_data['chat_ids'].append(chat_id)
 
-    context.dispatcher.persistence.update_user_data(user.id, context.user_data)
-    context.dispatcher.persistence.update_chat_data(chat_id, context.chat_data)
+    context.dispatcher.persistence.flush()
