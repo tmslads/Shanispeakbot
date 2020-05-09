@@ -11,16 +11,16 @@ sql_table = """
             CREATE TABLE IF NOT EXISTS CHAT_SETTINGS(
                 CHAT_ID INTEGER PRIMARY KEY,
                 CHAT_NAME TEXT,
-                MORNING_MSGS BOOLEAN,
+                MORNING_MSGS TEXT,
                 MEDIA_PROB DECIMAL(2,1),
                 PROFANE_PROB DECIMAL(2,1)
             );
             """
 
 # Websites to scrape from-
-_DOWNLOAD = "https://raw.githubusercontent.com"
-_LINK = "https://github.com/tmslads/Shanisirmodule/tree/master/Assets/clips"
-URL = 'http://randomfactgenerator.net/'  # To be scraped for facts()
+LINK = "https://api.github.com/repos/tmslads/shanisirmodule/contents/Assets/clips"
+FACT_URL = 'http://randomfactgenerator.net/'  # To be scraped for facts()
+QUIZ_URL = "https://www.onlinegk.com/general-knowledge/gk-question-answers/physics"
 
 # Bot usernames-
 shanibot = "@shanisirbot"

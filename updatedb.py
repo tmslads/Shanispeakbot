@@ -1,13 +1,11 @@
 import os
 import sqlite3
 
-import main
+from chatbot import get_tags
 
 os.chdir(r"C:\Users\Uncle Sam\Desktop\sthyaVERAT\4 FUN ya Practice\Shani-Sir-Telegram-Bot")
 connection = sqlite3.connect('dbtest.sqlite3')
 c = connection.cursor()
-
-get_tags = main.chatbot.shanisirbot.storage.tagger.get_bigram_pair_string
 
 c.execute("SELECT id FROM statement;")
 results = c.fetchall()
@@ -16,7 +14,8 @@ ids = [result[0] for result in results]
 
 for ID in ids:
     c.execute("SELECT * FROM statement WHERE id = ?", (ID,))
-    record = c.fetchall()[0]  # record format: (id, text, search_text, conversation, created_at, in_response_to, search_in_response_to, persona)
+    # record format: (id, text, search_text, conversation, created_at, in_response_to, search_in_response_to, persona)
+    record = c.fetchall()[0]
 
     text = record[1]
     in_response_to = record[5]

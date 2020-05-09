@@ -1,31 +1,33 @@
 # Connection to 12B class calendar, using Google Calendar API
-
 import datetime
 import os.path
 import pickle
 from datetime import date
 from datetime import timedelta
+from typing import Tuple, Union
 
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
+from helpers.logger import logger
+
+
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
-service = None
 
 
 class CalendarEventManager(object):
-    def __init__(self, name: str, date: datetime.date = None) -> None:
+    def __init__(self, name: str, _date: datetime.date = None) -> None:
         """
 
         :param name: Name of the person's whose birthday it is
-        :param date: Date of that person's birthday
+        :param _date: Date of that person's birthday
 
         """
 
         self.name = name
-        self.date = date
+        self.date = _date
 
         # self.formatted = formatter(self.date)
         self.event = {
@@ -56,7 +58,7 @@ class CalendarEventManager(object):
             raise ValueError("Date must be specified!")
 
         event = service.events().insert(calendarId='primary', body=self.event).execute()
-        print("Inserted")
+        logger(message=f"{self.event['summary']} was added.")
 
     def update_event(self, new_date: datetime.datetime):
         """
@@ -64,9 +66,6 @@ class CalendarEventManager(object):
         class instance.
         """
         # Get event id of the event to be modified
-        print(new_date)
-        print(self.name)
-
         events = service.events().list(calendarId='primary').execute()
 
         for event in events['items']:
@@ -75,17 +74,17 @@ class CalendarEventManager(object):
                 self.event['start']['date'] = f"{formatter(new_date)}"
                 self.event['end']['date'] = f"{formatter(new_date + timedelta(days=1))}"
 
-                print("Updated dates in the event.")
                 updated_event = service.events().update(calendarId='primary', eventId=event['id'],
                                                         body=self.event).execute()
 
-                print(f"Successfully updated {self.name}'s birthday: {updated_event['start']['date']}")
+                logger(f"Successfully updated {self.name}'s birthday: {updated_event['start']['date']}.")
+
                 break
         else:
             raise ValueError("Event not found")
 
 
-def formatter(date: datetime.date, days: int = 0, format_style=""):
+def formatter(today: datetime.date, days: int = 0, format_style: str = "") -> Union[str, None]:
     """
     Formats the date and returns it in the form used in the Google Calendar API. Adds 'days' no. of days to the date
     if 'days' parameter is specified.
@@ -93,22 +92,22 @@ def formatter(date: datetime.date, days: int = 0, format_style=""):
     Args:
         :param format_style: If specified, type 'DD/MM' to format it in that way.
         :param days: Number of days to add to the date.
-        :param date: A datetime object
+        :param today: A datetime object
 
     """
 
-    if isinstance(date, datetime.datetime):
+    if isinstance(today, datetime.datetime):
         if days != 0:
-            date += timedelta(days=days)
+            today += timedelta(days=days)
 
         if format_style == "DD/MM":
-            return date.strftime("%d/%m")
+            return today.strftime("%d/%m")
 
-        return date.strftime("%Y-%m-%d")
+        return today.strftime("%Y-%m-%d")
     return
 
 
-def get_next_bday():
+def get_next_bday() -> Tuple[int, str]:
     """
     Fetches a birthday from google calendar (12B only) and returns the number of days till the next birthday of a
     person along with their name.
@@ -141,7 +140,7 @@ def get_next_bday():
     return next_bday  # Returns lowest (i.e. next bday) in the calendar
 
 
-def main():
+def main() -> None:
     """
     Sets up the Google Calendar API for easy use.
     """
@@ -168,9 +167,6 @@ def main():
             pickle.dump(creds, token)
 
     service = build('calendar', 'v3', credentials=creds)
-
-    # Call the Calendar API
-    now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
 
 
 if __name__ == '__main__':

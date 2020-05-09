@@ -1,10 +1,14 @@
 import random as r
 import sqlite3
+from typing import Union
 
-from telegram import (InlineKeyboardMarkup, InlineKeyboardButton)
+from telegram import (InlineKeyboardMarkup, InlineKeyboardButton, Update)
 from telegram.error import BadRequest
+from telegram.ext import CallbackContext
 
 from constants import samir, harshil, sql_table
+from helpers.logger import logger
+from helpers.namer import get_nick, get_chat_name
 
 CURRENT_SETTINGS, UPDATED, PROBABILITY = range(3)
 
@@ -32,7 +36,7 @@ prob_buttons = [[InlineKeyboardButton(text="🔙 Back", callback_data="Back")],
 prob_markup = InlineKeyboardMarkup(prob_buttons)
 
 
-def start(update, context):
+def start(update: Update, context: CallbackContext) -> int:
     """
     Called when user uses /settings. If it is the first time using it, it creates and uses default bot settings.
     Can only be used in groups where user is admin, or in private chats.
@@ -58,9 +62,11 @@ def start(update, context):
                                      reply_to_message_id=update.message.message_id)
             return -1  # Stop convo since a regular user called /settings
 
+    logger(message=f"/settings", command=True, update=update)
+
     conn = sqlite3.connect('./files/bot_settings.db')
     c = conn.cursor()
-    name = namer(update, context)
+    name = get_nick(update, context)
 
     c.executescript(sql_table)  # If table is not made
     conn.commit()
@@ -78,22 +84,13 @@ def start(update, context):
 
     # Sends the current settings applied-
     if update.callback_query is None:
-        context.bot.send_message(chat_id=chat_id, text=setting_msg(update),
-                                 reply_markup=setting_markup, parse_mode="MarkdownV2")
+        context.bot.send_message(chat_id=chat_id, text=setting_msg(update), reply_markup=setting_markup,
+                                 parse_mode="MarkdownV2")
 
     return UPDATED
 
 
-def namer(update, context) -> str:
-    """Helper function to get name of private/group chat."""
-
-    name = update.effective_chat.title
-    if name is None:
-        name = update.effective_chat.first_name
-    return name
-
-
-def setting_msg(update, swap: bool = False):
+def setting_msg(update, swap: bool = False) -> str:
     """Helper function to modify or create the /settings menu message."""
 
     global msg, media_prob, profane_prob, morn_setting
@@ -116,12 +113,12 @@ def setting_msg(update, swap: bool = False):
 
     msg = "See is this the expected behaviour?\n\n" \
           r"1\. _Media reactions:_ " + f"{media_pct}\n" \
-          r"2\. _Profanity reactions:_ " + f"{profane_pct}\n" \
-          r"3\. _Morning quotes:_ " + f"{morn_setting}\n"
+                                       r"2\. _Profanity reactions:_ " + f"{profane_pct}\n" \
+                                                                        r"3\. _Morning quotes:_ " + f"{morn_setting}\n"
     return msg
 
 
-def prob_message(update, kind: str, column: str) -> [None, str]:
+def prob_message(update, kind: str, column: str) -> Union[None, str]:
     """Helper function to show current probability of corresponding setting."""
 
     chat_id = update.effective_chat.id
@@ -137,7 +134,7 @@ def prob_message(update, kind: str, column: str) -> [None, str]:
     return prob_msg
 
 
-def prob_updater(update, context):  # PROBABILITY
+def prob_updater(update: Update, context: CallbackContext) -> int:  # PROBABILITY
     """Updates probability when buttons are pressed. Also instantly saves those values in the database."""
     global media_prob, profane_prob
 
@@ -190,7 +187,7 @@ def prob_updater(update, context):  # PROBABILITY
     return PROBABILITY
 
 
-def change_prob(update, context):  # UPDATED
+def change_prob(update: Update, _: CallbackContext) -> int:  # UPDATED
     """
     This is run when the user clicks button to change the probability. It is common for both profanity and media
     reactions.
@@ -199,7 +196,6 @@ def change_prob(update, context):  # UPDATED
     global _type, media_prob, profane_prob
 
     data = update.callback_query.data
-    chat_id = update.effective_chat.id
 
     if data == "MEDIA_PROB":
         _type = "media"
@@ -212,7 +208,7 @@ def change_prob(update, context):  # UPDATED
     return PROBABILITY
 
 
-def morn_swap(update, context):  # UPDATED
+def morn_swap(update: Update, context: CallbackContext) -> int:  # UPDATED
     """Used to swap states of morning quotes."""
 
     global morn_setting
@@ -224,7 +220,7 @@ def morn_swap(update, context):  # UPDATED
     return UPDATED
 
 
-def go_back(update, context):  # PROBABILITY
+def go_back(update: Update, _: CallbackContext) -> int:  # PROBABILITY
     """Goes back to main menu."""
 
     update.callback_query.edit_message_text(text=setting_msg(update), reply_markup=setting_markup,
@@ -233,7 +229,7 @@ def go_back(update, context):  # PROBABILITY
     return UPDATED
 
 
-def save(update, context):  # UPDATED
+def save(update: Update, _: CallbackContext) -> int:  # UPDATED
     """Called when user clicks save. Saves all applied settings into database."""
 
     global morn_setting
@@ -250,13 +246,16 @@ def save(update, context):  # UPDATED
     update.callback_query.edit_message_text(text=r.choice(responses) + f"\n\n{r.choice(confirmations)}\n" + msg[36:],
                                             parse_mode="MarkdownV2")
 
+    logger(message=f"{update.effective_user.first_name} just updated {get_chat_name(update)}'s settings to:\n"
+                   f"Media={media_prob}, Profanity={profane_prob}, Morning quotes={morn_setting}.")
+
     c.execute(f"UPDATE CHAT_SETTINGS SET MORNING_MSGS='{morn_setting}' WHERE CHAT_ID={chat_id};")
     conn.commit()
 
     # Checks if group name has changed, if it did, updates in db-
     c.execute(f"SELECT CHAT_NAME FROM CHAT_SETTINGS WHERE CHAT_ID={chat_id};")  # Gets name from db
     result = c.fetchone()
-    name = namer(update, context)  # Gets name of chat
+    name = get_chat_name(update)  # Gets name of chat
 
     if name != result[0]:  # If the name is not the same, update it in db
         c.execute(f"UPDATE CHAT_SETTINGS SET CHAT_NAME='{name}' WHERE CHAT_ID={chat_id};")
