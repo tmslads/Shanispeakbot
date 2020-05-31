@@ -109,7 +109,7 @@ dp.add_handler(MessageHandler(Filters.private & Filters.text & ~ edit_filter, co
 dp.add_handler(MessageHandler(Filters.command, bc.unknown))
 
 updater.job_queue.run_repeating(bday_wisher.wish, 86400, first=1)  # Runs every time script is started, and once a day.
-updater.job_queue.run_repeating(morning_wisher.morning_goodness, 86400, first=1)
+updater.job_queue.run_repeating(morning_wisher.morning_goodness, 60**3, first=1)
 updater.job_queue.run_repeating(inline.get_clips, 60, first=1)  # Have to re-fetch clips since links expire
 updater.job_queue.run_repeating(send_quiz, 604800, first=1)  # Send quiz to 12B weekly
 

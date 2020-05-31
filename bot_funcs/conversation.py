@@ -15,18 +15,18 @@ from helpers.namer import get_nick, get_chat_name
 
 bot_response = None
 
-rebukes = ["This is not the expected behaviour", "I don't want you to talk like that", "Expand your vocabulary now",
+rebukes = ("This is not the expected behaviour", "I don't want you to talk like that", "Expand your vocabulary now",
            "Bad language is not allowed okay", "See this is not my policy", "This is not a fruitful conversation",
-           "This language is embarrassingassing to me like basically"]
+           "This language is embarrassingassing to me like basically")
 
-responses1 = ["I am so sowry", "I don't want to talk like that", "it is embarrassing to me like basically",
-              "it's not to trouble you like you say", "go for the worksheet", "it's not that hard"]
+responses1 = ("I am so sowry", "I don't want to talk like that", "it is embarrassing to me like basically",
+              "it's not to trouble you like you say", "go for the worksheet", "it's not that hard")
 
-responses2 = ["it will be fruitful", "you will benefit", "that is the expected behaviour",
+responses2 = ("it will be fruitful", "you will benefit", "that is the expected behaviour",
               "now you are on the track like", "now class is in the flow like", "don't press the jockey",
-              "aim to hit the tarjit"]
+              "aim to hit the tarjit")
 
-JJ_RB = ["like you say", "like you speak"]  # For Adjectives or Adverbs
+JJ_RB = ("like you say", "like you speak")  # For Adjectives or Adverbs
 
 
 def shanifier(update: Update, context: CallbackContext, is_group: bool = False, the_id: int = None) -> None:
@@ -97,12 +97,12 @@ def shanifier(update: Update, context: CallbackContext, is_group: bool = False, 
             cleaned.insert(index + 1, "(if the laws of physics allow it)")
             flag = 1
 
-        if tag in ['JJ', 'JJR', 'JJS', 'RB', 'RBR', 'RBS'] and JJ_RBcount < JJ_RBlim:  # Adjective or Adverb
+        if tag in ('JJ', 'JJR', 'JJS', 'RB', 'RBR', 'RBS') and JJ_RBcount < JJ_RBlim:  # Adjective or Adverb
             cleaned.insert(index + 1, r.choice(JJ_RB))
             JJ_RBcount += 1
             temp = index
 
-        elif tag in ['VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ'] and lydcount < lydlim:  # Verb
+        elif tag in ('VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ') and lydcount < lydlim:  # Verb
             cleaned.insert(index + 1, "like you do")
             lydcount += 1
             temp = index
@@ -116,7 +116,7 @@ def shanifier(update: Update, context: CallbackContext, is_group: bool = False, 
         cleaned.append(name)
 
     if len(cleaned) < 4 and r.choice([False, True]):  # Might run if input is too short
-        cleaned.append(r.choice(["*draws perfect circle*", "*scratches nose*"]))
+        cleaned.append(r.choice(("*draws perfect circle*", "*scratches nose*")))
 
     if re.search('when|time', ' '.join(cleaned), flags=re.IGNORECASE):
         cleaned.insert(-1, 'decide a date')
@@ -156,6 +156,8 @@ def reply(update: Update, context: CallbackContext) -> None:
     elif context.bot.name in text:
         shanifier(update, context, is_group=True, the_id=update.message.message_id)
 
+    del text
+
 
 def group(update: Update, context: CallbackContext) -> None:
     """
@@ -185,6 +187,8 @@ def group(update: Update, context: CallbackContext) -> None:
 
     elif context.bot.name in text:  # If username was mentioned in group chat, reply to it.
         shanifier(update, context, is_group=True, the_id=update.message.message_id)
+
+    del chat_id, text
 
 
 def get_response(update: Update, text: str) -> (str, str, str):

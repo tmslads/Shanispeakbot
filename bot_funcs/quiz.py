@@ -40,10 +40,10 @@ def send_quiz(context: CallbackContext) -> None:
         print("Not enough days for next quiz!")
         return
 
-    starts = ["See I'm keeping one quizizz now okay. You have one day to finish. For boards ok. I want everyone to do "
+    starts = ("See I'm keeping one quizizz now okay. You have one day to finish. For boards ok. I want everyone to do "
               "it that's it.", "I have kept one quizizz now. I expect something okay.",
               "Because of the bad like you say situation I have kept this online quizizz now. Do fast okay.",
-              "I'm sending these 5 questions now like. I want it to be done by tomorrow okay? Fast fast"]
+              "I'm sending these 5 questions now like. I want it to be done by tomorrow okay? Fast fast")
 
     context.bot.send_message(chat_id=group_ids['grade12'], text=r.choice(starts))
 
@@ -72,7 +72,7 @@ def timedout(context: CallbackContext) -> None:
     """Closes quiz when the time limit is over. Also scolds people if they got 3 or more answers wrong in the quiz."""
 
     to_scold = []
-    scolds = ["See if this is troubling you, you can come and get help from me directly okay?",
+    scolds = ("See if this is troubling you, you can come and get help from me directly okay?",
               "Now I didn't expect thaaat level. See this is counted for the term exam okay",
               "This is for you okay? This is for you to see your level. Aim to hit the tarjit",
               "It's not that hard I expected something but I didn't know this level",
@@ -81,7 +81,7 @@ def timedout(context: CallbackContext) -> None:
               "This is like you say embarrassing to me. You have to put effort and work towards the boards now",
               "That's it. I am telling mudassir sir now. Just tell me what's the confusion.",
               "Are you fine? Physics is easy what's the problem like",
-              "You are troubling me. See I just wanted to be in the right direction nothing else I mean okay?"]
+              "You are troubling me. See I just wanted to be in the right direction nothing else I mean okay?")
 
     scold_names = ""
 
@@ -110,6 +110,7 @@ def timedout(context: CallbackContext) -> None:
     for _id, name in to_scold:
         mention = mention_html(user_id=_id, name=name)  # Get their mention in html
         scold_names += mention + " "  # Add a whitespace after every name
+        logger(message=f"{name} is going to be scolded.")
 
     if to_scold:  # Send only if there is someone to scold!
         context.bot.send_chat_action(chat_id=group_ids['grade12'], action='typing')
@@ -175,7 +176,7 @@ def pp(context: CallbackContext) -> None:
         first_pic = pic.photos[0][0]
         file_id = first_pic.file_id
 
-        file = context.bot.get_file(file_id=file_id, timeout=15)
+        file = context.bot.get_file(file_id=file_id, timeout=15)  # Need a long timeout as it can take time to dl it.
         file.download(custom_path=value['profile_pic'])  # Dl's as jpg
 
     context.dispatcher.persistence.flush()

@@ -17,10 +17,10 @@ def magic8ball(update: Update, context: CallbackContext) -> int:
     chat_id = update.effective_chat.id
     name = get_nick(update, context)
 
-    initiate = ["If you have a doubt, just type it here",
+    initiate = ("If you have a doubt, just type it here",
                 f"{name}, are you confused? Ask me and I'll search for some sow...so..solutions"
                 " okay?", "I can predict the future like you say . Just ask me. I'm just trying to find you option",
-                "Fast fast no time ask me!", "See tell me what's the confusion", f"Yes {name}?"]
+                "Fast fast no time ask me!", "See tell me what's the confusion", f"Yes {name}?")
 
     context.bot.send_chat_action(chat_id=chat_id, action='typing')
     sleep(1)
@@ -31,6 +31,8 @@ def magic8ball(update: Update, context: CallbackContext) -> int:
                              reply_to_message_id=update.message.message_id)
 
     logger(message=f"/8ball", command=True, update=update)
+
+    del chat_id, name
 
     return PROCESSING  # Will go into first (and only) state in convo handler in main.py
 
@@ -54,17 +56,17 @@ def thinking(update: Update, context: CallbackContext) -> int:
     else:
         actual_msg = update.message.message_id
 
-    thoughts = ["See I'm spending time because your question normally comes mistake", "*scratching nose*", "Uhmmm",
-                "Ok, there is one option", "*sniffs*", "What you say like"]
+    thoughts = ("See I'm spending time because your question normally comes mistake", "*scratching nose*", "Uhmmm",
+                "Ok, there is one option", "*sniffs*", "What you say like")
 
-    answers = ["No no I'm sure not", "I don't want to tell you like you say", "I don't know like",
+    answers = ("No no I'm sure not", "I don't want to tell you like you say", "I don't know like",
                f"No {name}, I'm so sowry", "Obviously like you say", r"Yes\. No other option like",
                "I didn't say wrong, I don't know", "See just do the worksheet no other importance of the situation",
                "This may be hard, but I think no okay?", "The laws of physics say yes 😄", f"Yes yes", "Maybe okay?",
                "Ah yea", "My feeling says no, now I feel very bad I told you like that",
                "That's not my policy I'm not answering",
                "See don't waste my time like you say with these easy questions okay, fine?",
-               f"The universe says yes {name}", "That's going to be broken now", "Sorry no idea"]
+               f"The universe says yes {name}", "That's going to be broken now", "Sorry no idea")
 
     thought = r.choice(thoughts)
     answer = r.choice(answers)
@@ -85,6 +87,7 @@ def thinking(update: Update, context: CallbackContext) -> int:
         sleep(1)  # So all of this doesn't happen instantly and is visible to user
         context.bot.edit_message_text(chat_id=chat_id, message_id=msg_sent.message_id, text=f"{text}",
                                       parse_mode='MarkdownV2')  # Edits message sent by bot accordingly
+    del thought, answer, seconds, name, chat_id
 
     return -1  # End of conversation
 

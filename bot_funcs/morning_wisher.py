@@ -41,7 +41,7 @@ def morning_goodness(context: CallbackContext) -> None:
 
     # Open mp3 from desktop as github url doesn't support thumbnails-
 
-    clip_loc = r"C:/Users/Uncle Sam/Desktop/sthyaVERAT/4 FUN ya Practice/Shanisirmodule/Assets/clips/good mourning.mp3"
+    clip_loc = r"C:/Users/aarti/Documents/Python stuff/Bored/Shanisirmodule/Assets/clips/good mourning.mp3"
 
     for chat_id, chat_name in ids:
         try:
@@ -55,6 +55,7 @@ def morning_goodness(context: CallbackContext) -> None:
             logger(message=f"Today's morning audio was just sent to {chat_name}.")
 
             context.bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id, disable_notification=True)
+            del msg
 
         except Exception as e:  # When chat is private, no rights to pin message, or if bot was removed.
             logger(message=f"There was an error for {chat_name} due to: {e}.")
@@ -62,3 +63,5 @@ def morning_goodness(context: CallbackContext) -> None:
     context.bot_data['last_sent'] = datetime(right_now.year, right_now.month, right_now.day, 8)  # Set it as 8AM today
     context.dispatcher.persistence.update_bot_data(context.bot_data)
     logger(message="The last_sent object was successfully updated to 8AM today.")
+
+    del right_now, afternoon, eight_am, diff, greeting, query, ids, clip_loc
