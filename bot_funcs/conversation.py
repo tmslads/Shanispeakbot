@@ -5,7 +5,7 @@ import chatterbot
 import emoji
 from telegram import Update
 from telegram.ext import CallbackContext
-from textblob import TextBlob
+import spacy
 
 from chatbot import get_tags, shanisirbot
 from bot_funcs.commands import prohibited
@@ -75,57 +75,57 @@ def shanifier(update: Update, context: CallbackContext, is_group: bool = False, 
     else:
         chat_type = f"(GROUP: {update.effective_chat.title})"
 
-    punctuation = r"""!"#$%&'()*+,-./:;<=>?@[\]^_`{|}~"""
-    bot_msg = ''.join(c for c in bot_msg if c not in punctuation)  # Strips punctuation from text
-    blob = TextBlob(bot_msg)  # Make a blob object
-    cleaned = blob.words  # Returns list with no punctuation marks
+    nlp = spacy.load("en_core_web_sm")
+    sentence = nlp(bot_msg)
+
+    word_list = [word.text for word in sentence]  # Get words used in the sentence
 
     # Begin shanifying text-
-    if len(cleaned) < 20:
+    if len(word_list) < 20:
         lydlim = 1  # to limit the number of times we add
         JJ_RBlim = 1  # lyd and JJ_RB
     else:
-        lydlim = len(cleaned) // 20
-        JJ_RBlim = len(cleaned) // 20
+        lydlim = len(word_list) // 20
+        JJ_RBlim = len(word_list) // 20
 
-    for word, tag in blob.tags:  # returns list of tuples which tells the POS
-        index = cleaned.index(word)
+    for index, word in enumerate(sentence):  # returns list of tuples which tells the POS
         if index - temp < 7:  # Do not add lad things too close to each other
             continue
 
-        if tag == 'MD' and not flag:  # Modal
-            cleaned.insert(index + 1, "(if the laws of physics allow it)")
+        if word.tag_ == 'MD' and not flag:  # Modal
+            word_list.insert(index + 1, "(if the laws of physics allow it)")
             flag = 1
 
-        if tag in ('JJ', 'JJR', 'JJS', 'RB', 'RBR', 'RBS') and JJ_RBcount < JJ_RBlim:  # Adjective or Adverb
-            cleaned.insert(index + 1, r.choice(JJ_RB))
+        if word.tag_ in ('JJ', 'JJR', 'JJS', 'RB', 'RBR', 'RBS') and JJ_RBcount < JJ_RBlim:  # Adjective or Adverb
+            word_list.insert(index + 1, r.choice(JJ_RB))
             JJ_RBcount += 1
             temp = index
 
-        elif tag in ('VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ') and lydcount < lydlim:  # Verb
-            cleaned.insert(index + 1, "like you do")
+        elif word.tag_ in ('VB', 'VBD', 'VBG', 'VBN', 'VBP', 'VBZ') and lydcount < lydlim:  # Verb
+            word_list.insert(index + 1, "like you do")
             lydcount += 1
             temp = index
 
     if r.choice([0, 1]):
         if r.choice([0, 1]):
-            cleaned.append(r.choice(responses1 + responses2))
-        cleaned.insert(0, name)
+            word_list.append(r.choice(responses1 + responses2))
+        word_list.insert(0, name)
 
     elif r.choice([0, 1]):
-        cleaned.append(name)
+        word_list.append(f"{name}.")
 
-    if len(cleaned) < 4 and r.choice([False, True]):  # Might run if input is too short
-        cleaned.append(r.choice(("*draws perfect circle*", "*scratches nose*")))
+    if len(word_list) < 5 and r.choice([False, True]):  # Might run if input is too short
+        word_list.append(r.choice(("*draws perfect circle*", " *scratches nose*")))
 
-    if re.search('when|time', ' '.join(cleaned), flags=re.IGNORECASE):
-        cleaned.insert(-1, 'decide a date')
+    if re.search('when|time', ' '.join(word_list), flags=re.IGNORECASE):
+        word_list.append('decide a date')
 
     for word in update.message.text:
         if word in emoji.UNICODE_EMOJI:  # Checks if emoji is present in message
-            cleaned.append(r.choice(list(emoji.UNICODE_EMOJI)))  # Adds a random emoji
+            word_list.append(r.choice(list(emoji.UNICODE_EMOJI)))  # Adds a random emoji
 
-    shanitext = ' '.join(cleaned)
+    shanitext = re.sub(r" (?=[.!,:;?])", '', ' '.join(word_list))  # Remove spaces before .!,:;?
+    shanitext = re.sub("\sn'", "n'", shanitext)  # Remove spaces before contractions
     shanitext = shanitext[0].upper() + shanitext[1:]  # Make only first letter capital
 
     inp = f"UTC+0 {today} {chat_type} {reply_to} {full_name} ({user.username}) SAID: {msg_text}\n"
@@ -269,5 +269,8 @@ def add_update_records(update: Update, context: CallbackContext) -> None:
 
     elif chat_id not in context.chat_data['chat_ids']:  # Gets chat id of the user in which they have talked to the bot
         context.chat_data['chat_ids'].append(chat_id)
+
+    if "chat_name" not in context.chat_data:
+        context.chat_data['chat_name'] = get_chat_name(update)
 
     context.dispatcher.persistence.flush()

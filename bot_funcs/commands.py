@@ -144,18 +144,14 @@ class BotCommands:
 
         logger(update=update, message=f"/quizizz", command=True)
 
-        while True:
-            try:
-                questions, choices, answers = quiz_scraper.quiz_maker()
-                break
-            except TypeError:  # If we get None (due to error) back, retry.
-                logger(message="There was a problem getting the questions, trying again.", warning=True)
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
 
-        question = questions[0]
-        options = choices[0]
-        answer = answers[0]
-        context.bot.send_poll(chat_id=update.effective_chat.id, question=question, options=options, is_anonymous=False,
-                              type=Poll.QUIZ, correct_option_id=answer)
+        question, options, answer = quiz_scraper.quiz_maker_v2(number=1)
+
+        logger(message=f"The question was: {question[0]}\n\n" + '\n'.join(options[0]) + f"\n\nAnswer:{answer[0]}")
+
+        context.bot.send_poll(chat_id=update.effective_chat.id, question=question[0], options=options[0],
+                              is_anonymous=False, type=Poll.QUIZ, correct_option_id=answer[0])
 
     @staticmethod
     def unknown(update: Update, context: CallbackContext) -> None:

@@ -19,7 +19,6 @@ from helpers.logger import logger
 from helpers.namer import get_nick
 from online import quiz_scraper
 
-quizzes = []
 cwd = os.getcwd()
 
 
@@ -28,17 +27,18 @@ def send_quiz(context: CallbackContext) -> None:
     Sends 5 quizzes to target chat (tms group for now). Also sets a timer for 24 hours for quiz expiry (using jobs).
     """
 
-    global quizzes
-
     right_now = datetime.now()  # returns: Datetime obj
     if 'last_quiz' not in context.bot_data:
         context.bot_data['last_quiz'] = right_now
 
     diff = right_now - context.bot_data['last_quiz']
     logger(message=f"Last quiz was sent {diff.days} days ago.")
+
     if diff.days < 7:
         print("Not enough days for next quiz!")
         return
+
+    context.bot_data['sent_quizzes'] = []
 
     starts = ("See I'm keeping one quizizz now okay. You have one day to finish. For boards ok. I want everyone to do "
               "it that's it.", "I have kept one quizizz now. I expect something okay.",
@@ -47,29 +47,38 @@ def send_quiz(context: CallbackContext) -> None:
 
     context.bot.send_message(chat_id=group_ids['grade12'], text=r.choice(starts))
 
+    context.bot.send_chat_action(chat_id=group_ids['grade12'], action='typing')
+
     # Get our questions, choices and answers from the web-
-    while True:
-        try:
-            questions, choices, answers = quiz_scraper.quiz_maker()
-            break
-        except TypeError:  # If we get None (due to error), retry.
-            pass
+    questions, choices, answers = quiz_scraper.quiz_maker_v2(number=5)
 
     # Support sending quiz to tms group only for now-
     for question, choice, answer in zip(questions, choices, answers):
         quiz = context.bot.send_poll(chat_id=group_ids['grade12'], question=question, options=choice,
                                      is_anonymous=False, type=Poll.QUIZ, correct_option_id=answer, is_closed=False)
-        quizzes.append(quiz)
+
+        context.bot_data['sent_quizzes'].append(quiz)
 
     logger(message=f"The 5 quizzes were just sent to tms group successfully.")
 
-    context.job_queue.run_once(callback=timedout, when=60 * 60 * 10, context=[quizzes])
+    if right_now.day not in (29, 30, 31):  # If not in final days of a month, set date 2 days after
+        context.bot_data['stop_quiz_date'] = datetime(right_now.year, right_now.month, right_now.day + 2)
+
+    else:  # TODO: Contingency for new year
+        context.bot_data['stop_quiz_date'] = datetime(right_now.year, right_now.month + 1, 1)
+
     context.bot_data['last_quiz'] = right_now  # Save new time for last quiz
     context.dispatcher.persistence.flush()
 
 
 def timedout(context: CallbackContext) -> None:
     """Closes quiz when the time limit is over. Also scolds people if they got 3 or more answers wrong in the quiz."""
+
+    right_now = datetime.now()  # returns: Datetime obj
+
+    if context.bot_data['stop_quiz_date'] is None or not right_now >= context.bot_data['stop_quiz_date']:
+        logger(message="not time yet (to send leaderboard)!")
+        return
 
     to_scold = []
     scolds = ("See if this is troubling you, you can come and get help from me directly okay?",
@@ -85,10 +94,7 @@ def timedout(context: CallbackContext) -> None:
 
     scold_names = ""
 
-    # Assign additional argument passed from job to variables
-    array = context.job.context[0]
-
-    for index, quiz in enumerate(array):  # Stop all quizzes
+    for quiz in context.bot_data['sent_quizzes']:  # Stop all quizzes
         context.bot.stop_poll(chat_id=group_ids['grade12'], message_id=quiz.message_id)
 
     context.bot.send_chat_action(chat_id=group_ids['grade12'], action='upload_photo')
@@ -96,7 +102,7 @@ def timedout(context: CallbackContext) -> None:
     leaderboard(context)  # Make the leaderboard
 
     context.bot.send_photo(chat_id=group_ids['grade12'], photo=open('leaderboard.png', 'rb'),
-                           caption="This is where you stand like you say")  # Send latest leaderboard
+                           caption="Current standings now")  # Send latest leaderboard
 
     logger(message=f"The leaderboard was just sent on the group.")
 
@@ -118,6 +124,11 @@ def timedout(context: CallbackContext) -> None:
         context.bot.send_message(chat_id=group_ids['grade12'], text=scold_names + r.choice(scolds),
                                  parse_mode=ParseMode.HTML)
 
+    context.bot_data['stop_quiz_date'] = None
+    context.bot_data['sent_quizzes'].clear()  # Clear all quizzes
+
+    logger(message="Changed quiz date to None and cleared sent quizzes")
+
     context.dispatcher.persistence.flush()
 
 
@@ -131,11 +142,13 @@ def receive_answer(update: Update, context: CallbackContext) -> None:
     chosen_answer = update.poll_answer.option_ids
 
     # Get quiz id and correct option id-
-    for quiz in quizzes:
+    for quiz in context.bot_data['sent_quizzes']:
         if quiz.poll.id == update.poll_answer.poll_id:
             correct_answer = quiz.poll.correct_option_id
+            logger(message=f"tms quiz was answered by {user.first_name}")
             break
     else:  # Only happens when /quizizz quiz was answered.
+        logger(message=f"/quizizz was answered by {user.first_name}")
         return
 
     assert correct_answer is not None
@@ -303,7 +316,7 @@ def leaderboard(context) -> None:
 
         if marks != 0:  # Don't draw arrow and marks if he got a big fat ZERO.
             text_scale = 0.026 * max(vals)  # Another experimental value
-            plt.text(marks - text_scale, index, str(marks), color="#000000", va='center', ha='center', alpha=alpha,
+            plt.text(marks - text_scale, index, str(marks), color="#000000", va='bottom', ha='center', alpha=alpha,
                      fontdict={'weight': 'bold', 'size': size, 'fontfamily': 'DejaVu Sans'},
                      path_effects=effects)  # Puts marks on the bars near the end
 

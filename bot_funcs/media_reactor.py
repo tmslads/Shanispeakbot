@@ -22,7 +22,7 @@ def media(update: Update, context: CallbackContext) -> None:
     last_reacted_at = cur_time()
 
     chat_id = update.effective_chat.id
-    msg = update.message.message_id
+    msg_id = update.message.message_id
     name = get_nick(update, context)
     query = f"SELECT MEDIA_PROB FROM CHAT_SETTINGS WHERE CHAT_ID={chat_id};"
 
@@ -70,28 +70,28 @@ def media(update: Update, context: CallbackContext) -> None:
     sleep(2)
 
     if update.message.photo or doc in ('jpg', 'jpeg', 'png'):
-        context.bot.send_message(chat_id=chat_id, text=r.choice(img_reactions), reply_to_message_id=msg)
+        context.bot.send_message(chat_id=chat_id, text=r.choice(img_reactions), reply_to_message_id=msg_id)
         logger(message=f"Bot sent a reaction to a photo to {name}.")
 
     elif update.message.voice or update.message.audio:
-        context.bot.send_message(chat_id=chat_id, text=r.choice(voice_reactions), reply_to_message_id=msg)
+        context.bot.send_message(chat_id=chat_id, text=r.choice(voice_reactions), reply_to_message_id=msg_id)
         logger(message=f"Bot sent a reaction to a voice message/audio to {name}.")
 
     elif update.message.video or doc in ('mp4', 'gif'):
-        context.bot.send_message(chat_id=chat_id, text=r.choice(vid_reactions), reply_to_message_id=msg)
+        context.bot.send_message(chat_id=chat_id, text=r.choice(vid_reactions), reply_to_message_id=msg_id)
         logger(message=f"Bot sent a reaction to a video to {name}.")
 
     elif doc in ('apk', 'exe'):
-        context.bot.send_message(chat_id=chat_id, text=r.choice(app_reactions), reply_to_message_id=msg)
+        context.bot.send_message(chat_id=chat_id, text=r.choice(app_reactions), reply_to_message_id=msg_id)
         logger(message=f"Bot sent a reaction to a executable to {name}.")
 
     elif doc in ('pdf', 'doc', 'docx', 'txt'):
-        context.bot.send_message(chat_id=chat_id, text=r.choice(doc_reactions), reply_to_message_id=msg)
+        context.bot.send_message(chat_id=chat_id, text=r.choice(doc_reactions), reply_to_message_id=msg_id)
         logger(message=f"Bot sent a reaction to a text document to {name}.")
 
     else:
         logger(message=f"This shouldn't be happening, bot needs to respond to at least one of the media."
                        f"The file extension was {doc=}.", warning=True)
 
-    del chat_id, name, msg, query, true, false, prob, app_reactions, img_reactions, vid_reactions, voice_reactions, \
+    del chat_id, name, msg_id, query, true, false, prob, app_reactions, img_reactions, vid_reactions, voice_reactions, \
         doc_reactions

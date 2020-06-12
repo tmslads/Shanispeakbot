@@ -10,7 +10,7 @@ from bot_funcs import media_reactor, morning_wisher, bday_wisher, conversation, 
 from bot_funcs.commands import BotCommands as bc
 from constants import shanibot
 from convos import bday, magic, nick, settings_gui, start
-from bot_funcs.quiz import send_quiz, receive_answer
+from bot_funcs.quiz import send_quiz, receive_answer, timedout
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
@@ -111,7 +111,9 @@ dp.add_handler(MessageHandler(Filters.command, bc.unknown))
 updater.job_queue.run_repeating(bday_wisher.wish, 86400, first=1)  # Runs every time script is started, and once a day.
 updater.job_queue.run_repeating(morning_wisher.morning_goodness, 60**3, first=1)
 updater.job_queue.run_repeating(inline.get_clips, 60, first=1)  # Have to re-fetch clips since links expire
-updater.job_queue.run_repeating(send_quiz, 604800, first=1)  # Send quiz to 12B weekly
+updater.job_queue.run_repeating(send_quiz, 604800, first=1)  # Send quiz to TMS'20 weekly
+updater.job_queue.run_repeating(timedout, 86400, first=20)
+
 
 data_view()
 
