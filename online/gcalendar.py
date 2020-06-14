@@ -57,7 +57,7 @@ class CalendarEventManager(object):
         if self.date is None:
             raise ValueError("Date must be specified!")
 
-        event = service.events().insert(calendarId='primary', body=self.event).execute()
+        service.events().insert(calendarId='primary', body=self.event).execute()
         logger(message=f"{self.event['summary']} was added.")
 
     def update_event(self, new_date: datetime.datetime):
