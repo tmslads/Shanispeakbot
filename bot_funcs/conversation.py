@@ -125,7 +125,7 @@ def shanifier(update: Update, context: CallbackContext, is_group: bool = False, 
             word_list.append(r.choice(list(emoji.UNICODE_EMOJI)))  # Adds a random emoji
 
     shanitext = re.sub(r" (?=[.!,:;?])", '', ' '.join(word_list))  # Remove spaces before .!,:;?
-    shanitext = re.sub("\sn'", "n'", shanitext)  # Remove spaces before contractions
+    shanitext = re.sub(r" (\w)*'", r"\1'", shanitext)  # Remove spaces before contractions
     shanitext = shanitext[0].upper() + shanitext[1:]  # Make only first letter capital
 
     inp = f"UTC+0 {today} {chat_type} {reply_to} {full_name} ({user.username}) SAID: {msg_text}\n"
