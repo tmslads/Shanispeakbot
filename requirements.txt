@@ -1,15 +1,24 @@
+# Python telegram bot-
 python-telegram-bot~=12.7
+
+# NLP using libs-
 spacy
-emoji
 Chatterbot
+
+emoji  # Handles emojis
+
+# Calendar API related google libs-
 google-api-python-client
 google-auth
 google-auth-httplib2
 google-auth-oauthlib
 httplib2>=0.18.0
 
+# Scraping and parsing-
 requests
 beautifulsoup4
+
+# Data science/Imaging/Graphing libs-
 numpy
 Pillow
 matplotlib
