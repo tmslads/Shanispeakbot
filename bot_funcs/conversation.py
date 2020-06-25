@@ -112,7 +112,10 @@ def shanifier(update: Update, context: CallbackContext, is_group: bool = False, 
         word_list.insert(0, name)
 
     elif r.choice([0, 1]):
-        word_list.append(f"{name}.")
+        if '?' in bot_msg:  # Insert name at beginning if it's a question
+            word_list.insert(0, name.capitalize())
+        else:
+            word_list.append(f"{name}.")
 
     if len(word_list) < 5 and r.choice([False, True]):  # Might run if input is too short
         word_list.append(r.choice(("*draws perfect circle*", " *scratches nose*")))
@@ -124,8 +127,12 @@ def shanifier(update: Update, context: CallbackContext, is_group: bool = False, 
         if word in emoji.UNICODE_EMOJI:  # Checks if emoji is present in message
             word_list.append(r.choice(list(emoji.UNICODE_EMOJI)))  # Adds a random emoji
 
-    shanitext = re.sub(r" (?=[.!,:;?])", '', ' '.join(word_list))  # Remove spaces before .!,:;?
-    shanitext = re.sub(r" (\w)*'", r"\1'", shanitext)  # Remove spaces before contractions
+    # Text processing and replacing-
+    shanitext = re.sub(r" (?=[.!,:;?])", '', ' '.join(word_list))  # Remove spaces before .!,:;? - Lookahead assertion
+    shanitext = re.sub(r"(\s*)*(\w?)'", r"\1\2'", shanitext)  # Remove spaces before contractions (Let 's, ca n't, etc)
+    shanitext = re.sub("(^|[.?!])\s*([a-zA-Z])", lambda p: p.group(0).upper(), shanitext)  # Capitalize letter after .?!
+    shanitext = re.sub(f"[.] ({name})", r", \1", shanitext)  # Convert . into , if . is followed by name (usually @ end)
+
     shanitext = shanitext[0].upper() + shanitext[1:]  # Make only first letter capital
 
     inp = f"UTC+0 {today} {chat_type} {reply_to} {full_name} ({user.username}) SAID: {msg_text}\n"

@@ -95,8 +95,11 @@ def timedout(context: CallbackContext) -> None:
     scold_names = ""
 
     for quiz in context.bot_data['sent_quizzes']:  # Stop all quizzes
-        context.bot.stop_poll(chat_id=group_ids['grade12'], message_id=quiz.message_id)
-
+        try:
+            context.bot.stop_poll(chat_id=group_ids['grade12'], message_id=quiz.message_id)
+        except Exception as e:
+            print(e)
+            pass
     context.bot.send_chat_action(chat_id=group_ids['grade12'], action='upload_photo')
     pp(context)
     leaderboard(context)  # Make the leaderboard
@@ -301,7 +304,7 @@ def leaderboard(context) -> None:
             ax.add_artist(ab)  # Draws annotation
 
         else:
-            size = 13
+            size = 12
             alpha = 0.7
             effects = None
 
@@ -316,7 +319,7 @@ def leaderboard(context) -> None:
 
         if marks != 0:  # Don't draw arrow and marks if he got a big fat ZERO.
             text_scale = 0.026 * max(vals)  # Another experimental value
-            plt.text(marks - text_scale, index, str(marks), color="#000000", va='bottom', ha='center', alpha=alpha,
+            plt.text(marks - text_scale, index, str(marks), color="#000000", va='center', ha='center', alpha=alpha,
                      fontdict={'weight': 'bold', 'size': size, 'fontfamily': 'DejaVu Sans'},
                      path_effects=effects)  # Puts marks on the bars near the end
 
