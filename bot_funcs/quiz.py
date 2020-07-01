@@ -295,7 +295,7 @@ def leaderboard(context) -> None:
         marks = bar.get_width()  # Get no. of correct answers of that guy
 
         if index == len(barlist) - 1:  # Make text bolder, add trophy for the guy who is #1
-            size = 16
+            size = 15
             alpha = 1  # alpha controls transparency
             trophy_scale = 0.16 * max(vals)  # Value obtained by experimenting
             effects = [patheffects.SimpleLineShadow(shadow_color='black', alpha=0.95), patheffects.Normal()]
@@ -304,7 +304,7 @@ def leaderboard(context) -> None:
             ax.add_artist(ab)  # Draws annotation
 
         else:
-            size = 12
+            size = 11
             alpha = 0.7
             effects = None
 

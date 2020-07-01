@@ -8,9 +8,9 @@ from telegram.ext import (CommandHandler, ConversationHandler, InlineQueryHandle
 # from telegram.utils.helpers import mention_html
 
 import inline
-from bot_funcs import media_reactor, morning_wisher, bday_wisher, conversation, delete_pin
+from bot_funcs import media_reactor, morning_wisher, bday_wisher, conversation, delete_pin, welcome
 from bot_funcs.commands import BotCommands as bc
-from constants import shanibot
+from constants import shanibot, group_ids
 from convos import bday, magic, nick, settings_gui, start
 from bot_funcs.quiz import send_quiz, receive_answer, timedout
 
@@ -177,7 +177,9 @@ dp.add_handler(settings_gui_handler)
 media_filters = (Filters.document | Filters.photo | Filters.video | Filters.voice | Filters.audio)
 edit_filter = Filters.update.edited_message
 pin_filter = Filters.status_update.pinned_message
+new_mem = Filters.status_update.new_chat_members
 
+dp.add_handler(MessageHandler(new_mem & Filters.chat(chat_id=group_ids['grade12']), callback=welcome.welcome))
 dp.add_handler(MessageHandler(media_filters, media_reactor.media))
 dp.add_handler(MessageHandler(pin_filter & Filters.user(username=shanibot), delete_pin.de_pin))
 dp.add_handler(MessageHandler(Filters.reply & Filters.group & ~ edit_filter, conversation.reply))
