@@ -179,7 +179,7 @@ edit_filter = Filters.update.edited_message
 pin_filter = Filters.status_update.pinned_message
 new_mem = Filters.status_update.new_chat_members
 
-dp.add_handler(MessageHandler(new_mem & Filters.chat(chat_id=group_ids['grade12']), callback=welcome.welcome))
+dp.add_handler(MessageHandler(new_mem & Filters.chat(chat_id=int(group_ids['grade12'])), callback=welcome.welcome))
 dp.add_handler(MessageHandler(media_filters, media_reactor.media))
 dp.add_handler(MessageHandler(pin_filter & Filters.user(username=shanibot), delete_pin.de_pin))
 dp.add_handler(MessageHandler(Filters.reply & Filters.group & ~ edit_filter, conversation.reply))

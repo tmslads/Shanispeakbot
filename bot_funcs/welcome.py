@@ -9,6 +9,10 @@ def welcome(update: Update, context: CallbackContext) -> None:
     learn more about Telegram.
     """
     user = update.message.new_chat_members[0]
+
+    if user.is_bot:
+        return
+
     logger(message=f"{user.full_name} just joined the TMS group!")
 
     context.bot.send_message(chat_id=update.effective_chat.id,
