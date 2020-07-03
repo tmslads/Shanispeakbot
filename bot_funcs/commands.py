@@ -9,10 +9,7 @@ from helpers.namer import get_chat_name
 from online import util, quiz_scraper
 
 with open(r"files/lad_words.txt", "r") as f:
-    prohibited = f.read().lower().split('\n')
-
-with open(r"files/snake.txt", "r") as f:
-    snake_roast = f.read()
+    prohibited = set(f.read().lower().split('\n'))
 
 swear_advice = ["Don't use such words. Okay, fine?", "Such language fails to hit the tarjit.",
 
@@ -48,8 +45,8 @@ def del_command(update: Update) -> None:
     try:
         update.message.delete()
 
-    except error.BadRequest:
-        pass
+    except error.BadRequest as e:
+        logger(message=f"The command {update.message.text} could not be deleted due to {e}.")
 
 
 class BotCommands:
@@ -69,6 +66,7 @@ class BotCommands:
             logger(update=update, message=f"/start", command=True)
 
         context.bot.send_message(chat_id=update.effective_chat.id, text=msg)
+        del name, msg
 
     @staticmethod
     def helper(update: Update, context: CallbackContext) -> None:
@@ -79,7 +77,7 @@ class BotCommands:
         markup = InlineKeyboardMarkup(buttons)
 
         context.bot.send_message(chat_id=update.effective_chat.id,
-                                 text=r"This bot sends you audio clips straight from the Shani Sir Module\."
+                                 text=r"This bot sends you audio clips straight from the Shani Sir Module\. "
                                       "He's savage when he's cranky\."
                                       "\n\nHow to get clips \(Inline mode\):"
                                       "\n@ me in the chatbox \(don't press send yet\!\), press space and then type"
@@ -93,10 +91,10 @@ class BotCommands:
                                       "\n/8ball \- Answers yes/no questions in Shani Sir style\!"
                                       "\n/settings \- Modify my behaviour with granular precision\."
                                       "\n/quizizz \- Sends you a physics question\."
-                                      "\n\nHow to use /8ball:\n1\. Reply to a message with /8ball\n2\. Send /8ball in"
+                                      "\n\nHow to use /8ball:\nReply to a message with /8ball\nor send /8ball in"
                                       " chat and reply to the message the bot sends\.\n\n"
                                       r"Inspired by the [Shani Sir Module](https://github.com/tmslads/Shanisirmodule)"
-                                      r" and Telegram\!\.", parse_mode="MarkdownV2", disable_web_page_preview=True,
+                                      r" and Telegram\!", parse_mode="MarkdownV2", disable_web_page_preview=True,
                                  reply_markup=markup)
         logger(update=update, message=f"/help", command=True)
 
@@ -112,7 +110,7 @@ class BotCommands:
         del_command(update)
 
         while True:
-            swears = r.choices(prohibited, k=4)  # Returns a list of 4 elements
+            swears = r.choices(tuple(prohibited), k=4)  # Returns a list of 4 elements
             if len(set(swears)) == len(swears):  # i.e. if there is a duplicate element
                 break
 
@@ -126,7 +124,10 @@ class BotCommands:
         """Sends a roast to the user."""
 
         del_command(update)
-        context.bot.send_message(chat_id=update.effective_chat.id, text=snake_roast)
+
+        with open(r"files/snake.txt", "r") as f1:
+            context.bot.send_message(chat_id=update.effective_chat.id, text=f1.read())
+
         logger(update=update, message=f"/snake", command=True)
 
     @staticmethod
@@ -134,8 +135,7 @@ class BotCommands:
         """Sends one random fact to the user."""
 
         del_command(update)
-        fact = r.choice(util.facts())
-        context.bot.send_message(chat_id=update.effective_chat.id, text=fact)
+        context.bot.send_message(chat_id=update.effective_chat.id, text=r.choice(util.facts()))
         logger(update=update, message=f"/facts", command=True)
 
     @staticmethod
@@ -144,18 +144,14 @@ class BotCommands:
 
         logger(update=update, message=f"/quizizz", command=True)
 
-        while True:
-            try:
-                questions, choices, answers = quiz_scraper.quiz_maker()
-                break
-            except TypeError:  # If we get None (due to error) back, retry.
-                logger(message="There was a problem getting the questions, trying again.", warning=True)
+        context.bot.send_chat_action(chat_id=update.effective_chat.id, action='typing')
 
-        question = questions[0]
-        options = choices[0]
-        answer = answers[0]
-        context.bot.send_poll(chat_id=update.effective_chat.id, question=question, options=options, is_anonymous=False,
-                              type=Poll.QUIZ, correct_option_id=answer)
+        question, options, answer = quiz_scraper.quiz_maker_v2(number=1)
+
+        logger(message=f"The question was: {question[0]}\n\n" + '\n'.join(options[0]) + f"\n\nAnswer:{answer[0]}")
+
+        context.bot.send_poll(chat_id=update.effective_chat.id, question=question[0], options=options[0],
+                              is_anonymous=False, type=Poll.QUIZ, correct_option_id=answer[0])
 
     @staticmethod
     def unknown(update: Update, context: CallbackContext) -> None:

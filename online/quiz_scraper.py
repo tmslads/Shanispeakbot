@@ -9,67 +9,92 @@ from constants import QUIZ_URL
 from helpers.logger import logger
 
 
-# TODO: Improve the entire thing-
+def quiz_maker_v2(number: int) -> Tuple[List[str], List[List[str]], List[int]]:
+    """
+    Scrapes a random page to get all questions, and returns 3 lists, one which contains only questions,
+    another one contains choices for each of the questions, and the last one contains answers which are indexes
+    (points to correct option).
 
+    Args:
+        number (:obj:`int`): The number of question(s) (with respective choices and answers) to return. Must be between
+            1 and 10 (both included).
+    """
 
-def quiz_maker() -> Union[Tuple[List[str], List[List[str]], List[int]], None]:
-    """Scrapes 5 quizzes and returns 3 lists, one which contains only questions, another one contains choices for
-    each of the questions, and the last one contains answers which are indexes (points to correct option)."""
+    def remover():
+        """Helper function to remove respective question, choice and answer."""
+        try:
+            all_questions.remove(question)
+            all_choices.remove(choices)
+            all_answers.remove(answer)
+        except ValueError:
+            pass
 
     page = r.randint(1, 76)
-    logger(message=f"Quiz obtained from {page=}.", debug=True)
+    logger(message=f"Quiz obtained from {page=}.")
     quiz_url = f"{QUIZ_URL}/{page}"
-    content = requests.get(quiz_url).content
 
-    soup = BeautifulSoup(content, 'html.parser')
-    results = soup.find_all(class_=r.choice(['even', 'odd']))
+    soup = BeautifulSoup(requests.get(quiz_url).content, 'lxml')
+    results_ques = soup.find_all(class_=lambda a_class: a_class == 'odd' or a_class == 'even')
+
     all_questions = []
     all_choices = []  # Type: List[List[str(choices)]]
     all_answers = []
 
-    for result in results:
+    for result in results_ques:
+        ops = result.find_all(['br', 'sup', 'sub'])
         question_choices = []
 
-        question = result.find('b')  # Get question
-        question = question.text.strip()
-        question = question[3:]  # Removes the 'Q. ' part
+        if len(ops) == 5:
+            ops.pop()
 
-        if len(question) > 255:  # If we've reached max question character limit for ptb
-            return
+        if result.b.string is not None:
+            question = str(result.b.string)
+        else:
+            if result.i is not None:  # If there are italics in question
+                question = str(result.b.get_text())  # Get text without italics
+            else:
+                question = str(result.b.next_element.string)
 
-        all_questions.append(question)
+        all_questions.append(question[3:].strip())  # [3:] is to remove 'Q. '
 
-        options = result.find_all('br')  # Get options as a list
+        option = ''  # String to add choices
+        for op in ops:  # Loop through choices if extra formatting such as subscripts or superscripts are present
 
-        if len(options) > 5:  # If there are notes or something weird (cheap way out, but practicality >>)
-            options = options[:5]
+            sub_sup = re.sub('([0-9][)] )*', '', op.next_element.string).strip()  # Remove choice numbers like '1 )'
+            if op.name == 'sup':  # If superscript present, add that
+                option += u''.join(dict(zip(u"-0123456789", u"⁻⁰¹²³⁴⁵⁶⁷⁸⁹")).get(c, c) for c in sub_sup)
+            elif op.name == 'sub':  # If subscript present, add that
+                option += u''.join(dict(zip(u"-0123456789", u"₋₀₁₂₃₄₅₆₇₈₉")).get(c, c) for c in sub_sup)
+            else:  # If normal text, just add that
+                option += sub_sup
 
-        for option in options:  # Get string between <br> tags by printing next sibling
-            choice = option.nextSibling
+            sib = op.next_sibling
+            if sib.string is not None:
+                stripped = re.sub('([0-9][)] )*', '', sib.string).strip()
+                if stripped != sub_sup:  # Checks if already similar to what's already added or not
+                    option += sib
+            if sib.next_element.name in ('br', None):  # When we've reached end of question and its choices
+                question_choices.append(option.strip())  # Add choice
+                option = ''  # Reset choice for next choice
 
-            if choice is None:  # Edge case when there's that stupid note
-                text = option.text.strip()
-                spliced = re.sub('([0-4][)])*', '', text).split()
-                question_choices.extend(spliced)
+        if question_choices[-1] == "Note:":  # Remove notes (not needed)
+            question_choices.pop()
+
+        all_choices.append(question_choices)  # Add all the choices for the respective question
+        all_answers.append(int(result.span.get_text()[6:]) - 1)  # Add answer index, [6:] is to remove 'ANS: '
+
+    # Filter questions and choices for Telegram limits (max 10 choices, each choice < 100 chars, question < 255 chars)
+    for question, choices, answer in zip(all_questions[:], all_choices[:], all_answers[:]):
+        for choice in choices:
+            # Question's formatting (sub/sup) gets into the choices so we have to add that to the question-
+            if choice[0] in dict(zip('⁻⁰¹²³⁴⁵⁶⁷⁸⁹₀₁₂₃₄₅₆₇₈₉', '-01234567890123456789')):
+                all_questions[all_questions.index(question)] = question + choice  # Add to question
+                choices.remove(choice)  # Remove that choice from list since it's in the question
+            if len(choice) > 100:
+                remover()
                 break
+        else:
+            if len(question) > 255 or len(choices) > 10:
+                remover()
 
-            to_str = str(choice).strip()
-            stripped = re.sub('([0-4][)])*', '', to_str).strip()
-
-            if len(stripped) > 100:  # Telegram doesn't allow a choice to have more than 100 characters
-                return
-
-            question_choices.append(stripped)
-
-        question_choices.pop()  # Remove last empty string
-
-        if len(question_choices) > 10:  # Telegram doesn't allow more than 10 choices
-            return
-
-        all_choices.append(question_choices)
-
-        answer = result.find('span', class_='ans')  # Returns answer number
-        right_answer = int(answer.text.strip().replace('ANS: ', ''))
-        all_answers.append(right_answer - 1)
-
-    return all_questions, all_choices, all_answers
+    return tuple(zip(*r.sample(list(zip(all_questions, all_choices, all_answers)), k=number)))  # Get random question(s)

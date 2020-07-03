@@ -6,6 +6,9 @@ group_ids = {'12b': '-1001396726510', 'grade12': '-1001210862980', 'wait': '-100
 samir = 764886971
 harshil = 476269395
 
+# The bot itself-
+bot_id = 997899425
+
 # Table-
 sql_table = """
             CREATE TABLE IF NOT EXISTS CHAT_SETTINGS(

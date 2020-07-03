@@ -19,7 +19,6 @@ from helpers.logger import logger
 from helpers.namer import get_nick
 from online import quiz_scraper
 
-quizzes = []
 cwd = os.getcwd()
 
 
@@ -28,42 +27,46 @@ def send_quiz(context: CallbackContext) -> None:
     Sends 5 quizzes to target chat (tms group for now). Also sets a timer for 24 hours for quiz expiry (using jobs).
     """
 
-    global quizzes
-
     right_now = datetime.now()  # returns: Datetime obj
     if 'last_quiz' not in context.bot_data:
         context.bot_data['last_quiz'] = right_now
 
     diff = right_now - context.bot_data['last_quiz']
     logger(message=f"Last quiz was sent {diff.days} days ago.")
+
     if diff.days < 7:
         print("Not enough days for next quiz!")
         return
 
-    starts = ["See I'm keeping one quizizz now okay. You have one day to finish. For boards ok. I want everyone to do "
+    context.bot_data['sent_quizzes'] = []
+
+    starts = ("See I'm keeping one quizizz now okay. You have one day to finish. For boards ok. I want everyone to do "
               "it that's it.", "I have kept one quizizz now. I expect something okay.",
               "Because of the bad like you say situation I have kept this online quizizz now. Do fast okay.",
-              "I'm sending these 5 questions now like. I want it to be done by tomorrow okay? Fast fast"]
+              "I'm sending these 5 questions now like. I want it to be done by tomorrow okay? Fast fast")
 
     context.bot.send_message(chat_id=group_ids['grade12'], text=r.choice(starts))
 
+    context.bot.send_chat_action(chat_id=group_ids['grade12'], action='typing')
+
     # Get our questions, choices and answers from the web-
-    while True:
-        try:
-            questions, choices, answers = quiz_scraper.quiz_maker()
-            break
-        except TypeError:  # If we get None (due to error), retry.
-            pass
+    questions, choices, answers = quiz_scraper.quiz_maker_v2(number=5)
 
     # Support sending quiz to tms group only for now-
     for question, choice, answer in zip(questions, choices, answers):
         quiz = context.bot.send_poll(chat_id=group_ids['grade12'], question=question, options=choice,
                                      is_anonymous=False, type=Poll.QUIZ, correct_option_id=answer, is_closed=False)
-        quizzes.append(quiz)
+
+        context.bot_data['sent_quizzes'].append(quiz)
 
     logger(message=f"The 5 quizzes were just sent to tms group successfully.")
 
-    context.job_queue.run_once(callback=timedout, when=60 * 60 * 10, context=[quizzes])
+    if right_now.day not in (29, 30, 31):  # If not in final days of a month, set date 2 days after
+        context.bot_data['stop_quiz_date'] = datetime(right_now.year, right_now.month, right_now.day + 2)
+
+    else:  # TODO: Contingency for new year
+        context.bot_data['stop_quiz_date'] = datetime(right_now.year, right_now.month + 1, 1)
+
     context.bot_data['last_quiz'] = right_now  # Save new time for last quiz
     context.dispatcher.persistence.flush()
 
@@ -71,8 +74,14 @@ def send_quiz(context: CallbackContext) -> None:
 def timedout(context: CallbackContext) -> None:
     """Closes quiz when the time limit is over. Also scolds people if they got 3 or more answers wrong in the quiz."""
 
+    right_now = datetime.now()  # returns: Datetime obj
+
+    if context.bot_data['stop_quiz_date'] is None or not right_now >= context.bot_data['stop_quiz_date']:
+        logger(message="not time yet (to send leaderboard)!")
+        return
+
     to_scold = []
-    scolds = ["See if this is troubling you, you can come and get help from me directly okay?",
+    scolds = ("See if this is troubling you, you can come and get help from me directly okay?",
               "Now I didn't expect thaaat level. See this is counted for the term exam okay",
               "This is for you okay? This is for you to see your level. Aim to hit the tarjit",
               "It's not that hard I expected something but I didn't know this level",
@@ -81,22 +90,22 @@ def timedout(context: CallbackContext) -> None:
               "This is like you say embarrassing to me. You have to put effort and work towards the boards now",
               "That's it. I am telling mudassir sir now. Just tell me what's the confusion.",
               "Are you fine? Physics is easy what's the problem like",
-              "You are troubling me. See I just wanted to be in the right direction nothing else I mean okay?"]
+              "You are troubling me. See I just wanted to be in the right direction nothing else I mean okay?")
 
     scold_names = ""
 
-    # Assign additional argument passed from job to variables
-    array = context.job.context[0]
-
-    for index, quiz in enumerate(array):  # Stop all quizzes
-        context.bot.stop_poll(chat_id=group_ids['grade12'], message_id=quiz.message_id)
-
+    for quiz in context.bot_data['sent_quizzes']:  # Stop all quizzes
+        try:
+            context.bot.stop_poll(chat_id=group_ids['grade12'], message_id=quiz.message_id)
+        except Exception as e:
+            print(e)
+            pass
     context.bot.send_chat_action(chat_id=group_ids['grade12'], action='upload_photo')
     pp(context)
     leaderboard(context)  # Make the leaderboard
 
     context.bot.send_photo(chat_id=group_ids['grade12'], photo=open('leaderboard.png', 'rb'),
-                           caption="This is where you stand like you say")  # Send latest leaderboard
+                           caption="Current standings now")  # Send latest leaderboard
 
     logger(message=f"The leaderboard was just sent on the group.")
 
@@ -110,12 +119,18 @@ def timedout(context: CallbackContext) -> None:
     for _id, name in to_scold:
         mention = mention_html(user_id=_id, name=name)  # Get their mention in html
         scold_names += mention + " "  # Add a whitespace after every name
+        logger(message=f"{name} is going to be scolded.")
 
     if to_scold:  # Send only if there is someone to scold!
         context.bot.send_chat_action(chat_id=group_ids['grade12'], action='typing')
         sleep(2)
         context.bot.send_message(chat_id=group_ids['grade12'], text=scold_names + r.choice(scolds),
                                  parse_mode=ParseMode.HTML)
+
+    context.bot_data['stop_quiz_date'] = None
+    context.bot_data['sent_quizzes'].clear()  # Clear all quizzes
+
+    logger(message="Changed quiz date to None and cleared sent quizzes")
 
     context.dispatcher.persistence.flush()
 
@@ -130,11 +145,13 @@ def receive_answer(update: Update, context: CallbackContext) -> None:
     chosen_answer = update.poll_answer.option_ids
 
     # Get quiz id and correct option id-
-    for quiz in quizzes:
+    for quiz in context.bot_data['sent_quizzes']:
         if quiz.poll.id == update.poll_answer.poll_id:
             correct_answer = quiz.poll.correct_option_id
+            logger(message=f"tms quiz was answered by {user.first_name}")
             break
     else:  # Only happens when /quizizz quiz was answered.
+        logger(message=f"/quizizz was answered by {user.first_name}")
         return
 
     assert correct_answer is not None
@@ -175,7 +192,7 @@ def pp(context: CallbackContext) -> None:
         first_pic = pic.photos[0][0]
         file_id = first_pic.file_id
 
-        file = context.bot.get_file(file_id=file_id, timeout=15)
+        file = context.bot.get_file(file_id=file_id, timeout=15)  # Need a long timeout as it can take time to dl it.
         file.download(custom_path=value['profile_pic'])  # Dl's as jpg
 
     context.dispatcher.persistence.flush()
@@ -278,7 +295,7 @@ def leaderboard(context) -> None:
         marks = bar.get_width()  # Get no. of correct answers of that guy
 
         if index == len(barlist) - 1:  # Make text bolder, add trophy for the guy who is #1
-            size = 16
+            size = 15
             alpha = 1  # alpha controls transparency
             trophy_scale = 0.16 * max(vals)  # Value obtained by experimenting
             effects = [patheffects.SimpleLineShadow(shadow_color='black', alpha=0.95), patheffects.Normal()]
@@ -287,7 +304,7 @@ def leaderboard(context) -> None:
             ax.add_artist(ab)  # Draws annotation
 
         else:
-            size = 13
+            size = 11
             alpha = 0.7
             effects = None
 

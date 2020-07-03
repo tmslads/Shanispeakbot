@@ -18,22 +18,24 @@ morn_setting = ""
 profane_prob = 0.2
 media_prob = 0.3
 
-buttons = [[InlineKeyboardButton(text="Media reactions 🎛️", callback_data="MEDIA_PROB")],
-           [InlineKeyboardButton(text="Profanity reactions 🎛️", callback_data="PROFANE_PROB")],
-           [InlineKeyboardButton(text="Morning quote 💬", callback_data="Morning")],
-           [InlineKeyboardButton(text="Save changes 💾", callback_data="SAVE")]]
+setting_markup = InlineKeyboardMarkup(
+    [[InlineKeyboardButton(text="Media reactions 🎛️", callback_data="MEDIA_PROB")],
+     [InlineKeyboardButton(text="Profanity reactions 🎛️", callback_data="PROFANE_PROB")],
+     [InlineKeyboardButton(text="Morning quote 💬", callback_data="Morning")],
+     [InlineKeyboardButton(text="Save changes 💾", callback_data="SAVE")]
+     ]
+)
 
-setting_markup = InlineKeyboardMarkup(buttons)
-
-prob_buttons = [[InlineKeyboardButton(text="🔙 Back", callback_data="Back")],
-                [InlineKeyboardButton(text="🔻10%", callback_data=str(-0.1)),
-                 InlineKeyboardButton(text="🔻5%", callback_data=str(-0.05)),
-                 InlineKeyboardButton(text="🔺5%", callback_data=str(0.05)),
-                 InlineKeyboardButton(text="🔺10%", callback_data=str(0.1))],
-                [InlineKeyboardButton(text="⬇0%⬇", callback_data=str(0.0)),
-                 InlineKeyboardButton(text="⬆100%⬆", callback_data=str(1.0))]]
-
-prob_markup = InlineKeyboardMarkup(prob_buttons)
+prob_markup = InlineKeyboardMarkup(
+    [[InlineKeyboardButton(text="🔙 Back", callback_data="Back")],
+     [InlineKeyboardButton(text="🔻10%", callback_data=str(-0.1)),
+      InlineKeyboardButton(text="🔻5%", callback_data=str(-0.05)),
+      InlineKeyboardButton(text="🔺5%", callback_data=str(0.05)),
+      InlineKeyboardButton(text="🔺10%", callback_data=str(0.1))],
+     [InlineKeyboardButton(text="⬇0%⬇", callback_data=str(0.0)),
+      InlineKeyboardButton(text="⬆100%⬆", callback_data=str(1.0))]
+     ]
+)
 
 
 def start(update: Update, context: CallbackContext) -> int:
@@ -55,11 +57,12 @@ def start(update: Update, context: CallbackContext) -> int:
             if user_id in (samir, harshil) or admin.user.id == user_id:  # Check if admin/creators are calling /settings
                 break
         else:
-            responses = ["I'm not allowing you like you say", "Ask the permission then only",
+            responses = ("I'm not allowing you like you say", "Ask the permission then only",
                          "This is not for you okay?", "Only few of them can do this not all okay?",
-                         "See not you so sowry"]
+                         "See not you so sowry")
             context.bot.send_message(chat_id=chat_id, text=r.choice(responses),
                                      reply_to_message_id=update.message.message_id)
+            del responses
             return -1  # Stop convo since a regular user called /settings
 
     logger(message=f"/settings", command=True, update=update)
@@ -113,8 +116,8 @@ def setting_msg(update, swap: bool = False) -> str:
 
     msg = "See is this the expected behaviour?\n\n" \
           r"1\. _Media reactions:_ " + f"{media_pct}\n" \
-                                       r"2\. _Profanity reactions:_ " + f"{profane_pct}\n" \
-                                                                        r"3\. _Morning quotes:_ " + f"{morn_setting}\n"
+          r"2\. _Profanity reactions:_ " + f"{profane_pct}\n" \
+          r"3\. _Morning quotes:_ " + f"{morn_setting}\n"
     return msg
 
 
@@ -236,11 +239,11 @@ def save(update: Update, _: CallbackContext) -> int:  # UPDATED
 
     chat_id = update.effective_chat.id
 
-    responses = ["I updated my behaviour", "See I got the clarity now", r"I will now like you do fo\.\.follow this",
-                 "Ok I will do this now it's not that hard", "I am now in the right direction"]
+    responses = ("I updated my behaviour", "See I got the clarity now", r"I will now like you do fo\.\.follow this",
+                 "Ok I will do this now it's not that hard", "I am now in the right direction")
 
-    confirmations = ["Now I'm like this:", "This is okay with me now like:", "Okay fine I'm okay with this:",
-                     "I have like you say changed now:", "My new behaviour is:"]
+    confirmations = ("Now I'm like this:", "This is okay with me now like:", "Okay fine I'm okay with this:",
+                     "I have like you say changed now:", "My new behaviour is:")
 
     # Show settings have been updated-
     update.callback_query.edit_message_text(text=r.choice(responses) + f"\n\n{r.choice(confirmations)}\n" + msg[36:],
@@ -262,4 +265,5 @@ def save(update: Update, _: CallbackContext) -> int:  # UPDATED
         conn.commit()
 
     conn.close()  # Close connection, we don't want mem leaks
+    del name, chat_id, responses, confirmations, result
     return -1

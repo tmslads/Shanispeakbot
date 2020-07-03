@@ -9,7 +9,12 @@ def get_nick(update: Update, context: CallbackContext) -> str:
     try:
         name = context.user_data['nickname'][-1]
     except (KeyError, IndexError):
-        context.user_data['nickname'] = [update.message.from_user.first_name]
+        if update.message is not None:
+            context.user_data['nickname'] = [update.message.from_user.first_name]
+
+        elif update.poll_answer is not None:
+            context.user_data['nickname'] = [update.poll_answer.user.first_name]
+
     finally:
         return context.user_data['nickname'][-1]
 

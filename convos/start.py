@@ -8,9 +8,9 @@ from helpers.namer import get_nick
 
 # This is the main menu. Shown when /tell is invoked.
 
-keyboard = [[KeyboardButton(text="Birthday"), KeyboardButton(text="Nickname")], [KeyboardButton(text="Nothing")]]
-
-markup = ReplyKeyboardMarkup(keyboard=keyboard, one_time_keyboard=True, selective=True)
+markup = ReplyKeyboardMarkup(
+    keyboard=[[KeyboardButton(text="Birthday"), KeyboardButton(text="Nickname")], [KeyboardButton(text="Nothing")]],
+    one_time_keyboard=True, selective=True)
 
 CHOICE = 0
 
@@ -23,8 +23,7 @@ def initiate(update: Update, context: CallbackContext) -> int:  # Entry_point
 
     if chat.type != "private":
         link = create_deep_linked_url(bot_username=context.bot.username, payload="tell")
-        button = [[InlineKeyboardButton(text="Let's go like you say!", url=link)]]
-        tell_markup = InlineKeyboardMarkup(button)
+        tell_markup = InlineKeyboardMarkup([[InlineKeyboardButton(text="Let's go like you say!", url=link)]])
 
         context.bot.send_message(chat_id=chat.id, text="Just come to another chat I want to talk to you like you say",
                                  reply_markup=tell_markup)
@@ -32,6 +31,7 @@ def initiate(update: Update, context: CallbackContext) -> int:  # Entry_point
         logger(message=f"{first_name} just tried using /tell in a {chat.type}. "
                        f"A message telling them to use it in private was sent.")
 
+        del chat, first_name, link, tell_markup
         return -1
 
     name = get_nick(update, context)
@@ -42,6 +42,7 @@ def initiate(update: Update, context: CallbackContext) -> int:  # Entry_point
 
     logger(message=f"/tell", update=update, command=True)
 
+    del name
     return CHOICE
 
 
@@ -54,6 +55,8 @@ def leave(update: Update, context: CallbackContext) -> int:
                              text=f'Bye {name}, sit and solve the past papers like you say, I want to put a test okay?',
                              reply_to_message_id=update.message.message_id,
                              reply_markup=ReplyKeyboardRemove(selective=True))
+
+    del name
 
     return -1
 
