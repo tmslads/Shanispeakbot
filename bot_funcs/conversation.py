@@ -69,8 +69,8 @@ def shanifier(update: Update, context: CallbackContext, is_group: bool = False, 
     reply_to, bot_msg, user_msg = get_response(update, text=msg_text)
 
     if not is_group:
-        shanisirbot.learn_response(user_msg, bot_response)  # Learn response if it is not in a group
-        chat_type = "(PRIVATE)"  # This is assigned only for interactions.txt
+        shanisirbot.learn_response(user_msg, bot_response)  # Learn response if it's a private chat
+        chat_type = "(PRIVATE)"  # for interactions.txt
 
     else:
         chat_type = f"(GROUP: {update.effective_chat.title})"
@@ -117,7 +117,7 @@ def shanifier(update: Update, context: CallbackContext, is_group: bool = False, 
         else:
             word_list.append(f"{name}.")
 
-    if len(word_list) < 5 and r.choice([False, True]):  # Might run if input is too short
+    if len(word_list) < 5 and r.choice([0, 1]):  # Might run if input is too short
         word_list.append(r.choice(("*draws perfect circle*", " *scratches nose*")))
 
     if re.search('when|time', ' '.join(word_list), flags=re.IGNORECASE):

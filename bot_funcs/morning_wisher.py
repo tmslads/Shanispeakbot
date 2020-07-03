@@ -21,7 +21,7 @@ def morning_goodness(context: CallbackContext) -> None:
 
     diff = right_now - context.bot_data['last_sent']
 
-    # Send only if it has been over a day and is between 8 and 11am next morning since last good morning message-
+    # Send only if it has been over a day since last good morning message and current time is between 8 and 11AM-
     if diff.days < 1 or right_now >= afternoon or right_now <= eight_am:
         return
 
