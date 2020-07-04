@@ -31,25 +31,29 @@ def data_view() -> None:
 
 
 # def update_data(context):
-#     # Samir update-
-#     context.bot_data['quizizz'][764886971]['questions_answered'] += 5
-#     context.bot_data['quizizz'][764886971]['answers_wrong'] = 1
-#     context.bot_data['quizizz'][764886971]['answers_right'] += 4
+    # Samir update-
+    # context.bot_data['quizizz'][764886971]['questions_answered'] += 5
+    # context.bot_data['quizizz'][764886971]['answers_wrong'] = 1
+    # context.bot_data['quizizz'][764886971]['answers_right'] += 1
+
+    # # me-
+    # context.bot_data['quizizz'][476269395]['answers_right'] += 1
+
 #
 #     # Jaden update-
 #     context.bot_data['quizizz'][847874359]['questions_answered'] += 5
 #     context.bot_data['quizizz'][847874359]['answers_wrong'] = 2
 #     context.bot_data['quizizz'][847874359]['answers_right'] += 3
 #
-#     # Samrin update-
+    # Samrin update-
 #     context.bot_data['quizizz'][1009248402]['questions_answered'] += 5
 #     context.bot_data['quizizz'][1009248402]['answers_wrong'] = 1
-#     context.bot_data['quizizz'][1009248402]['answers_right'] += 4
+#     context.bot_data['quizizz'][1009248402]['answers_right'] += 1
 #
-#     # Abdus update-
+    # Abdus update-
 #     context.bot_data['quizizz'][925784909]['questions_answered'] += 5
 #     context.bot_data['quizizz'][925784909]['answers_wrong'] = 2
-#     context.bot_data['quizizz'][925784909]['answers_right'] += 3
+#     context.bot_data['quizizz'][925784909]['answers_right'] += 1
 #
 #     # Rakin update-
 #     context.bot_data['quizizz'][831658863] = {}
@@ -77,7 +81,7 @@ def data_view() -> None:
 #     context.bot_data['quizizz'][1020219808]['answers_wrong'] = 0
 #     context.bot_data['quizizz'][1020219808]['answers_right'] += 5
 #
-#     print("UPDATED ALL")
+    # print("UPDATED ALL")
 # #     with open('files/user_data', 'rb+') as f1:
 # #         dic = pickle.load(f1)
 # #         dic['user_data'][894016631]['nickname'].remove('Nigger')
