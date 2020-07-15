@@ -36,3 +36,26 @@ The following commands are currently available to use:
 
 ### Inline mode:
 This bot will give you clips from [Shanisirmodule](https://github.com/tmslads/Shanisirmodule) (private repo sorry!), @ the bot and type a name of a clip and click on a result to send it to the target chat as a mp3 file.
+
+
+## Screenshots:
+A casual conversation with the bot:
+
+<img src="https://i.postimg.cc/3rgX1TLv/convo.jpg" width="300">
+
+Using the command /8ball:
+
+<img src="https://i.postimg.cc/V6kr1xqK/8ball.jpg" width="300">
+
+
+Using the command /quizizz:
+
+<img src="https://i.postimg.cc/KzpKY0Qx/quizizz.jpg" width="300">
+
+Using the inline mode:
+
+<img src="https://j.gifs.com/k8nBXx.gif" width="300">
+
+Using /settings:
+
+<img src="https://j.gifs.com/71rYkO.gif" width="300">
