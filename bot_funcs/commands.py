@@ -7,6 +7,7 @@ from telegram.ext import CallbackContext
 from helpers.logger import logger
 from helpers.namer import get_chat_name
 from online import util, quiz_scraper
+from constants import samir, harshil
 
 with open(r"files/lad_words.txt", "r") as f:
     prohibited = set(f.read().lower().split('\n'))
@@ -152,6 +153,14 @@ class BotCommands:
 
         context.bot.send_poll(chat_id=update.effective_chat.id, question=question[0], options=options[0],
                               is_anonymous=False, type=Poll.QUIZ, correct_option_id=answer[0])
+
+    @staticmethod
+    def broadcast(update: Update, context: CallbackContext) -> None:
+        """Allows unclesam79 or harshil21 to broadcast a message via the bot"""
+
+    if update.effective_user.id in [samir, harshil]:
+        context.bot.send_message(chat_id=update.effective_chat.id, text="Who do I broadcast to, master?")
+        
 
     @staticmethod
     def unknown(update: Update, context: CallbackContext) -> None:
