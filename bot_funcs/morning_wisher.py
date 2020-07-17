@@ -41,7 +41,7 @@ def morning_goodness(context: CallbackContext) -> None:
 
     # Open mp3 from desktop as github url doesn't support thumbnails-
 
-    clip_loc = r"C:/Users/aarti/Documents/Python stuff/Bored/Shanisirmodule/Assets/clips/good mourning.mp3"
+    clip_loc = r"C:\Users\Uncle Sam\Desktop\sthyaVERAT\4 FUN ya Practice\Shanisirmodule\Assets\clips\bell.mp3"
 
     for chat_id, chat_name in ids:
         try:
@@ -50,7 +50,7 @@ def morning_goodness(context: CallbackContext) -> None:
 
             context.bot.send_chat_action(chat_id=chat_id, action='upload_audio')
 
-            context.bot.send_audio(chat_id=chat_id, title="Good morning", performer="Shani sir",
+            context.bot.send_audio(chat_id=chat_id, title="Good morning", performer="Shani Sir",
                                    audio=open(clip_loc, "rb"), thumb=open("files/shanisir.jpeg", 'rb'))
             logger(message=f"Today's morning audio was just sent to {chat_name}.")
 
