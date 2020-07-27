@@ -1,4 +1,5 @@
 from datetime import datetime
+import random
 
 from telegram.ext import CallbackContext
 
@@ -25,15 +26,18 @@ def morning_goodness(context: CallbackContext) -> None:
     if diff.days < 1 or right_now >= afternoon or right_now <= eight_am:
         return
 
-    with open("files/good_mourning.txt", "r") as greetings:
+    with open("files/good_mourning.txt", "r+") as greetings:
+        quotes = greetings.readlines()
         position = context.bot_data['seek']
-        if position == 13642:  # If EOF was reached
-            position = 0  # Start from the beginning
+        if position == 13642:  # if EOF was reached
+            position = 0  # start from the beginning
+            random.shuffle(quotes)  # randomise order of quotes
+            greetings.writelines(quotes)
         greetings.seek(position)
 
         greeting = greetings.readline()
         logger(message=f"Today's morning quote is:\n{greeting}")
-        context.bot_data['seek'] = greetings.tell()
+        context.bot_data['seek'] = greetings.tell()  # update file cursor position
 
     query = "SELECT CHAT_ID, CHAT_NAME FROM CHAT_SETTINGS WHERE MORNING_MSGS='✅';"
     ids = connection(query, fetchall=True)
@@ -41,7 +45,7 @@ def morning_goodness(context: CallbackContext) -> None:
 
     # Open mp3 from desktop as github url doesn't support thumbnails-
 
-    clip_loc = r"C:/Users/aarti/Documents/Python stuff/Bored/Shanisirmodule/Assets/clips/good mourning.mp3"
+    clip_loc = r"C:/Users/Uncle Sam/Desktop/sthyaVERAT/4 FUN ya Practice/Shanisirmodule/Assets/clips/bell.mp3"
 
     for chat_id, chat_name in ids:
         try:

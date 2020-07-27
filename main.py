@@ -8,7 +8,8 @@ from telegram.ext import (CommandHandler, ConversationHandler, InlineQueryHandle
 # from telegram.utils.helpers import mention_html
 
 import inline
-from bot_funcs import media_reactor, morning_wisher, bday_wisher, conversation, delete_pin, welcome, broadcast
+from bot_funcs import media_reactor, morning_wisher, bday_wisher, conversation, delete_pin, welcome
+# from bot_funcs import broadcast
 from bot_funcs.commands import BotCommands as bc
 from constants import shanibot, group_ids
 from convos import bday, magic, nick, settings_gui, start
@@ -117,7 +118,7 @@ dp.add_handler(CommandHandler(command='swear', callback=bc.swear))
 dp.add_handler(CommandHandler(command='snake', callback=bc.snake))
 dp.add_handler(CommandHandler(command='facts', callback=bc.facts))
 dp.add_handler(CommandHandler(command='quizizz', callback=bc.quizizz))
-dp.add_handler(CommandHandler(command='broadcast', callback=bc.broadcast, filter=Filters.chat(chat_id=samir)|Filters.chat(chat_id=harshil))
+# dp.add_handler(CommandHandler(command='broadcast', callback=bc.broadcast, filter=Filters.chat(chat_id=samir)|Filters.chat(chat_id=harshil))
 dp.add_handler(PollAnswerHandler(callback=receive_answer))
 
 # /8ball conversation-
@@ -179,10 +180,10 @@ settings_gui_handler = ConversationHandler(
     fallbacks=[CommandHandler('cancel', settings_gui.save)])
 dp.add_handler(settings_gui_handler)
 
-broadcast_handler = ConversationHandler(
-    entry_points=[CommandHandler('broadcast', bc.broadcast)],
+# broadcast_handler = ConversationHandler(
+    # entry_points=[CommandHandler('broadcast', bc.broadcast)],
 
-    states={
+    # states={
 
 media_filters = (Filters.document | Filters.photo | Filters.video | Filters.voice | Filters.audio)
 edit_filter = Filters.update.edited_message

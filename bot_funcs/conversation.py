@@ -155,7 +155,7 @@ def reply(update: Update, context: CallbackContext) -> None:
 
     text = update.message.text
     if update.message.reply_to_message.from_user.username == context.bot.username:  # If the reply is to this bot:
-        if not (text.startswith('!r') or text.endswith('!r')):  # Don't reply if this is prepended or appended.
+        if not (text.startswith('!r') or text.endswith('!r')):  # Don't reply if !r is prepended or appended.
             logger(message=f"Bot received a reply from {update.effective_user.first_name} in "
                            f"{update.effective_chat.title}.")
             shanifier(update, context, is_group=True, the_id=update.message.message_id)
