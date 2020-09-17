@@ -34,7 +34,7 @@ def wish(context: CallbackContext) -> None:
 
         msg = context.bot.send_message(chat_id=_12B, text=bday_msgs[2])
         context.bot.pin_chat_message(chat_id=_12B, message_id=msg.message_id, disable_notification=True)
-        logger(message=f"Happy birthday message to {name} was just sent.")
+        logger(message=f"Happy birthday message for {name} was just sent to the 12B group.")
 
         now = str(date.today())
         today = datetime.strptime(now, "%Y-%m-%d")  # Parses today's date (time object) into datetime object
@@ -43,5 +43,8 @@ def wish(context: CallbackContext) -> None:
         gcalendar.CalendarEventManager(name=name).update_event(new_date)  # Updates bday to next year
 
         del _12B, msg, now, today, new_date
+    elif days_remaining in (21, 69):
+        context.bot.send_message(chat_id=group_ids['12b'], text=f"{name}'s birthday is in {days_remaining} days!!")
+        logger(message=f"Happy birthday reminder for {name}({days_remaining} days) was just sent to the 12B group.")
     del days_remaining, name
     # TODO: Wishes from /tell birthday input-
