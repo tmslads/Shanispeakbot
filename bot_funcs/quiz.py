@@ -1,6 +1,7 @@
 import os
 import random as r
 from datetime import datetime
+from datetime import timedelta
 from time import sleep
 
 import matplotlib
@@ -61,13 +62,12 @@ def send_quiz(context: CallbackContext) -> None:
 
     logger(message=f"The 5 quizzes were just sent to tms group successfully.")
 
-    if right_now.day not in (29, 30, 31):  # If not in final days of a month, set date 2 days after
-        context.bot_data['stop_quiz_date'] = datetime(right_now.year, right_now.month, right_now.day + 2)
+    if 'stop_quiz_date' not in context.bot_data:
+        context.bot_data['stop_quiz_date'] = right_now
 
-    else:  # TODO: Contingency for new year
-        context.bot_data['stop_quiz_date'] = datetime(right_now.year, right_now.month + 1, 1)
-
+    context.bot_data['stop_quiz_date'] += timedelta(days=2)
     context.bot_data['last_quiz'] = right_now  # Save new time for last quiz
+
     context.dispatcher.persistence.flush()
 
 
@@ -90,7 +90,10 @@ def timedout(context: CallbackContext) -> None:
               "This is like you say embarrassing to me. You have to put effort and work towards the boards now",
               "That's it. I am telling mudassir sir now. Just tell me what's the confusion.",
               "Are you fine? Physics is easy what's the problem like",
-              "You are troubling me. See I just wanted to be in the right direction nothing else I mean okay?")
+              "You are troubling me. See I just wanted to be in the right direction nothing else I mean okay?",
+              "Even after this much time you're not learning like you say",
+              "Now I'm not working on this okay? Finish. Do what you want",
+              "I'm calling your parents and now you have to come to support class, good for you okay?")
 
     scold_names = ""
 
@@ -105,7 +108,7 @@ def timedout(context: CallbackContext) -> None:
     leaderboard(context)  # Make the leaderboard
 
     context.bot.send_photo(chat_id=group_ids['grade12'], photo=open('leaderboard.png', 'rb'),
-                           caption="Current standings now")  # Send latest leaderboard
+                           caption="Current standings")  # Send latest leaderboard
 
     logger(message=f"The leaderboard was just sent on the group.")
 
@@ -148,7 +151,7 @@ def receive_answer(update: Update, context: CallbackContext) -> None:
     for quiz in context.bot_data['sent_quizzes']:
         if quiz.poll.id == update.poll_answer.poll_id:
             correct_answer = quiz.poll.correct_option_id
-            logger(message=f"tms quiz was answered by {user.first_name}")
+            logger(message=f"TMS quiz was answered by {user.first_name}")
             break
     else:  # Only happens when /quizizz quiz was answered.
         logger(message=f"/quizizz was answered by {user.first_name}")
@@ -173,6 +176,7 @@ def receive_answer(update: Update, context: CallbackContext) -> None:
 
     if correct_answer != chosen_answer[0]:  # If guy got it wrong
         lad['answers_wrong'] += 1
+        lad['answers_right'] -= 1  # Deduct one mark for wrong answer
     else:
         lad['answers_right'] += 1
 
@@ -211,7 +215,7 @@ def round_pic() -> None:
             continue
 
         img = Image.open(f"profile_pics/{name}").convert("RGB")
-        npImage = np.array(img)
+        np_image = np.array(img)
         h, w = img.size
 
         # Create same size alpha layer with circle
@@ -220,16 +224,16 @@ def round_pic() -> None:
         draw.pieslice([0, 0, h, w], 0, 360, fill=255)
 
         # Convert alpha Image to numpy array
-        npAlpha = np.array(alpha)
+        np_alpha = np.array(alpha)
 
         # Add alpha layer to RGB
-        npImage = np.dstack((npImage, npAlpha))
+        np_image = np.dstack((np_image, np_alpha))
 
         png_name = name.replace('jpg', 'png')
         jpg_name_path = f"{cwd}/profile_pics/{name}"
 
         # Save with alpha
-        Image.fromarray(npImage).save(f"profile_pics/{png_name}")  # Only saves in .png
+        Image.fromarray(np_image).save(f"profile_pics/{png_name}")  # Only saves in .png
         os.remove(jpg_name_path)  # Remove jpg file
 
 
@@ -276,7 +280,7 @@ def leaderboard(context) -> None:
         return
 
     mean = sum(vals) / len(vals)  # Gets average for color sorting later
-    vals, names = zip(*sorted(zip(vals, names)))  # Sorts both lists correspondingly in ascending order. Returns tuples
+    vals, names = zip(*sorted(zip(vals, names)))  # Sorts both lists correspondingly in descending order. Returns tuples
     matplotlib.use('Agg')
     canvas, ax = plt.subplots(1, 1, figsize=(10, 8))  # That fig size is perfect for 1920x1080 (Don't change this!)
     plt.grid()  # Shows grid lines
@@ -295,8 +299,8 @@ def leaderboard(context) -> None:
         marks = bar.get_width()  # Get no. of correct answers of that guy
 
         if index == len(barlist) - 1:  # Make text bolder, add trophy for the guy who is #1
-            size = 15
-            alpha = 1  # alpha controls transparency
+            size = 12
+            alpha = 0.9  # alpha controls transparency
             trophy_scale = 0.16 * max(vals)  # Value obtained by experimenting
             effects = [patheffects.SimpleLineShadow(shadow_color='black', alpha=0.95), patheffects.Normal()]
 
@@ -304,31 +308,37 @@ def leaderboard(context) -> None:
             ax.add_artist(ab)  # Draws annotation
 
         else:
-            size = 11
+            size = 9
             alpha = 0.7
             effects = None
 
         if marks > mean:
             color = '#00FA3F'  # Set bar color to green if guy got above avg marks
-        elif marks <= mean - 5:
+        elif marks <= mean - 3:
             color = '#FA1D07'  # Set bar color to red if guy got really bad marks
         else:
             color = '#F8ED0F'  # Set bar color to yellow if guy got below avg marks
 
         barlist[index].set_color(color)  # Sets bar color
 
-        if marks != 0:  # Don't draw arrow and marks if he got a big fat ZERO.
-            text_scale = 0.026 * max(vals)  # Another experimental value
+        text_scale = 0.026 * max(vals)  # Another experimental value
+        arrow_scale, arrow_pad = max(vals) * 0.016, 0.001
+        image_scale = max(vals) * 0.08375  # Yet another experimental value
+
+        if marks < 0:  # Reverse position of image, arrow and text if marks are negative
+            text_scale = -text_scale
+            arrow_scale, arrow_pad = -arrow_scale, -arrow_pad
+            image_scale = -image_scale
+
+        if marks != 0:   # Don't draw arrow and marks if he got a big fat ZERO.
             plt.text(marks - text_scale, index, str(marks), color="#000000", va='center', ha='center', alpha=alpha,
                      fontdict={'weight': 'bold', 'size': size, 'fontfamily': 'DejaVu Sans'},
                      path_effects=effects)  # Puts marks on the bars near the end
 
-        arrow_scale = max(vals) * 0.016
-        ax.annotate("", xy=(marks + arrow_scale, index), xytext=(marks + 0.001 + arrow_scale, index), xycoords='data',
-                    arrowprops={'color': '#02D4F5'}, annotation_clip=False)
+        ax.annotate("", xy=(marks + arrow_scale, index), xytext=(marks + arrow_pad + arrow_scale, index),
+                    xycoords='data', arrowprops={'color': '#02D4F5'}, annotation_clip=False)
 
         # Add profile pic next to arrows-
-        image_scale = max(vals) * 0.08375  # Yet another experimental value
         ab = add_image(name, marks, index, offset=image_scale)
         ax.add_artist(ab)
 
