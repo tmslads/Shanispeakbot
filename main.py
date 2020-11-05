@@ -9,8 +9,9 @@ from telegram.ext import (CommandHandler, ConversationHandler, InlineQueryHandle
 
 import inline
 from bot_funcs import media_reactor, morning_wisher, bday_wisher, conversation, delete_pin, welcome
+# from bot_funcs import broadcast
 from bot_funcs.commands import BotCommands as bc
-from constants import shanibot, group_ids
+from constants import shanibot, group_ids, samir, harshil
 from convos import bday, magic, nick, settings_gui, start
 from bot_funcs.quiz import send_quiz, receive_answer, timedout
 
@@ -26,87 +27,8 @@ dp = updater.dispatcher
 
 
 def data_view() -> None:
-    with open('files/user_data', 'rb') as f:
-        pprint.PrettyPrinter(indent=2).pprint(pickle.load(f))
-
-
-# def update_data(context):
-    # Samir update-
-    # context.bot_data['quizizz'][764886971]['questions_answered'] += 5
-    # context.bot_data['quizizz'][764886971]['answers_wrong'] = 1
-    # context.bot_data['quizizz'][764886971]['answers_right'] += 1
-
-    # # me-
-    # context.bot_data['quizizz'][476269395]['answers_right'] += 1
-
-#
-#     # Jaden update-
-#     context.bot_data['quizizz'][847874359]['questions_answered'] += 5
-#     context.bot_data['quizizz'][847874359]['answers_wrong'] = 2
-#     context.bot_data['quizizz'][847874359]['answers_right'] += 3
-#
-    # Samrin update-
-#     context.bot_data['quizizz'][1009248402]['questions_answered'] += 5
-#     context.bot_data['quizizz'][1009248402]['answers_wrong'] = 1
-#     context.bot_data['quizizz'][1009248402]['answers_right'] += 1
-#
-    # Abdus update-
-#     context.bot_data['quizizz'][925784909]['questions_answered'] += 5
-#     context.bot_data['quizizz'][925784909]['answers_wrong'] = 2
-#     context.bot_data['quizizz'][925784909]['answers_right'] += 1
-#
-#     # Rakin update-
-#     context.bot_data['quizizz'][831658863] = {}
-#     context.bot_data['quizizz'][831658863]['questions_answered'] = 5
-#     context.bot_data['quizizz'][831658863]['answers_wrong'] = 0
-#     context.bot_data['quizizz'][831658863]['answers_right'] = 5
-#     context.bot_data['quizizz'][831658863]['name'] = 'Rakin'
-#     context.bot_data['quizizz'][831658863]['profile_pic'] = 'profile_pics/Rakin.jpg'
-#
-#     # Ronit update-
-#     context.bot_data['quizizz'][869309961] = {}
-#     context.bot_data['quizizz'][869309961]['questions_answered'] = 5
-#     context.bot_data['quizizz'][869309961]['answers_wrong'] = 1
-#     context.bot_data['quizizz'][869309961]['answers_right'] = 4
-#     context.bot_data['quizizz'][869309961]['name'] = 'Ronit'
-#     context.bot_data['quizizz'][869309961]['profile_pic'] = 'profile_pics/Ronit.jpg'
-#
-#     # Jai update-
-#     context.bot_data['quizizz'][822149388]['questions_answered'] += 5
-#     context.bot_data['quizizz'][822149388]['answers_wrong'] = 2
-#     context.bot_data['quizizz'][822149388]['answers_right'] += 3
-#
-#     # Adeep update-
-#     context.bot_data['quizizz'][1020219808]['questions_answered'] += 5
-#     context.bot_data['quizizz'][1020219808]['answers_wrong'] = 0
-#     context.bot_data['quizizz'][1020219808]['answers_right'] += 5
-#
-    # print("UPDATED ALL")
-# #     with open('files/user_data', 'rb+') as f1:
-# #         dic = pickle.load(f1)
-# #         dic['user_data'][894016631]['nickname'].remove('Nigger')
-# #         dic['user_data'][894016631]['nickname'].remove('Nigga')
-# #         print('removed')
-# #         print(dic['user_data'][894016631]['nickname'])
-# #
-# #     with open('files/user_data', 'wb+') as f2:
-# #         pickle.dump(dic, f2)
-# #         print('updated')
-#     context.dispatcher.persistence.flush()
-#     print('saved')
-
-#
-# def user(context):
-#
-#     context.bot.send_photo(chat_id=group_ids['grade12'], photo=open('leaderboard.png', 'rb'),
-#                            caption="Current standings.")
-#     mention = ''
-#     for _id, name in [(822149388, 'Jai ')]:
-#         mention += mention_html(user_id=_id, name=name)  # Get their mention in html
-#
-#     context.bot.send_message(chat_id=group_ids['grade12'],
-#                              text=mention + "Are you fine? Physics is easy what's the problem like",
-#                              parse_mode=ParseMode.HTML)
+    with open('files/user_data', 'rb') as data:
+        pprint.PrettyPrinter(indent=2).pprint(pickle.load(data))
 
 
 dp.add_handler(InlineQueryHandler(inline.inline_clips))
@@ -117,6 +39,8 @@ dp.add_handler(CommandHandler(command='swear', callback=bc.swear))
 dp.add_handler(CommandHandler(command='snake', callback=bc.snake))
 dp.add_handler(CommandHandler(command='facts', callback=bc.facts))
 dp.add_handler(CommandHandler(command='quizizz', callback=bc.quizizz))
+# dp.add_handler(CommandHandler(command='broadcast', callback=bc.broadcast, filters=Filters.chat(chat_id=samir)|Filters.chat(chat_id=harshil)))
+dp.add_handler(CommandHandler(command='12b', callback=bc.mention_all, filters=Filters.user((samir,harshil))))
 dp.add_handler(PollAnswerHandler(callback=receive_answer))
 
 # /8ball conversation-
@@ -178,6 +102,12 @@ settings_gui_handler = ConversationHandler(
     fallbacks=[CommandHandler('cancel', settings_gui.save)])
 dp.add_handler(settings_gui_handler)
 
+# broadcast_handler = ConversationHandler(
+    # entry_points=[CommandHandler('broadcast', bc.broadcast)],
+
+    # states={
+            # 0: [MessageHandler(filters=Filters.text(['12b, grade12']), callback=bc.send_broadcast)]})
+
 media_filters = (Filters.document | Filters.photo | Filters.video | Filters.voice | Filters.audio)
 edit_filter = Filters.update.edited_message
 pin_filter = Filters.status_update.pinned_message
@@ -201,4 +131,4 @@ updater.job_queue.run_repeating(timedout, 86400, first=20)
 data_view()
 
 updater.start_polling()
-updater.idle()
+##updater.idle()
