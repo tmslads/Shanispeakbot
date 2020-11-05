@@ -4,14 +4,13 @@ import os.path
 import pickle
 from datetime import date
 from datetime import timedelta
-from typing import Tuple, Union
+from typing import Tuple, Union, List
 
 from google.auth.transport.requests import Request
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 
 from helpers.logger import logger
-
 
 # If modifying these scopes, delete the file token.pickle.
 SCOPES = ['https://www.googleapis.com/auth/calendar']
@@ -107,7 +106,7 @@ def formatter(today: datetime.date, days: int = 0, format_style: str = "") -> Un
     return
 
 
-def get_next_bday() -> Tuple[int, str]:
+def get_next_bday() -> List[Tuple[int, str]]:
     """
     Fetches a birthday from google calendar (12B only) and returns the number of days till the next birthday of a
     person along with their name.
@@ -131,13 +130,19 @@ def get_next_bday() -> Tuple[int, str]:
     diff = []
 
     for bday_date in bday_list:
-        day_diff = bday_date[0] - today  # Finds diff from today to birthday
-        diff.append((day_diff.days, bday_date[1]))
+        day_diff = (bday_date[0] - today).days  # Finds diff from today to birthday
+        diff.append((day_diff, bday_date[1]))
 
-    print(diff, '\n')
-    next_bday = min(lowest for lowest in diff if lowest[0] >= 0)
-    print(f"Next birthday: {next_bday}\n")
-    return next_bday  # Returns lowest (i.e. next bday) in the calendar
+    bday_sorted: List[Tuple[int, str]] = sorted(diff)
+    print(bday_sorted, '\n')
+
+    next_bday_countdown: int = bday_sorted[0][0]
+
+    bdays = [bday for bday in bday_sorted if bday[0] == next_bday_countdown]
+    print(f"Next birthday(s): {bdays}\n")
+
+    del diff
+    return bdays  # Returns lowest (i.e. next bday) in the calendar
 
 
 def main() -> None:

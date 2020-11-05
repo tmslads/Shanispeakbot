@@ -1,6 +1,6 @@
 import random as r
 import re
-from typing import List, Union, Tuple
+from typing import List, Tuple
 
 import requests
 from bs4 import BeautifulSoup
@@ -94,7 +94,7 @@ def quiz_maker_v2(number: int) -> Tuple[List[str], List[List[str]], List[int]]:
                 remover()
                 break
         else:
-            if len(question) > 255 or len(choices) > 10:
+            if len(question) > 300 or len(choices) > 10:
                 remover()
 
     return tuple(zip(*r.sample(list(zip(all_questions, all_choices, all_answers)), k=number)))  # Get random question(s)
