@@ -7,8 +7,9 @@ from telegram.error import BadRequest
 from telegram.ext import CallbackContext
 
 from constants import samir, harshil, sql_table
+from helpers.db_connector import connection
 from helpers.logger import logger
-from helpers.namer import get_nick, get_chat_name
+from helpers.namer import get_chat_name
 
 CURRENT_SETTINGS, UPDATED, PROBABILITY = range(3)
 
@@ -69,21 +70,13 @@ def start(update: Update, context: CallbackContext) -> int:
 
     conn = sqlite3.connect('./files/bot_settings.db')
     c = conn.cursor()
-    name = get_nick(update, context)
 
     c.executescript(sql_table)  # If table is not made
     conn.commit()
+    conn.close()
 
-    c.execute(f"SELECT EXISTS(SELECT * FROM CHAT_SETTINGS WHERE chat_id = {chat_id});")  # Returns 0 if doesn't exist
-    result = c.fetchone()
-
-    if not result[0]:
-        c.execute(f"INSERT INTO CHAT_SETTINGS VALUES({chat_id},'{name}','❌',0.3,0.2);")  # First time use
-        conn.commit()
-
-    c.execute(f"SELECT MORNING_MSGS FROM CHAT_SETTINGS WHERE chat_id = {chat_id};")
-    result = c.fetchone()
-    morn_setting = result[0]
+    morn_setting = connection(query=f"SELECT MORNING_MSGS FROM CHAT_SETTINGS WHERE chat_id = {chat_id};",
+                              update=update)
 
     # Sends the current settings applied-
     if update.callback_query is None:

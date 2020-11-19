@@ -1,7 +1,7 @@
 # Shani Sir Telegram Bot
 A Shani Sir Telegram bot who is savage in groups, sends you clips of Sir, and can get up close and personal with you in the DMs!
 
-Chat with him now: @shanisirbot
+Chat with him now: [@shanisirbot](https://t.me/shanisirbot/)
 
 ## Commands available:
 The following commands are currently available to use:

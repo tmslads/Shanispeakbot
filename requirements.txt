@@ -1,5 +1,5 @@
 # Python telegram bot-
-python-telegram-bot>=12.7
+python-telegram-bot>=13.1
 
 # NLP using libs-
 spacy

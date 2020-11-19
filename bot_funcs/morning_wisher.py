@@ -1,5 +1,5 @@
-from datetime import datetime
 import random
+from datetime import datetime
 
 from telegram.ext import CallbackContext
 
@@ -19,6 +19,8 @@ def morning_goodness(context: CallbackContext) -> None:
 
     if 'last_sent' not in context.bot_data:
         context.bot_data['last_sent'] = right_now
+
+    context.bot_data.setdefault('pin_msgs', [])
 
     diff = right_now - context.bot_data['last_sent']
 
@@ -44,7 +46,6 @@ def morning_goodness(context: CallbackContext) -> None:
     logger(message=f"The query executed on the database was:\n{query}\nand the result was:\n{ids=}")
 
     # Open mp3 from desktop as github url doesn't support thumbnails-
-
     clip_loc = r"C:/Users/Uncle Sam/Desktop/sthyaVERAT/4 FUN ya Practice/Shanisirmodule/Assets/clips/bell.mp3"
 
     for chat_id, chat_name in ids:
@@ -59,12 +60,13 @@ def morning_goodness(context: CallbackContext) -> None:
             logger(message=f"Today's morning audio was just sent to {chat_name}.")
 
             context.bot.pin_chat_message(chat_id=chat_id, message_id=msg.message_id, disable_notification=True)
-            del msg
 
-        except Exception as e:  # When chat is private, no rights to pin message, or if bot was removed.
+            context.bot_data['pin_msgs'].append(msg)
+
+        except Exception as e:  # Insufficient permissions, bot removal/block, or any other unexpected error
             logger(message=f"There was an error for {chat_name} due to: {e}.")
 
-    context.bot_data['last_sent'] = datetime(right_now.year, right_now.month, right_now.day, 8)  # Set it as 8AM today
+    context.bot_data['last_sent'] = eight_am  # Set it as 8AM today
     context.dispatcher.persistence.update_bot_data(context.bot_data)
     logger(message="The last_sent object was successfully updated to 8AM today.")
 

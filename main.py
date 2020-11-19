@@ -4,16 +4,17 @@ import pprint
 
 from telegram.ext import (CommandHandler, ConversationHandler, InlineQueryHandler, MessageHandler, Filters,
                           PicklePersistence, Updater, CallbackQueryHandler, PollAnswerHandler)
-# from telegram import ParseMode
-# from telegram.utils.helpers import mention_html
 
 import inline
 from bot_funcs import media_reactor, morning_wisher, bday_wisher, conversation, delete_pin, welcome
 # from bot_funcs import broadcast
 from bot_funcs.commands import BotCommands as bc
+from bot_funcs.quiz import send_quiz, receive_answer, timedout
 from constants import shanibot, group_ids, samir, harshil
 from convos import bday, magic, nick, settings_gui, start
-from bot_funcs.quiz import send_quiz, receive_answer, timedout
+
+# from telegram import ParseMode
+# from telegram.utils.helpers import mention_html
 
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(lineno)d - %(message)s', level=logging.INFO)
 
@@ -39,8 +40,8 @@ dp.add_handler(CommandHandler(command='swear', callback=bc.swear))
 dp.add_handler(CommandHandler(command='snake', callback=bc.snake))
 dp.add_handler(CommandHandler(command='facts', callback=bc.facts))
 dp.add_handler(CommandHandler(command='quizizz', callback=bc.quizizz))
-# dp.add_handler(CommandHandler(command='broadcast', callback=bc.broadcast, filters=Filters.chat(chat_id=samir)|Filters.chat(chat_id=harshil)))
-dp.add_handler(CommandHandler(command='12b', callback=bc.mention_all, filters=Filters.user((samir,harshil))))
+# dp.add_handler(CommandHandler(command='broadcast', callback=bc.broadcast, filters=Filters.chat([samir, harshil])))
+dp.add_handler(CommandHandler(command='12b', callback=bc.mention_all, filters=Filters.user([samir, harshil])))
 dp.add_handler(PollAnswerHandler(callback=receive_answer))
 
 # /8ball conversation-
@@ -121,8 +122,9 @@ dp.add_handler(MessageHandler(Filters.group & Filters.text & ~ edit_filter, conv
 dp.add_handler(MessageHandler(Filters.private & Filters.text & ~ edit_filter, conversation.shanifier))
 dp.add_handler(MessageHandler(Filters.command, bc.unknown))
 
+updater.job_queue.run_repeating(delete_pin.unpin_all, 86400, first=1)
 updater.job_queue.run_repeating(bday_wisher.wish, 86400, first=1)  # Runs every time script is started, and once a day.
-updater.job_queue.run_repeating(morning_wisher.morning_goodness, 3600, first=1)
+updater.job_queue.run_repeating(morning_wisher.morning_goodness, 3600, first=2)
 updater.job_queue.run_repeating(inline.get_clips, 60, first=1)  # Have to re-fetch clips since links expire
 updater.job_queue.run_repeating(send_quiz, 604800, first=1)  # Send quiz to TMS'20 weekly
 updater.job_queue.run_repeating(timedout, 86400, first=20)

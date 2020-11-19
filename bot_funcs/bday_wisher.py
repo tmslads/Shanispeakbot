@@ -38,6 +38,8 @@ def wish(context: CallbackContext) -> None:
         today = datetime.strptime(now, "%Y-%m-%d")  # Parses today's date (time object) into datetime object
         new_date = today.replace(year=today.year + 1)
 
+        context.bot_data.setdefault('pin_msgs', [])
+
         for _, name in bdays:
             try:
                 mention = mention_html(class_12b[name.capitalize()], name)
@@ -47,6 +49,9 @@ def wish(context: CallbackContext) -> None:
             msg = context.bot.send_message(chat_id=_12B, text=bday_msgs[2].replace('(placeholder)', mention),
                                            parse_mode="HTML")
             context.bot.pin_chat_message(chat_id=_12B, message_id=msg.message_id, disable_notification=True)
+
+            context.bot_data['pin_msgs'].append(msg)
+
             logger(message=f"Happy birthday message for {name} was just sent to the 12B group.")
             gcalendar.CalendarEventManager(name=name).update_event(new_date)  # Updates bday to next year
 

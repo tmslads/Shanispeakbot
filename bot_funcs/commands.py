@@ -169,14 +169,14 @@ class BotCommands:
 
     # @staticmethod
     # def broadcast(update: Update, context: CallbackContext) -> None:
-        # """Allows unclesam79 or harshil21 to broadcast a message via the bot"""
-
-        # if update.effective_chat.id in [samir, harshil]:
-            # context.bot.send_message(chat_id=update.effective_chat.id, text="Who do I broadcast to, master?")
-            # logger(message=f"Broadcast initiated.")
-            # return 0
-
-        # return -1
+    #     """Allows unclesam79 or harshil21 to broadcast a message via the bot"""
+    #
+    #     if update.effective_chat.id in [samir, harshil]:
+    #         context.bot.send_message(chat_id=update.effective_chat.id, text="Who do I broadcast to, master?")
+    #         logger(message=f"Broadcast initiated.")
+    #         return 0
+    #
+    #     return -1
 
     @staticmethod
     def unknown(update: Update, context: CallbackContext) -> None:

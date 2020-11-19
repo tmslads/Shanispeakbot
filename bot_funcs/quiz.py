@@ -102,7 +102,7 @@ def timedout(context: CallbackContext) -> None:
             context.bot.stop_poll(chat_id=group_ids['grade12'], message_id=quiz.message_id)
         except Exception as e:
             print(e)
-            pass
+
     context.bot.send_chat_action(chat_id=group_ids['grade12'], action='upload_photo')
     pp(context)
     leaderboard(context)  # Make the leaderboard
@@ -119,9 +119,12 @@ def timedout(context: CallbackContext) -> None:
             to_scold.append((user_id, name))  # Add to list of people to scold
         value['answers_wrong'] = 0  # Reset answers_wrong for every quiz
 
-    for _id, name in to_scold:
+    for index, _id, name in enumerate(to_scold):
         mention = mention_html(user_id=_id, name=name)  # Get their mention in html
-        scold_names += mention + " "  # Add a whitespace after every name
+        if index == len(to_scold) - 1 and len(to_scold) > 1:  # If last item and not the only item in the list
+            scold_names += f"and {mention}.\n"  # Add 'and' for final item
+        else:
+            scold_names += f"{mention}, "  # Add a whitespace after every name
         logger(message=f"{name} is going to be scolded.")
 
     if to_scold:  # Send only if there is someone to scold!
@@ -133,7 +136,7 @@ def timedout(context: CallbackContext) -> None:
     context.bot_data['stop_quiz_date'] = None
     context.bot_data['sent_quizzes'].clear()  # Clear all quizzes
 
-    logger(message="Changed quiz date to None and cleared sent quizzes")
+    logger(message="Reset quiz date to None and cleared sent quizzes.")
 
     context.dispatcher.persistence.flush()
 
