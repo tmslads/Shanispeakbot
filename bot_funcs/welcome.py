@@ -18,6 +18,6 @@ def welcome(update: Update, context: CallbackContext) -> None:
     context.bot.send_message(chat_id=update.effective_chat.id,
                              text=f'Welcome to the TMS group '
                                   f'{user.mention_html()}! I want you to know all Telegram like you say features okay? '
-                                  f'Check out this '
-                                  f'<a href="https://t.me/IntroducingTelegram">channel</a> to know everything!',
+                                  f'Check out @TelegramTips '
+                                  f'to know everything now itself\!',
                              parse_mode="HTML")
