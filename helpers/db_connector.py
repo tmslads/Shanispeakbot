@@ -8,7 +8,11 @@ from helpers.namer import get_chat_name
 
 
 def connection(query: str, update: Update = None, fetchall: bool = False) -> Union[list, int, float, str]:
-    """Connect to database and execute given query."""
+    """
+    Connect to database and execute given query.
+    `update` should be specified, if query contains any PTB related type such as chat_id. This is to avoid unexpected
+    results and errors.
+    """
 
     conn = sqlite3.connect('./files/bot_settings.db')
     c = conn.cursor()

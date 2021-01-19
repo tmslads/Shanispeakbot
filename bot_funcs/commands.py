@@ -4,6 +4,7 @@ import random as r
 from telegram import error, InlineKeyboardButton, InlineKeyboardMarkup, Poll, Update
 from telegram.ext import CallbackContext
 
+from constants import class_12b
 from helpers.logger import logger
 from helpers.namer import get_chat_name
 from online import util, quiz_scraper
@@ -152,6 +153,30 @@ class BotCommands:
 
         context.bot.send_poll(chat_id=update.effective_chat.id, question=question[0], options=options[0],
                               is_anonymous=False, type=Poll.QUIZ, correct_option_id=answer[0])
+
+    @staticmethod
+    def mention_all(update: Update, context: CallbackContext) -> None:
+        """Bot mentions all 12B users"""
+
+        del_command(update)
+        msg = ''
+        for lad, _id in class_12b.items():
+            msg += f"[{lad}](tg://user?id={_id})\t"
+
+        context.bot.send_message(chat_id=update.effective_chat.id, text=msg, parse_mode="MarkdownV2")
+
+        logger(message=f"{update.message.from_user.first_name} used mention_all. Group: {update.effective_chat.title}")
+
+    # @staticmethod
+    # def broadcast(update: Update, context: CallbackContext) -> None:
+    #     """Allows unclesam79 or harshil21 to broadcast a message via the bot"""
+    #
+    #     if update.effective_chat.id in [samir, harshil]:
+    #         context.bot.send_message(chat_id=update.effective_chat.id, text="Who do I broadcast to, master?")
+    #         logger(message=f"Broadcast initiated.")
+    #         return 0
+    #
+    #     return -1
 
     @staticmethod
     def unknown(update: Update, context: CallbackContext) -> None:
