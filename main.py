@@ -117,9 +117,9 @@ new_mem = Filters.status_update.new_chat_members
 dp.add_handler(MessageHandler(new_mem & Filters.chat(chat_id=int(group_ids['grade12'])), callback=welcome.welcome))
 dp.add_handler(MessageHandler(media_filters, media_reactor.media))
 dp.add_handler(MessageHandler(pin_filter & Filters.user(username=shanibot), delete_pin.de_pin))
-dp.add_handler(MessageHandler(Filters.reply & Filters.group & ~ edit_filter, conversation.reply))
-dp.add_handler(MessageHandler(Filters.group & Filters.text & ~ edit_filter, conversation.group))
-dp.add_handler(MessageHandler(Filters.private & Filters.text & ~ edit_filter, conversation.shanifier))
+dp.add_handler(MessageHandler(Filters.reply & Filters.chat_type.groups & ~ edit_filter, conversation.reply))
+dp.add_handler(MessageHandler(Filters.chat_type.groups & Filters.text & ~ edit_filter, conversation.group))
+dp.add_handler(MessageHandler(Filters.chat_type.private & Filters.text & ~ edit_filter, conversation.shanifier))
 dp.add_handler(MessageHandler(Filters.command, bc.unknown))
 
 updater.job_queue.run_repeating(delete_pin.unpin_all, 86400, first=1)
